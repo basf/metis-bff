@@ -30,6 +30,33 @@ app.post('/users/login', (req, res) => {
         });
 })
 
+app.get('/events', (req, res) => {
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache',
+        'Access-Control-Allow-Origin': '*',
+        'Connection': 'keep-alive'
+    });
+
+    let counter = 0;
+    let interValID = setInterval(() => {
+        counter++;
+        if (counter >= 10) {
+            clearInterval(interValID);
+            res.end();
+            return;
+        }
+        res.write('data: ' + counter + '\n\n');
+    }, 1000);
+
+
+    res.on('close', () => {
+        console.log('client dropped me');
+        clearInterval(interValID);
+        res.end();
+    });
+});
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
