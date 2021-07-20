@@ -12,7 +12,6 @@ const app = express();
 
 bff(app, {
     security: {
-        cors: false,
         secure,
     },
     session: {
@@ -34,11 +33,7 @@ bff(app, {
         target: 'https://peer.basf.science',
         secure,
     },
-    static: {
-        dir: path.join(__dirname, 'static'),
-        single: true,
-        dev,
-    },
+    static: false,
     ssr: false,
 });
 
