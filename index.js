@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const bff = require('express-bff');
 
-const { PORT = 5000, NODE_ENV } = process.env;
+const { PORT = 3000, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 const secure = !dev;
 
@@ -12,6 +12,11 @@ const app = express();
 
 bff(app, {
     security: {
+        cors: {
+            credentials: true,
+            origin: true,
+        },
+        csrf: false,
         secure,
     },
     session: {
