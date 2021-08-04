@@ -31,7 +31,7 @@ bff(app, {
         },
     },
     sse: {
-        path: '/data',
+        path: '/stream',
     },
     api: {
         dir: path.join(__dirname, 'routes'),

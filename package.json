@@ -15,6 +15,7 @@
   "homepage": "https://bitbucket.org/tilde-mi/bscience-bff#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "express-bff": "^0.7.0"
+    "express-bff": "^0.7.0",
+    "uuid4": "^2.0.2"
   }
 }
