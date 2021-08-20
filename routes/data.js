@@ -3,21 +3,19 @@ const uuid4 = require('uuid4');
 module.exports = {
     get,
     post,
-    patch,
+    put,
 };
 
+const data = Array.apply(null, Array(Math.floor(Math.random() * 5) + 0)).map((_, i) => generateItem(`Data ${i}`));
+console.log('data', data);
 async function get(req, res) {
     if (!req.session.user) {
         return res.status(401).json({ message: 'Need to authorization first' });
     }
+    res.status(202).json({});
 
-    const listing = Array.apply(null, Array(Math.floor(Math.random() * 3) + 0)).map(() => ({
-        uuid: uuid4(),
-        type: Math.floor(Math.random() * 2) + 1,
-        name: 'Ba2Li3Sc6O9'
-    }));
 
-    return res.json(listing);
+    res.sse.send(data, 'data');
 }
 
 async function post(req, res) {
@@ -25,25 +23,37 @@ async function post(req, res) {
         return res.status(401).json({ message: 'Need to authorization first' });
     }
 
-    if (!req.body.content) {
-        return res.status(400).json({ message: 'Empty or invalid content' });
-    }
+    data.push(generateItem(`Data ${data.length}`, req.body.content));
 
-    return res.json({
-        uuid: uuid4(),
-        type: Math.floor(Math.random() * 2) + 1,
-        name: 'SrTiO3'
-    });
+    res.sse.send(data, 'data');
+
+    res.status(202).json({});
 }
 
-async function patch(req, res) {
+async function put(req, res) {
     if (!req.session.user) {
         return res.status(401).json({ message: 'Need to authorization first' });
     }
 
     if (!req.body.uuid) {
-        return res.status(400).json({ message: 'Empty or invalid content' });
+        return res.status(401).json({ message: 'Need to authorization first' });
     }
 
-    return res.json({});
+    res.status(202).json({});
+
+    const uuid = req.body.uuid;
+
+    const i = data.findIndex(item => item.uuid === uuid);
+    data.splice(i, 1);
+    
+    res.sse.send(data, 'data'); 
+}
+
+function generateItem(name, content = '') {
+    return {
+        uuid: uuid4(),
+        type: Math.floor(Math.random() * 2) + 1,
+        name,
+        content
+    };
 }
