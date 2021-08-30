@@ -7,6 +7,7 @@ const credentials = {
     login: 'basf',
     password: 'fsab'
 };
+
 async function post(req, res) {
     const { login, password } = req.body;
 

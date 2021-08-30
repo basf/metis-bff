@@ -10,7 +10,7 @@ const calculations = [];
 
 async function get(req, res) {
     if (!req.session.user) {
-        return res.status(401).json({ message: 'Need to authorization first' });
+        return res.status(401).json({ message: 'Need to authorize first' });
     }
 
     res.status(202).json({});
@@ -20,11 +20,11 @@ async function get(req, res) {
 
 async function post(req, res) {
     if (!req.session.user) {
-        return res.status(401).json({ message: 'Need to authorization first' });
+        return res.status(401).json({ message: 'Need to authorize first' });
     }
 
     if (!req.body.uuid) {
-        return res.status(401).json({ message: 'Need to authorization first' });
+        return res.status(401).json({ message: 'Need to authorize first' });
     }
 
     res.status(202).json({});
@@ -55,11 +55,11 @@ async function post(req, res) {
 
 async function put(req, res) {
     if (!req.session.user) {
-        return res.status(401).json({ message: 'Need to authorization first' });
+        return res.status(401).json({ message: 'Need to authorize first' });
     }
 
     if (!req.body.uuid) {
-        return res.status(401).json({ message: 'Need to authorization first' });
+        return res.status(401).json({ message: 'Need to authorize first' });
     }
 
     res.status(202).json({});
