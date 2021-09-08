@@ -7,7 +7,7 @@ module.exports = {
 };
 
 const data = Array.apply(null, Array(Math.floor(Math.random() * 5) + 0)).map((_, i) => generateItem(`Data ${i}`));
-console.log('data', data);
+
 async function get(req, res) {
     if (!req.session.user) {
         return res.status(401).json({ message: 'Need to authorization first' });
