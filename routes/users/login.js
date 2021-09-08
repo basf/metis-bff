@@ -7,11 +7,12 @@ const credentials = {
     login: 'basf',
     password: 'fsab'
 };
+
 async function post(req, res) {
     const { login, password } = req.body;
 
     if (login !== credentials.login || password !== credentials.password) {
-        return res.status(400).json({ message: 'Bad credentials' });
+        return res.status(400).json({ error: 'Bad credentials' });
     }
 
     req.session.user = {
