@@ -10,23 +10,18 @@ module.exports = {
     delete: del,
 };
 
-
 const secret = 'b088a178-47db-458f-b00d-465490f9517a';
-const datastore = new Set();
-
-//datastore.add({error: 'Just a random error message'});
-//datastore.add({uuid: 'c099a178-47db-458f-b00d-465490f9998b', name: 'SrTiO<sub>3</sub>', type: 1});
-
-console.log('datastore: ');
-console.log(datastore);
 
 async function get(req, res) {
+
     if (!req.session.user) {
         return res.status(401).json({ error: 'Need to authorize first' });
     }
 
+    if (!req.session.datastore) req.session.datastore = [];
+
     const uuids = [];
-    datastore.forEach(x => uuids.push(x.uuid));
+    req.session.datastore.forEach(item => uuids.push(item.uuid));
 
     if (!uuids.length) return res.status(204).json({});
 
@@ -39,7 +34,7 @@ async function get(req, res) {
     const proxy_req = net.request({
         host: 'localhost', // global.proxy.target
         port: 7070,
-        path: 'data/list',
+        path: 'data/listing',
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -56,10 +51,13 @@ async function get(req, res) {
                 if (result.error)
                     res.sse.send([result], 'data');
                 else
-                    datastore.add(result);
-                res.sse.send(Array.from(datastore), 'data');
+                    result.forEach(item => req.session.datastore.push(item))
+
+                req.session.datastore = req.session.datastore.filter((v, i, self) => self.findIndex(t => (t.uuid === v.uuid)) === i);
+                res.sse.send(req.session.datastore, 'data');
+                req.session.save();
             } catch (e){
-                console.error("Invalid data received");
+                console.error("Invalid data received: " + JSON.stringify(result));
             }
 
         });
@@ -69,7 +67,6 @@ async function get(req, res) {
 
     proxy_req.write(post_data);
     proxy_req.end();
-
     res.status(202).json({});
 }
 
@@ -78,6 +75,8 @@ async function post(req, res) {
     if (!req.session.user) {
         return res.status(401).json({ error: 'Need to authorize first' });
     }
+
+    if (!req.session.datastore) req.session.datastore = [];
 
     const post_data = querystring.stringify({
         'secret': secret,
@@ -104,10 +103,13 @@ async function post(req, res) {
                 if (result.error)
                     res.sse.send([result], 'data');
                 else
-                    datastore.add(result);
-                res.sse.send(Array.from(datastore), 'data');
+                    req.session.datastore.push(result);
+
+                req.session.datastore = req.session.datastore.filter((v, i, self) => self.findIndex(t => (t.uuid === v.uuid)) === i);
+                res.sse.send(req.session.datastore, 'data');
+                req.session.save();
             } catch (e){
-                console.error("Invalid data received");
+                console.error("Invalid data received: " + JSON.stringify(result));
             }
 
         });
@@ -126,15 +128,20 @@ async function del(req, res) {
         return res.status(401).json({ error: 'Need to authorize first' });
     }
 
+    if (!req.session.datastore) req.session.datastore = [];
+
     if (!req.body.uuid) {
         return res.status(400).json({ error: 'Invalid request' });
     }
 
     res.status(202).json({});
 
-    const uuid = req.body.uuid;
-    datastore.forEach(x => x.uuid === uuid ? datastore.delete(x) : x);
+    let filtered = [];
+    req.session.datastore.forEach(function(item){
+        if (item.uuid != req.body.uuid)
+            filtered.push(item);
+    });
+    req.session.datastore = filtered;
 
-    res.sse.send(Array.from(datastore), 'data');
+    res.sse.send(req.session.datastore, 'data');
 }
-
