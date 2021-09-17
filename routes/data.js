@@ -134,6 +134,8 @@ async function del(req, res) {
         return res.status(400).json({ error: 'Invalid request' });
     }
 
+    // TODO backend request
+
     res.status(202).json({});
 
     let filtered = [];
@@ -144,4 +146,5 @@ async function del(req, res) {
     req.session.datastore = filtered;
 
     res.sse.send(req.session.datastore, 'data');
+    req.session.save();
 }
