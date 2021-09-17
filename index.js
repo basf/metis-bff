@@ -10,7 +10,7 @@ const secure = !dev;
 
 const app = express();
 
-! dev && app.set('trust proxy', 1); // if nginx used
+!dev && app.set('trust proxy', 1); // if nginx used
 
 bff(app, {
     security: {
@@ -45,5 +45,5 @@ bff(app, {
 });
 
 app.listen(PORT, () => {
-    console.log(`Example app listening at port http://localhost:${PORT}`)
+    console.log(`App in dev-mode=${dev} listens to http://localhost:${PORT}`);
 });
