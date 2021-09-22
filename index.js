@@ -37,7 +37,7 @@ bff(app, {
         dir: path.join(__dirname, 'routes'),
     },
     proxy: {
-        target: 'http://localhost:7070', // https://peer.basf.science
+        target: dev ? 'http://localhost:7070' : 'https://peer.basf.science/v0',
         secure,
     },
     static: false,
