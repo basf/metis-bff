@@ -3,6 +3,8 @@ const http = require('http');
 const https = require('https');
 const querystring = require('querystring');
 
+const config = require('./../config');
+
 
 module.exports = {
     get,
@@ -25,16 +27,16 @@ async function get(req, res) {
 
     if (!uuids.length) return res.status(204).json({});
 
-    const post_data = querystring.stringify({
-        'secret': secret,
-        'uuid': uuids.join(':')
-    });
+    const post_data = querystring.stringify({ 'secret': secret, 'uuid': uuids.join(':') });
 
-    const net = http; // global.secure ? https : http; FIXME import from index.js
+    const dev = req.app.get('development mode'),
+        proxy = config.target[ dev ? 'dev': 'prod' ];
+
+    const net = dev ? http : https;
     const proxy_req = net.request({
-        host: 'localhost', // global.proxy.target
-        port: 7070,
-        path: 'data/listing',
+        host: proxy.host,
+        port: proxy.port,
+        path: proxy.path + '/data/listing',
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -59,15 +61,14 @@ async function get(req, res) {
             } catch (e){
                 console.error("Invalid data received: " + JSON.stringify(result));
             }
-
         });
     }).on('error', function(err){
         console.error("Network error: " + err);
     });
-
     proxy_req.write(post_data);
     proxy_req.end();
     res.status(202).json({});
+    console.log(req.session.datastore);
 }
 
 async function post(req, res) {
@@ -78,15 +79,16 @@ async function post(req, res) {
 
     if (!req.session.datastore) req.session.datastore = [];
 
-    const post_data = querystring.stringify({
-        'secret': secret,
-        'content': req.body.content
-    });
-    const net = http; // global.secure ? https : http; FIXME import from index.js
+    const post_data = querystring.stringify({ 'secret': secret, 'content': req.body.content });
+
+    const dev = req.app.get('development mode'),
+        proxy = config.target[ dev ? 'dev': 'prod' ];
+
+    const net = dev ? http : https;
     const proxy_req = net.request({
-        host: 'localhost', // global.proxy.target
-        port: 7070,
-        path: 'data/create',
+        host: proxy.host,
+        port: proxy.port,
+        path: proxy.path + '/data/create',
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -111,15 +113,14 @@ async function post(req, res) {
             } catch (e){
                 console.error("Invalid data received: " + JSON.stringify(result));
             }
-
         });
     }).on('error', function(err){
         console.error("Network error: " + err);
     });
-
     proxy_req.write(post_data);
     proxy_req.end();
     res.status(202).json({});
+    console.log(req.session.datastore);
 }
 
 async function del(req, res) {
@@ -134,8 +135,41 @@ async function del(req, res) {
         return res.status(400).json({ error: 'Invalid request' });
     }
 
-    // TODO backend request
+    const post_data = querystring.stringify({ 'secret': secret, 'uuid': req.body.uuid });
 
+    const dev = req.app.get('development mode'),
+        proxy = config.target[ dev ? 'dev': 'prod' ];
+
+    const net = dev ? http : https;
+    const proxy_req = net.request({
+        host: proxy.host,
+        port: proxy.port,
+        path: proxy.path + '/data/delete',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(post_data)
+        }
+    }, function(subresponse){
+        let result = '';
+        subresponse.on('data', function(chunk){
+            result += chunk;
+        });
+        subresponse.on('end', function(){
+            try {
+                result = JSON.parse(result);
+                if (result.error)
+                    res.sse.send([result], 'data');
+
+            } catch (e){
+                console.error("Invalid data received: " + JSON.stringify(result));
+            }
+        });
+    }).on('error', function(err){
+        console.error("Network error: " + err);
+    });
+    proxy_req.write(post_data);
+    proxy_req.end();
     res.status(202).json({});
 
     let filtered = [];
@@ -147,4 +181,5 @@ async function del(req, res) {
 
     res.sse.send(req.session.datastore, 'data');
     req.session.save();
+    console.log(req.session.datastore);
 }

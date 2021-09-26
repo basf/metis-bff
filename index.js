@@ -8,9 +8,12 @@ const { PORT = 3000, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 const secure = !dev;
 
+const config = require('./config');
+
 const app = express();
 
 !dev && app.set('trust proxy', 1); // if nginx used
+app.set('development mode', !!dev);
 
 bff(app, {
     security: {
@@ -24,7 +27,7 @@ bff(app, {
     session: {
         persist: !dev,
         cookie: {
-            secure,
+            secure: false, // TODO FIXME?
             httpOnly: true,
             sameSite: true,
             maxAge: 86400000,
@@ -37,8 +40,8 @@ bff(app, {
         dir: path.join(__dirname, 'routes'),
     },
     proxy: {
-        target: dev ? 'http://localhost:7070' : 'https://peer.basf.science/v0',
-        secure,
+        target: config.target.get_url( dev ? 'dev': 'prod' ),
+        secure: false, // TODO FIXME?
     },
     static: false,
     ssr: false,
