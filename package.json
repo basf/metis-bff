@@ -10,12 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://PaulMaly@bitbucket.org/tilde-mi/bscience-bff.git"
+    "url": "git+https://bitbucket.org/tilde-mi/bscience-bff.git"
   },
-  "homepage": "https://bitbucket.org/tilde-mi/bscience-bff#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "express-bff": "^0.7.1",
+    "express-bff": "^0.7.2",
     "uuid4": "^2.0.2"
   }
 }
