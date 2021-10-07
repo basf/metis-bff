@@ -5,11 +5,11 @@ db.schema.dropTable('users').then(() => {
 		if (!exists) {
 			return db.schema.createTable('users', (table) => {
 				table.increments('id');
-				table.string('githubId');
-				table.string('linkedinId');
-				table.string('basfId');
-				table.string('orcidId');
-				table.string('username');
+				table.string('githubId').unique();
+				table.string('linkedinId').unique();
+				table.string('basfId').unique();
+				table.string('orcidId').unique();
+				table.string('username').unique();
 				table.string('email').unique();
 				table.string('password');
 				table.string('firstname');
