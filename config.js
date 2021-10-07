@@ -46,11 +46,11 @@ module.exports = {
         client: 'pg',
         version: '13.3',
         connection: {
-            database: 'valexrdb',
+            database: 'xraydb',
             host: '188.34.166.142',
             port: 5432,
-            user: 'valexr',
-            password: 'tilde0xray1valexr',
+            user: 'xray',
+            password: 'tilde0xray1xray',
         },
         pool: { min: 0, max: 7 },
     }

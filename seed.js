@@ -1,6 +1,6 @@
 const { db, hashPassword } = require('./services/db');
 
-db.schema.dropTable('users').then(() => {
+db.schema.dropTableIfExists('users').then(() => {
 	return db.schema.hasTable('users').then((exists) => {
 		if (!exists) {
 			return db.schema.createTable('users', (table) => {
