@@ -3,7 +3,7 @@ module.exports = {
 };
 
 async function get(req, res) {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).json({ error: 'Need to authorize first' });
     }
 
