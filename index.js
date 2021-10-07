@@ -9,9 +9,12 @@ const { PORT = 3000, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 const secure = !dev;
 
+const config = require('./config');
+
 const app = express();
 
-! dev && app.set('trust proxy', 1); // if nginx used
+!dev && app.set('trust proxy', 1); // if nginx used
+app.set('development mode', !!dev);
 
 bff(app, {
     security: {
@@ -25,7 +28,7 @@ bff(app, {
     session: {
         persist: true,
         cookie: {
-            secure,
+            secure: false, // TODO FIXME?
             httpOnly: true,
             sameSite: true,
             maxAge: 86400000,
@@ -38,8 +41,8 @@ bff(app, {
         dir: path.join(__dirname, 'routes'),
     },
     proxy: {
-        target: 'https://peer.basf.science',
-        secure,
+        target: config.target.get_url( dev ? 'dev': 'prod' ),
+        secure: false, // TODO FIXME?
     },
     static: false,
     ssr: {
@@ -54,5 +57,5 @@ bff(app, {
 });
 
 app.listen(PORT, () => {
-    console.log(`Example app listening at port http://localhost:${PORT}`)
+    console.log(`App in dev-mode=${dev} listens to http://localhost:${PORT}`);
 });

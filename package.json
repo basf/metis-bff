@@ -10,9 +10,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://PaulMaly@bitbucket.org/tilde-mi/bscience-bff.git"
+    "url": "git+https://bitbucket.org/tilde-mi/bscience-bff.git"
   },
-  "homepage": "https://bitbucket.org/tilde-mi/bscience-bff#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "express": "^4.17.1",
