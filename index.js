@@ -3,6 +3,7 @@
 const path = require('path');
 const express = require('express');
 const bff = require('express-bff');
+const passport = require('passport');
 
 const { PORT = 3000, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
@@ -25,7 +26,7 @@ bff(app, {
         secure,
     },
     session: {
-        persist: !dev,
+        persist: true,
         cookie: {
             secure: false, // TODO FIXME?
             httpOnly: true,
@@ -44,7 +45,15 @@ bff(app, {
         secure: false, // TODO FIXME?
     },
     static: false,
-    ssr: false,
+    ssr: {
+        handler(req) {
+            return { html: '<h1>Hello world</h1>', css: '', head: '' };
+        },
+    },
+    middlewares: [
+        passport.initialize(),
+        passport.session(),
+    ]
 });
 
 app.listen(PORT, () => {
