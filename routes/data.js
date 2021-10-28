@@ -26,7 +26,7 @@ async function get(req, res) {
 
     if (!uuids.length) return res.status(204).json({});
 
-    const post_data = querystring.stringify({ 'secret': secret, 'uuid': uuids.join(':') });
+    const post_data = querystring.stringify({ 'uuid': uuids.join(':') });
 
     const dev = req.app.get('development mode'),
         proxy = config.target[ dev ? 'dev': 'prod' ];
@@ -39,7 +39,8 @@ async function get(req, res) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(post_data)
+            'Content-Length': Buffer.byteLength(post_data),
+            'Key': secret
         }
     }, function(subresponse){
         let result = '';
@@ -78,7 +79,7 @@ async function post(req, res) {
 
     if (!req.session.datastore) req.session.datastore = [];
 
-    const post_data = querystring.stringify({ 'secret': secret, 'content': req.body.content });
+    const post_data = querystring.stringify({ 'content': req.body.content });
 
     const dev = req.app.get('development mode'),
         proxy = config.target[ dev ? 'dev': 'prod' ];
@@ -91,7 +92,8 @@ async function post(req, res) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(post_data)
+            'Content-Length': Buffer.byteLength(post_data),
+            'Key': secret
         }
     }, function(subresponse){
         let result = '';
@@ -134,7 +136,7 @@ async function del(req, res) {
         return res.status(400).json({ error: 'Invalid request' });
     }
 
-    const post_data = querystring.stringify({ 'secret': secret, 'uuid': req.body.uuid });
+    const post_data = querystring.stringify({ 'uuid': req.body.uuid });
 
     const dev = req.app.get('development mode'),
         proxy = config.target[ dev ? 'dev': 'prod' ];
@@ -147,7 +149,8 @@ async function del(req, res) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(post_data)
+            'Content-Length': Buffer.byteLength(post_data),
+            'Key': secret
         }
     }, function(subresponse){
         let result = '';
