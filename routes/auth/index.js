@@ -6,7 +6,7 @@ const { db, comparePasswords } = require('../../services/db');
 const publicFields = ['id', 'username', 'email', 'firstname', 'lastname'];
 
 passport.use(
-	new LocalStrategy({
+    new LocalStrategy({
         usernameField: 'email',
         passReqToCallback: true,
     }, async (req, email, password, done) => {
@@ -23,7 +23,7 @@ passport.use(
         } catch(err) {
             done(err, null);
         }
-	})
+    })
 );
 
 module.exports = {

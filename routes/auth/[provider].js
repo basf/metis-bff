@@ -8,7 +8,7 @@ const { db } = require('../../services/db');
 const { oauth } = require('../../config');
 
 module.exports = {
-	get: [
+    get: [
         (req, res, next) => {
             if ( ! req.session.redirectURL) {
                 req.session.redirectURL = req.headers.origin || req.headers.referer;
