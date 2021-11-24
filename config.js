@@ -1,3 +1,8 @@
+const fs = require('fs');
+const ini = require('ini');
+
+const config = ini.parse(fs.readFileSync('./env.ini', 'utf-8'))
+
 const sandbox = process.env.NODE_ENV !== 'production';
 
 module.exports = {
@@ -20,37 +25,37 @@ module.exports = {
     },
     oauth: {
         github: {
-            clientID: '82ee7d73d50de04c6221',
-            clientSecret: 'c71b609d6e2b91de850c7cb3b28b8cc26f3b18ee',
-            callbackURL: '/auth/github',
-            scope: ['user'],
+            clientID: config.oauth.github.client || 'unset',
+            clientSecret: config.oauth.github.secret || 'unset',
+            callbackURL: config.oauth.github.callback || 'unset',
+            scope: config.oauth.github.scope,
         },
         linkedin: {
-            clientID: '78uerzm58wch2x',
-            clientSecret: 'q9a3oxhJAJsfeoBF',
-            callbackURL: '/auth/linkedin',
-            scope: ['r_emailaddress', 'r_liteprofile'],
+            clientID: config.oauth.linkedin.client || 'unset',
+            clientSecret: config.oauth.linkedin.secret || 'unset',
+            callbackURL: config.oauth.linkedin.callback || 'unset',
+            scope: config.oauth.linkedin.scope,
         },
         orcid: {
-            clientID: 'APP-4SXAFAP0H6DI4SXY',
-            clientSecret: '37eccfcb-a7b6-4b5f-bb13-10254ec40541',
-            callbackURL: '/auth/orcid',
+            clientID: config.oauth.orcid.client || 'unset',
+            clientSecret: config.oauth.orcid.secret || 'unset',
+            callbackURL: config.oauth.orcid.callback || 'unset',
         },
         basf: {
-            clientID: '',
-            clientSecret: '',
-            callbackURL: '/auth/basf',
+            clientID: config.oauth.basf.client || 'unset',
+            clientSecret: config.oauth.basf.secret || 'unset',
+            callbackURL: config.oauth.basf.callback || 'unset',
         },
     },
     db: {
         client: 'pg',
         version: '13.3',
         connection: {
-            database: 'xraydb',
-            host: '188.34.166.142',
-            port: 5432,
-            user: 'xray',
-            password: 'tilde0xray1xray',
+            database: config.db.database,
+            host: config.db.host,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
         },
         pool: { min: 0, max: 7 },
     }
