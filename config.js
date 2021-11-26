@@ -58,5 +58,6 @@ module.exports = {
             password: config.db.password,
         },
         pool: { min: 0, max: 7 },
-    }
+    },
+    secret: config.api.key
 };

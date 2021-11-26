@@ -12,8 +12,6 @@ module.exports = {
     delete: del,
 };
 
-const secret = 'b088a178-47db-458f-b00d-465490f9517a';
-
 async function get(req, res) {
     if (!req.user) {
         return res.status(401).json({ error: 'Need to authorize first' });
@@ -40,7 +38,7 @@ async function get(req, res) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(post_data),
-            'Key': secret
+            'Key': config.secret
         }
     }, function(subresponse){
         let result = '';
@@ -93,7 +91,7 @@ async function post(req, res) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(post_data),
-            'Key': secret
+            'Key': config.secret
         }
     }, function(subresponse){
         let result = '';
@@ -150,7 +148,7 @@ async function del(req, res) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(post_data),
-            'Key': secret
+            'Key': config.secret
         }
     }, function(subresponse){
         let result = '';
