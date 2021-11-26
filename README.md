@@ -20,4 +20,5 @@ npm run start
 ## License
 
 Copyright 2021-2022 BASF SE
+
 BSD 3-Clause
