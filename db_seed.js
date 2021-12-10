@@ -1,9 +1,11 @@
-const { db, hashPassword } = require('./services/db');
+#!/usr/bin/env node
 
-db.schema.dropTableIfExists('users').then(() => {
-    return db.schema.hasTable('users').then((exists) => {
+const { db, hashPassword, tnames } = require('./services/db');
+
+db.schema.dropTableIfExists(tnames.table_users).then(() => {
+    return db.schema.hasTable(tnames.table_users).then((exists) => {
         if (!exists) {
-            return db.schema.createTable('users', (table) => {
+            return db.schema.createTable(tnames.table_users, (table) => {
                 table.increments('id');
                 table.string('githubId').unique();
                 table.string('linkedinId').unique();
@@ -24,7 +26,7 @@ db.schema.dropTableIfExists('users').then(() => {
 })
 .then(() => hashPassword('123123'))
 .then((password) => {
-    return db('users').insert({
+    return db(tnames.table_users).insert({
         username: 'TestTest',
         email: 'test@test.com',
         firstname: 'Test',
