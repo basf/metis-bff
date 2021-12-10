@@ -1,7 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-const { db, comparePasswords } = require('../../services/db');
+const { db, comparePasswords, tnames } = require('../../services/db');
 
 const publicFields = ['id', 'username', 'email', 'firstname', 'lastname'];
 
@@ -12,7 +12,7 @@ passport.use(
     }, async (req, email, password, done) => {
 
         try {
-            const user = await db('users').where({ email }).first();
+            const user = await db(tnames.table_users).where({ email }).first();
             const match = user ? await comparePasswords(password, user.password) : false;
 
             if (user && match) {

@@ -4,10 +4,15 @@ const bcrypt = require('bcrypt');
 
 const db = require('knex')(dbConfig);
 
+const tnames = {
+    table_users: dbConfig.tprefix + 'users',
+};
+
 module.exports = {
     db,
     hashPassword,
     comparePasswords,
+    tnames,
 };
 
 async function hashPassword(pass) {
