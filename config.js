@@ -41,7 +41,7 @@ module.exports = {
             user: db.user,
             password: db.password,
         },
-        tprefix: config.db.tprefix,
+        tprefix: db.tprefix,
         pool: { min: 0, max: 7 },
     },
     backend: {
