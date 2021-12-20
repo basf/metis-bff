@@ -4,11 +4,14 @@
 
 - `node -v >= 15`
 - `npm -v >= 7`
+- Postgres (any relatively new)
 
 ## Installation
 
 ```bash
+cp env.ini.sample env.ini
 npm install
+node db_seed.js
 ```
 
 ## Running

@@ -34,7 +34,6 @@ module.exports = {
     },
     db: {
         client: 'pg',
-        version: '13.3',
         connection: {
             database: db.database,
             host: db.host,
@@ -42,6 +41,7 @@ module.exports = {
             user: db.user,
             password: db.password,
         },
+        tprefix: config.db.tprefix,
         pool: { min: 0, max: 7 },
     },
     backend: {

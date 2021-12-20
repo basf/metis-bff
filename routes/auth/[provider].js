@@ -47,9 +47,9 @@ function handleCallback(provider) {
      * @param {string} refreshToken
      * @param {Object} profile
      * @param {Function} done
-     * 
+     *
      * @also
-     * 
+     *
      * @param {string} accessToken
      * @param {string} refreshToken
      * @param {Object} params
@@ -80,7 +80,7 @@ function handleCallback(provider) {
                     profile: JSON.stringify(profile),
                     [`${provider}Id`]: providerId,
                     username,
-                    email, 
+                    email,
                 }, ['id']);
 
                 const user = await db(USERS_TABLE).where('id', inserted[0].id).first();

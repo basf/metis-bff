@@ -6,9 +6,9 @@ const db = require('knex')(dbConfig);
 
 const DEFAULT_FIELDS = ['id', 'userId', 'uuid', 'created_at', 'updated_at'];
 
-const USERS_TABLE = 'users';
-const USER_CALCULATIONS_TABLE = 'user_calculations';
-const USER_DATASOURCES_TABLE = 'user_datasources';
+const USERS_TABLE = dbConfig.tprefix + 'users';
+const USER_CALCULATIONS_TABLE = dbConfig.tprefix + 'user_calculations';
+const USER_DATASOURCES_TABLE = dbConfig.tprefix + 'user_datasources';
 
 
 const selectDataSourcesByUserId = selectAllByUserId(USER_DATASOURCES_TABLE);

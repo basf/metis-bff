@@ -1,16 +1,17 @@
-const { db, hashPassword } = require('./services/db');
+#!/usr/bin/env node
 
+const { db, hashPassword, USERS_TABLE, USER_CALCULATIONS_TABLE, USER_DATASOURCES_TABLE } = require('./services/db');
 
 Promise.all([
-    db.schema.dropTableIfExists('users'),
-    db.schema.dropTableIfExists('user_datasets'),
-    db.schema.dropTableIfExists('user_calculations'),
+    db.schema.dropTableIfExists(USERS_TABLE),
+    db.schema.dropTableIfExists(USER_DATASOURCES_TABLE),
+    db.schema.dropTableIfExists(USER_CALCULATIONS_TABLE),
 ]).then(() => {
 
     const promises = [];
-    promises.push(db.schema.hasTable('users').then((exists) => {
+    promises.push(db.schema.hasTable(USERS_TABLE).then((exists) => {
         if (!exists) {
-            return db.schema.createTable('users', (table) => {
+            return db.schema.createTable(USERS_TABLE, (table) => {
                 table.increments('id');
                 table.string('githubId').unique();
                 table.string('linkedinId').unique();
@@ -28,9 +29,9 @@ Promise.all([
             console.log('AFTER TABLE');
         }
     }));
-    promises.push(db.schema.hasTable('user_datasources').then((exists) => {
+    promises.push(db.schema.hasTable(USER_DATASOURCES_TABLE).then((exists) => {
         if (!exists) {
-            return db.schema.createTable('user_datasources', (table) => {
+            return db.schema.createTable(USER_DATASOURCES_TABLE, (table) => {
                 table.increments('id');
                 table.bigInteger('userId').unsigned().index().references('id').inTable('users').onDelete('CASCADE');
                 table.uuid('uuid').unique();
@@ -40,9 +41,9 @@ Promise.all([
             console.log('AFTER TABLE');
         }
     }));
-    promises.push(db.schema.hasTable('user_calculations').then((exists) => {  
+    promises.push(db.schema.hasTable(USER_CALCULATIONS_TABLE).then((exists) => {  
         if (!exists) {
-            return db.schema.createTable('user_calculations', (table) => {
+            return db.schema.createTable(USER_CALCULATIONS_TABLE, (table) => {
                 table.increments('id');
                 table.bigInteger('userId').unsigned().index().references('id').inTable('users').onDelete('CASCADE');
                 table.uuid('uuid').unique();
@@ -58,7 +59,7 @@ Promise.all([
 })
 .then(() => hashPassword('123123'))
 .then((password) => {
-    return db('users').insert({
+    return db(USERS_TABLE).insert({
         username: 'TestTest',
         email: 'test@test.com',
         firstname: 'Test',

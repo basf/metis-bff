@@ -15,7 +15,7 @@ passport.use(
     }, async (req, email, password, done) => {
 
         try {
-            const user = await db('users').where({ email }).first();
+            const user = await db(tnames.table_users).where({ email }).first();
             const match = user ? await comparePasswords(password, user.password) : false;
 
             if (user && match) {
