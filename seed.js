@@ -1,7 +1,14 @@
 const { db, hashPassword } = require('./services/db');
 
-db.schema.dropTableIfExists('users').then(() => {
-    return db.schema.hasTable('users').then((exists) => {
+
+Promise.all([
+    db.schema.dropTableIfExists('users'),
+    db.schema.dropTableIfExists('user_datasets'),
+    db.schema.dropTableIfExists('user_calculations'),
+]).then(() => {
+
+    const promises = [];
+    promises.push(db.schema.hasTable('users').then((exists) => {
         if (!exists) {
             return db.schema.createTable('users', (table) => {
                 table.increments('id');
@@ -20,7 +27,34 @@ db.schema.dropTableIfExists('users').then(() => {
         } else {
             console.log('AFTER TABLE');
         }
-    });
+    }));
+    promises.push(db.schema.hasTable('user_datasources').then((exists) => {
+        if (!exists) {
+            return db.schema.createTable('user_datasources', (table) => {
+                table.increments('id');
+                table.bigInteger('userId').unsigned().index().references('id').inTable('users').onDelete('CASCADE');
+                table.uuid('uuid').unique();
+                table.timestamps(false, true);
+            });
+        } else {
+            console.log('AFTER TABLE');
+        }
+    }));
+    promises.push(db.schema.hasTable('user_calculations').then((exists) => {  
+        if (!exists) {
+            return db.schema.createTable('user_calculations', (table) => {
+                table.increments('id');
+                table.bigInteger('userId').unsigned().index().references('id').inTable('users').onDelete('CASCADE');
+                table.uuid('uuid').unique();
+                table.timestamps(false, true);
+            });
+        } else {
+            console.log('AFTER TABLE');
+        }
+    }));
+
+
+    return Promise.all(promises);
 })
 .then(() => hashPassword('123123'))
 .then((password) => {

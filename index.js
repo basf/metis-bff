@@ -4,17 +4,19 @@ const path = require('path');
 const express = require('express');
 const bff = require('express-bff');
 const passport = require('passport');
+const { getReasonPhrase } = require('http-status-codes');
 
-const { PORT = 3000, NODE_ENV } = process.env;
-const dev = NODE_ENV === 'development';
+const { PORT = 3000 } = process.env;
+
+const { dev } = require('./config');
+
+const sseCache = require('./middlewares/sseCache');
+
 const secure = !dev;
-
-const config = require('./config');
 
 const app = express();
 
-!dev && app.set('trust proxy', 1); // if nginx used
-app.set('development mode', !!dev);
+secure && app.set('trust proxy', 1); // if nginx used
 
 bff(app, {
     security: {
@@ -40,10 +42,7 @@ bff(app, {
     api: {
         dir: path.join(__dirname, 'routes'),
     },
-    proxy: {
-        target: config.target.get_url( dev ? 'dev': 'prod' ),
-        secure: false, // TODO FIXME?
-    },
+    proxy: false,
     static: false,
     ssr: {
         handler(req) {
@@ -53,7 +52,21 @@ bff(app, {
     middlewares: [
         passport.initialize(),
         passport.session(),
+        sseCache,
     ]
+});
+
+app.use((err, req, res, next) => {
+    const status = err.status || 400;
+    const error = err || { status, error: getReasonPhrase(status) };
+    
+    console.error(error);
+
+    if (res.headersSent) {
+        res.sse.send([ error ], 'errors');
+    } else {
+        res.status(status).json(error);
+    }
 });
 
 app.listen(PORT, () => {

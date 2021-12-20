@@ -1,63 +1,53 @@
 const fs = require('fs');
 const ini = require('ini');
 
-const config = ini.parse(fs.readFileSync('./env.ini', 'utf-8'))
+const { oauth, db, api, webhooks } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'))
 
-const sandbox = process.env.NODE_ENV !== 'production';
+const dev = process.env.NODE_ENV === 'development';
+
+const backend = dev ? api.dev : api.prod;
 
 module.exports = {
-    target: {
-        'dev': {
-            'schema': 'http',
-            'host': 'localhost',
-            'port': 7070,
-            'path': ''
-        },
-        'prod': {
-            'schema': 'https',
-            'host': 'peer.basf.science',
-            'port': 443,
-            'path': '/v0'
-        },
-        'get_url': function(which){
-            return this[which].schema + '://' + this[which].host + ':' + this[which].port + this[which].path;
-        }
-    },
     oauth: {
         github: {
-            clientID: config.oauth.github.client || 'unset',
-            clientSecret: config.oauth.github.secret || 'unset',
-            callbackURL: config.oauth.github.callback || 'unset',
-            scope: config.oauth.github.scope,
+            clientID: oauth.github.client,
+            clientSecret: oauth.github.secret,
+            callbackURL: oauth.github.callback,
+            scope: oauth.github.scope,
         },
         linkedin: {
-            clientID: config.oauth.linkedin.client || 'unset',
-            clientSecret: config.oauth.linkedin.secret || 'unset',
-            callbackURL: config.oauth.linkedin.callback || 'unset',
-            scope: config.oauth.linkedin.scope,
+            clientID: oauth.linkedin.client,
+            clientSecret: oauth.linkedin.secret,
+            callbackURL: oauth.linkedin.callback,
+            scope: oauth.linkedin.scope,
         },
         orcid: {
-            clientID: config.oauth.orcid.client || 'unset',
-            clientSecret: config.oauth.orcid.secret || 'unset',
-            callbackURL: config.oauth.orcid.callback || 'unset',
+            clientID: oauth.orcid.client,
+            clientSecret: oauth.orcid.secret,
+            callbackURL: oauth.orcid.callback,
         },
         basf: {
-            clientID: config.oauth.basf.client || 'unset',
-            clientSecret: config.oauth.basf.secret || 'unset',
-            callbackURL: config.oauth.basf.callback || 'unset',
+            clientID: oauth.basf.client,
+            clientSecret: oauth.basf.secret,
+            callbackURL: oauth.basf.callback,
         },
     },
     db: {
         client: 'pg',
         version: '13.3',
         connection: {
-            database: config.db.database,
-            host: config.db.host,
-            port: config.db.port,
-            user: config.db.user,
-            password: config.db.password,
+            database: db.database,
+            host: db.host,
+            port: db.port,
+            user: db.user,
+            password: db.password,
         },
         pool: { min: 0, max: 7 },
     },
-    secret: config.api.key
+    backend: {
+        ...backend,
+        baseURL: `${backend.schema}://${backend.host}:${backend.port}${backend.path}`,
+    },
+    webhooks,
+    dev,
 };
