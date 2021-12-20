@@ -1,7 +1,10 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-const { db, comparePasswords, tnames } = require('../../services/db');
+const { StatusCodes } = require('http-status-codes');
+
+const { db, comparePasswords } = require('../../services/db');
+const { checkAuth } = require('../../middlewares/auth');
 
 const publicFields = ['id', 'username', 'email', 'firstname', 'lastname'];
 
@@ -27,7 +30,10 @@ passport.use(
 );
 
 module.exports = {
-    get,
+    get: [
+        checkAuth,
+        get,
+    ],
     post: [
         passport.authenticate('local'),
         post,
@@ -36,11 +42,7 @@ module.exports = {
 };
 
 
-async function get(req, res) {
-    if (!req.user) {
-        return res.status(401).json({ error: 'Need to authorize first' });
-    }
-
+async function get(req, res, next) {
     const userDTO = Object.entries(req.user).reduce((dto, [ key, val ]) => {
         if (publicFields.includes(key)) dto[key] = val;
         return dto;
@@ -49,14 +51,14 @@ async function get(req, res) {
     return res.json(userDTO);
 }
 
-async function post(req, res) {
+async function post(req, res, next) {
     if (!req.user) {
-        return res.status(400).json({ error: 'Bad credentials' });
+        return next({ status: StatusCodes.BAD_REQUEST, error: 'Bad credentials' });
     }
-    return res.status(204).end();
+    return res.status(StatusCodes.NO_CONTENT).end();
 }
 
 async function del(req, res) {
     req.logout();
-    return res.status(204).end();
+    return res.status(StatusCodes.NO_CONTENT).end();
 }

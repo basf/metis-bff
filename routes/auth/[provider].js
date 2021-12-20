@@ -4,7 +4,7 @@ const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
 const OAuth2Strategy = require('passport-oauth2').Strategy;
 
-const { db, tnames } = require('../../services/db');
+const { db, USERS_TABLE } = require('../../services/db');
 const { oauth } = require('../../config');
 
 module.exports = {
@@ -30,7 +30,7 @@ module.exports = {
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await db(tnames.table_users).where('id', id).first();
+        const user = await db(USERS_TABLE).where('id', id).first();
         done(null, user);
     } catch(err) {
         done(err, null);
@@ -64,8 +64,6 @@ function handleCallback(provider) {
             profile = params;
         }
 
-        console.log('oauth profile', profile);
-
         if ( ! profile || ! profile.id) return done(new Error('OAuth profile is incorrect'), null);
 
         const providerId = profile.id;
@@ -73,19 +71,19 @@ function handleCallback(provider) {
         const email = profile.email || (profile.emails.length && profile.emails[0].value) || null;
 
         try {
-            const user = await db(tnames.table_users).where(`${provider}Id`, providerId).first();
+            const user = await db(USERS_TABLE).where(`${provider}Id`, providerId).first();
 
             if (user) {
                 done(null, user);
             } else {
-                const inserted = await db(tnames.table_users).insert({
+                const inserted = await db(USERS_TABLE).insert({ 
                     profile: JSON.stringify(profile),
                     [`${provider}Id`]: providerId,
                     username,
                     email,
                 }, ['id']);
 
-                const user = await db(tnames.table_users).where('id', inserted[0].id).first();
+                const user = await db(USERS_TABLE).where('id', inserted[0].id).first();
 
                 done(null, user);
             }
