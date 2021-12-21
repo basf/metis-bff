@@ -66,5 +66,5 @@ function selectAllByUserId(table, defaultFields = DEFAULT_FIELDS) {
 function selectFirstByUserId(table, defaultFields = DEFAULT_FIELDS) {
     return async (userId, query = {}, fields = defaultFields) => {
         return db.select(...fields).from(table).where({ userId, ...query }).first();
-    };  
+    };
 }

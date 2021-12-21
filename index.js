@@ -59,7 +59,7 @@ bff(app, {
 app.use((err, req, res, next) => {
     const status = err.status || 400;
     const error = err || { status, error: getReasonPhrase(status) };
-    
+
     console.error(error);
 
     if (res.headersSent) {

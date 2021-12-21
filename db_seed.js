@@ -41,7 +41,7 @@ Promise.all([
             console.log('AFTER TABLE');
         }
     }));
-    promises.push(db.schema.hasTable(USER_CALCULATIONS_TABLE).then((exists) => {  
+    promises.push(db.schema.hasTable(USER_CALCULATIONS_TABLE).then((exists) => {
         if (!exists) {
             return db.schema.createTable(USER_CALCULATIONS_TABLE, (table) => {
                 table.increments('id');
