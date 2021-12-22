@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const { StatusCodes } = require('http-status-codes');
 
-const { db, comparePasswords } = require('../../services/db');
+const { db, USERS_TABLE, comparePasswords } = require('../../services/db');
 const { checkAuth } = require('../../middlewares/auth');
 
 const publicFields = ['id', 'username', 'email', 'firstname', 'lastname'];
@@ -15,7 +15,7 @@ passport.use(
     }, async (req, email, password, done) => {
 
         try {
-            const user = await db(tnames.table_users).where({ email }).first();
+            const user = await db(USERS_TABLE).where({ email }).first();
             const match = user ? await comparePasswords(password, user.password) : false;
 
             if (user && match) {

@@ -33,7 +33,7 @@ Promise.all([
         if (!exists) {
             return db.schema.createTable(USER_DATASOURCES_TABLE, (table) => {
                 table.increments('id');
-                table.bigInteger('userId').unsigned().index().references('id').inTable('users').onDelete('CASCADE');
+                table.bigInteger('userId').unsigned().index().references('id').inTable(USERS_TABLE).onDelete('CASCADE');
                 table.uuid('uuid').unique();
                 table.timestamps(false, true);
             });
@@ -45,7 +45,7 @@ Promise.all([
         if (!exists) {
             return db.schema.createTable(USER_CALCULATIONS_TABLE, (table) => {
                 table.increments('id');
-                table.bigInteger('userId').unsigned().index().references('id').inTable('users').onDelete('CASCADE');
+                table.bigInteger('userId').unsigned().index().references('id').inTable(USERS_TABLE).onDelete('CASCADE');
                 table.uuid('uuid').unique();
                 table.timestamps(false, true);
             });

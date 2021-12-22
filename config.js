@@ -10,26 +10,26 @@ const backend = dev ? api.dev : api.prod;
 module.exports = {
     oauth: {
         github: {
-            clientID: oauth.github.client,
-            clientSecret: oauth.github.secret,
-            callbackURL: oauth.github.callback,
+            clientID: oauth.github.client || 'unset',
+            clientSecret: oauth.github.secret || 'unset',
+            callbackURL: oauth.github.callback  || 'unset',
             scope: oauth.github.scope,
         },
         linkedin: {
-            clientID: oauth.linkedin.client,
-            clientSecret: oauth.linkedin.secret,
-            callbackURL: oauth.linkedin.callback,
+            clientID: oauth.linkedin.client || 'unset',
+            clientSecret: oauth.linkedin.secret || 'unset',
+            callbackURL: oauth.linkedin.callback || 'unset',
             scope: oauth.linkedin.scope,
         },
         orcid: {
-            clientID: oauth.orcid.client,
-            clientSecret: oauth.orcid.secret,
-            callbackURL: oauth.orcid.callback,
+            clientID: oauth.orcid.client || 'unset',
+            clientSecret: oauth.orcid.secret || 'unset',
+            callbackURL: oauth.orcid.callback || 'unset',
         },
         basf: {
-            clientID: oauth.basf.client,
-            clientSecret: oauth.basf.secret,
-            callbackURL: oauth.basf.callback,
+            clientID: oauth.basf.client || 'unset',
+            clientSecret: oauth.basf.secret || 'unset',
+            callbackURL: oauth.basf.callback || 'unset',
         },
     },
     db: {
