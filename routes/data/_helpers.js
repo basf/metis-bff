@@ -27,7 +27,9 @@ async function getAndPrepareDataSources(datasources = []) {
     if (!uuids.length) return [];
 
     const { data = [] } = await getDataSources(uuids);
-    console.log('data', data);
+
+    if (!data.length) return [];
+
     return data.reduce((acc, { uuid, ...data }) => {
         const i = uuids.indexOf(uuid);
         acc.push(Object.assign(data, ds[i]));
@@ -37,6 +39,6 @@ async function getAndPrepareDataSources(datasources = []) {
 
 async function deleteAndClearDataSource(userId, id) {
     const { uuid } = await deleteUserDataSource(userId, id);
-    deleteDataSource(uuid);
+    await deleteDataSource(uuid);
     return uuid;
 }
