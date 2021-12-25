@@ -36,6 +36,8 @@ async function getAndPrepareCalculations(calculations = []) {
 
     const { data = [] } = await getCalculations(uuids);
 
+    if (!data.length) return [];
+
     return data.reduce((acc, { uuid, ...data }) => {
         const i = uuids.indexOf(uuid);
         acc.push(Object.assign(data, calc[i]));
@@ -45,6 +47,6 @@ async function getAndPrepareCalculations(calculations = []) {
 
 async function deleteAndClearCalculation(userId, id) {
     const { uuid } = await deleteUserCalculation(userId, id);
-    cancelCalculation(uuid);
+    await cancelCalculation(uuid);
     return uuid;
 }
