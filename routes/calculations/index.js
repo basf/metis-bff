@@ -10,7 +10,7 @@ const { webhooks } = require('../../config');
 module.exports = {
     get: [
         checkAuth,
-        getUserCalculations,   
+        getUserCalculations,
         get,
     ],
     post: [
@@ -24,7 +24,7 @@ async function post(req, res, next) {
 
     if (!req.body.dataId) {
         return next({ status: StatusCodes.BAD_REQUEST });
-    } 
+    }
 
     res.status(202).json({});
 
@@ -38,6 +38,7 @@ async function post(req, res, next) {
         const output = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.send(output, 'calculations');
+
     } catch(error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -51,6 +52,7 @@ async function get(req, res, next) {
         const output = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.send(output, 'calculations');
+
     } catch(error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }

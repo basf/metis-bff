@@ -17,7 +17,7 @@ node db_seed.js
 ## Running
 
 ```bash
-npm run start
+npm run
 ```
 
 ## License
