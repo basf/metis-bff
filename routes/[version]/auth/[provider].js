@@ -4,8 +4,8 @@ const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
 const OAuth2Strategy = require('passport-oauth2').Strategy;
 
-const { db, USERS_TABLE } = require('../../services/db');
-const { oauth } = require('../../config');
+const { db, USERS_TABLE } = require('../../../services/db');
+const { oauth } = require('../../../config');
 
 module.exports = {
     get: [

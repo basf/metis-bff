@@ -16,9 +16,20 @@ node db_seed.js
 
 ## Running
 
+# For development mode run following command:
+
 ```bash
-npm run
+npm run dev
 ```
+
+# For production mode run following command:
+
+```bash
+npm run start
+```
+
+Configurate development and production settings in env.ini file.
+
 
 ## License
 

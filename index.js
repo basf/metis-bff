@@ -44,11 +44,7 @@ bff(app, {
     },
     proxy: false,
     static: false,
-    ssr: {
-        handler(req) {
-            return { html: '<h1>Hello world</h1>', css: '', head: '' };
-        },
-    },
+    ssr: false,
     middlewares: [
         passport.initialize(),
         passport.session(),

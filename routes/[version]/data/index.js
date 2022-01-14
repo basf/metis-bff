@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
-const { checkAuth } = require('../../middlewares/auth');
-const { getUserDataSources } = require('../../middlewares/db');
+const { checkAuth } = require('../../../middlewares/auth');
+const { getUserDataSources } = require('../../../middlewares/db');
 
 const { createAndSaveDataSource, getAndPrepareDataSources } = require('./_helpers');
 
