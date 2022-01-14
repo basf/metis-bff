@@ -1,11 +1,11 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { checkAuth } = require('../../middlewares/auth');
-const { getUserCalculations } = require('../../middlewares/db');
+const { checkAuth } = require('../../../middlewares/auth');
+const { getUserCalculations } = require('../../../middlewares/db');
 
 const { runAndSaveCalculation, getAndPrepareCalculations } = require('./_helpers');
 
-const { webhooks } = require('../../config');
+const { webhooks } = require('../../../config');
 
 module.exports = {
     get: [

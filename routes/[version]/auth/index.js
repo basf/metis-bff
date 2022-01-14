@@ -3,8 +3,8 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const { StatusCodes } = require('http-status-codes');
 
-const { db, USERS_TABLE, comparePasswords } = require('../../services/db');
-const { checkAuth } = require('../../middlewares/auth');
+const { db, USERS_TABLE, comparePasswords } = require('../../../services/db');
+const { checkAuth } = require('../../../middlewares/auth');
 
 const publicFields = ['id', 'username', 'email', 'firstname', 'lastname'];
 

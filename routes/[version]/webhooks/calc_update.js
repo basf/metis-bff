@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
-const cache = require('../../services/sseCache');
-const { db, USER_CALCULATIONS_TABLE, selectCalculationsByUserId } = require('../../services/db');
+const cache = require('../../../services/sseCache');
+const { db, USER_CALCULATIONS_TABLE, selectCalculationsByUserId } = require('../../../services/db');
 
 const { getAndPrepareCalculations } = require('../calculations/_helpers');
 

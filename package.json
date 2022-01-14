@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "env NODE_ENV=development node index.js",
-    "prod": "env NODE_ENV=production node index.js",
+    "start": "env NODE_ENV=production node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
