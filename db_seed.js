@@ -17,7 +17,6 @@ Promise.all([
                 table.string('linkedinId').unique();
                 table.string('basfId').unique();
                 table.string('orcidId').unique();
-                table.string('username').unique();
                 table.string('email').unique();
                 table.string('password');
                 table.string('firstname');
@@ -60,7 +59,6 @@ Promise.all([
 .then(() => hashPassword('123123'))
 .then((password) => {
     return db(USERS_TABLE).insert({
-        username: 'TestTest',
         email: 'test@test.com',
         firstname: 'Test',
         lastname: 'Test',

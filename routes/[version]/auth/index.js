@@ -6,7 +6,7 @@ const { StatusCodes } = require('http-status-codes');
 const { db, USERS_TABLE, comparePasswords } = require('../../../services/db');
 const { checkAuth } = require('../../../middlewares/auth');
 
-const publicFields = ['id', 'username', 'email', 'firstname', 'lastname'];
+const publicFields = ['id', 'email', 'firstname', 'lastname'];
 
 passport.use(
     new LocalStrategy({

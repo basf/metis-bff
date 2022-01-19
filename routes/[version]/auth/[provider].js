@@ -67,8 +67,9 @@ function handleCallback(provider) {
         if ( ! profile || ! profile.id) return done(new Error('OAuth profile is incorrect'), null);
 
         const providerId = profile.id;
-        const username = profile.displayName || profile.username || null;
         const email = profile.email || (profile.emails.length && profile.emails[0].value) || null;
+        // TODO get firstname and lastname from IdP
+        // TODO ask and validate email if absent
 
         try {
             const user = await db(USERS_TABLE).where(`${provider}Id`, providerId).first();
@@ -76,10 +77,9 @@ function handleCallback(provider) {
             if (user) {
                 done(null, user);
             } else {
-                const inserted = await db(USERS_TABLE).insert({ 
+                const inserted = await db(USERS_TABLE).insert({
                     profile: JSON.stringify(profile),
                     [`${provider}Id`]: providerId,
-                    username,
                     email,
                 }, ['id']);
 
