@@ -16,6 +16,7 @@ const api = axios.create({
             return body;
         },
     ],
+    responseType: 'json',
 });
 
 module.exports = {
@@ -40,8 +41,8 @@ async function getDataSources(uuids) {
     return api.post('/data/listing', { uuid: uuids.join(':') });
 }
 
-async function runCalculation(uuid, webhook_url) {
-    return api.post('/calculations/create', { uuid, webhook_url });
+async function runCalculation(uuid, engine, input, webhook_url) {
+    return api.post('/calculations/create', { uuid, engine, input, webhook_url });
 }
 
 async function cancelCalculation(uuid) {

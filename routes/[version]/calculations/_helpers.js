@@ -7,7 +7,7 @@ module.exports = {
     runAndSaveCalculation,
 };
 
-async function runAndSaveCalculation(userId, dataId, updateHook) {
+async function runAndSaveCalculation(userId, dataId, engine, input, updateHook) {
 
     const datasource = await selectDataSourceByUserId(userId, { id: dataId });
 
@@ -15,7 +15,7 @@ async function runAndSaveCalculation(userId, dataId, updateHook) {
         throw 'Data Source UUID is not available';
     }
 
-    const { data = {} } = await runCalculation(datasource.uuid, updateHook);
+    const { data = {} } = await runCalculation(datasource.uuid, engine, input, updateHook);
 
     if (!data.uuid) {
         throw 'Calculation UUID is not available';

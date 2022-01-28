@@ -26,12 +26,14 @@ async function post(req, res, next) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
+    const engine = req.body.engine, input = req.body.input || {};
+
     res.status(202).json({});
 
     try {
         const updateHook = `${req.protocol}://${req.get('host')}${webhooks.calc_update}`;
 
-        const calculation = await runAndSaveCalculation(req.user.id, req.body.dataId, updateHook);
+        const calculation = await runAndSaveCalculation(req.user.id, req.body.dataId, engine, input, updateHook);
 
         req.session.calculations.push(calculation);
 
@@ -40,6 +42,9 @@ async function post(req, res, next) {
         res.sse.send(output, 'calculations');
 
     } catch(error) {
+        //console.log(error);
+        //res.sse.send([ error ], 'errors');
+
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
 }
@@ -54,6 +59,9 @@ async function get(req, res, next) {
         res.sse.send(output, 'calculations');
 
     } catch(error) {
+        //console.log(error);
+        //res.sse.send([ error ], 'errors');
+
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
 }

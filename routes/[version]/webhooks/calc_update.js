@@ -9,11 +9,17 @@ module.exports = {
     post,
 };
 
+function is_valid_uuid(uuid) {
+    uuid = "" + uuid;
+    uuid = uuid.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+    return (uuid !== null);
+}
+
 async function post(req, res, next) {
 
-    const { uuid } = req.body;
+    const { uuid, status } = req.body;
 
-    if (!uuid || !status) {
+    if (!uuid || !is_valid_uuid(uuid) || !status) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
@@ -35,4 +41,5 @@ async function post(req, res, next) {
 
         sse.send(output, 'calculations');
     }
+    else console.error('Wrong UUID requested');
 }

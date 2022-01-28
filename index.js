@@ -42,7 +42,7 @@ bff(app, {
     api: {
         dir: path.join(__dirname, 'routes'),
     },
-    proxy: false,
+    proxy: true,
     static: false,
     ssr: false,
     middlewares: [
@@ -56,7 +56,8 @@ app.use((err, req, res, next) => {
     const status = err.status || 400;
     const error = err || { status, error: getReasonPhrase(status) };
 
-    console.error(error);
+    //console.error(error);
+    console.error(JSON.stringify(error).substr(0, 500) + '...');
 
     if (res.headersSent) {
         res.sse.send([ error ], 'errors');
