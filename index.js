@@ -8,7 +8,7 @@ const { getReasonPhrase } = require('http-status-codes');
 
 const { PORT = 3000 } = process.env;
 
-const { dev } = require('./config');
+const { dev, backend } = require('./config');
 
 const sseCache = require('./middlewares/sseCache');
 
@@ -42,7 +42,9 @@ bff(app, {
     api: {
         dir: path.join(__dirname, 'routes'),
     },
-    proxy: true,
+	proxy: {
+		target: backend.baseURL,
+	},
     static: false,
     ssr: false,
     middlewares: [
