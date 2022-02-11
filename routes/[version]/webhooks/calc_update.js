@@ -1,6 +1,5 @@
 const { StatusCodes } = require('http-status-codes');
 
-const cache = require('../../../services/sseCache');
 const { db, USER_CALCULATIONS_TABLE, selectCalculationsByUserId } = require('../../../services/db');
 
 const { getAndPrepareCalculations } = require('../calculations/_helpers');
@@ -33,13 +32,15 @@ async function post(req, res, next) {
 
     const userId = calculation.userId;
 
-    if (cache.has(userId)) {
-        const sse = cache.get(ctx.userId);
 
-        const calculations = await selectCalculationsByUserId(userId);
-        const output = await getAndPrepareCalculations(calculations);
+    const calculations = await selectCalculationsByUserId(userId);
+    const output = await getAndPrepareCalculations(calculations);
 
-        sse.send(output, 'calculations');
-    }
-    else console.error('Wrong UUID requested');
+    res.sse.send(
+        ({ session }) => {
+            return userId && session.passport && userId === session.passport.user;
+        }, 
+        output, 
+        'calculations'
+    );
 }

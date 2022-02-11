@@ -39,11 +39,11 @@ async function post(req, res, next) {
 
         const output = await getAndPrepareCalculations(req.session.calculations);
 
-        res.sse.send(output, 'calculations');
+        res.sse.sendTo(output, 'calculations');
 
     } catch(error) {
         //console.log(error);
-        //res.sse.send([ error ], 'errors');
+        //res.sse.sendTo([ error ], 'errors');
 
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -56,11 +56,11 @@ async function get(req, res, next) {
     try {
         const output = await getAndPrepareCalculations(req.session.calculations);
 
-        res.sse.send(output, 'calculations');
+        res.sse.sendTo(output, 'calculations');
 
     } catch(error) {
         //console.log(error);
-        //res.sse.send([ error ], 'errors');
+        //res.sse.sendTo([ error ], 'errors');
 
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }

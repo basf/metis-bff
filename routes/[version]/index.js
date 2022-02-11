@@ -8,6 +8,6 @@ async function get(req, res) {
 }
 
 async function head(req, res) {
-    res.sse.send('pong');
+    res.sse.send('all', 'pong');
     return res.status(204).end();
 }
