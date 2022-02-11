@@ -26,7 +26,7 @@ async function del(req, res, next) {
 
         const output = await getAndPrepareDataSources(req.session.datasources);
     
-        res.sse.send(output, 'datasources');
+        res.sse.sendTo(output, 'datasources');
     } catch(error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     } 

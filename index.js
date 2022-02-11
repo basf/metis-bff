@@ -10,7 +10,7 @@ const { PORT = 3000 } = process.env;
 
 const { dev, backend } = require('./config');
 
-const sseCache = require('./middlewares/sseCache');
+const sseMiddleware = require('./middlewares/sse');
 
 const secure = !dev;
 
@@ -50,7 +50,7 @@ bff(app, {
     middlewares: [
         passport.initialize(),
         passport.session(),
-        sseCache,
+        sseMiddleware,
     ]
 });
 
@@ -58,11 +58,10 @@ app.use((err, req, res, next) => {
     const status = err.status || 400;
     const error = err || { status, error: getReasonPhrase(status) };
 
-    //console.error(error);
     console.error(JSON.stringify(error).substr(0, 500) + '...');
 
     if (res.headersSent) {
-        res.sse.send([ error ], 'errors');
+        res.sse.sendTo([ error ], 'errors');
     } else {
         res.status(status).json(error);
     }
