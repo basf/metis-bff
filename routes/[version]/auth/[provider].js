@@ -4,8 +4,10 @@ const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
 const OAuth2Strategy = require('passport-oauth2').Strategy;
 
-const { db, USERS_TABLE } = require('../../../services/db');
+const { USERS_TABLE, USER_OAUTHS_TABLE, selectFirstUser, upsertUser } = require('../../../services/db');
 const { oauth } = require('../../../config');
+
+const { sendVerifyEmail } = require('./_middlewares');
 
 module.exports = {
     get: [
@@ -16,6 +18,7 @@ module.exports = {
             }
             passport.authenticate(req.params.provider)(req, res, next);
         },
+        sendVerifyEmail,
         (req, res) => {
             const redirectURL = req.session.redirectURL;
             if (redirectURL) {
@@ -26,16 +29,6 @@ module.exports = {
         }
     ]
 };
-
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await db(USERS_TABLE).where('id', id).first();
-        done(null, user);
-    } catch(err) {
-        done(err, null);
-    }
-});
 
 passport.use(new GitHubStrategy(oauth.github, handleCallback('github')));
 passport.use(new LinkedInStrategy(oauth.linkedin, handleCallback('linkedin')));
@@ -56,34 +49,36 @@ function handleCallback(provider) {
      * @param {Object} profile
      * @param {Function} done
     */
-    return async (accessToken, refreshToken, ...tail) => {
+    return async (...args) => {
 
-        let [ done, profile, params ] = tail.reverse();
+        let [ done, profile, params ] = args.reverse();
 
         if (!profile || !Object.keys(profile).length) {
             profile = params;
         }
 
-        if ( ! profile || ! profile.id) return done(new Error('OAuth profile is incorrect'), null);
+        const providerId = provider === 'orcid' ? profile.orcid : profile.id;
 
-        const providerId = profile.id;
-        const email = profile.email || (profile.emails.length && profile.emails[0].value) || null;
-        // TODO get firstname and lastname from IdP
-        // TODO ask and validate email if absent
+        if ( ! profile || ! providerId) return done(new Error('OAuth profile is incorrect'), null);
+
+        const email = /*profile.email || (profile.emails.length && profile.emails[0].value) ||*/ '';
+        let [ firstName = '', lastName = '' ] = (profile.displayName || profile.name || '').split(' ');
+
+        if (!firstName && !lastName) {
+            firstName = profile.username || profile.login;
+        }
 
         try {
-            const user = await db(USERS_TABLE).where(`${provider}Id`, providerId).first();
+            const user = await selectFirstUser({
+                [`${USER_OAUTHS_TABLE}.provider`]: provider,
+                [`${USER_OAUTHS_TABLE}.providerId`]: providerId,  
+            });
 
             if (user) {
                 done(null, user);
             } else {
-                const inserted = await db(USERS_TABLE).insert({
-                    profile: JSON.stringify(profile),
-                    [`${provider}Id`]: providerId,
-                    email,
-                }, ['id']);
-
-                const user = await db(USERS_TABLE).where('id', inserted[0].id).first();
+                const inserted = await upsertUser({ firstName, lastName, email, provider, providerId, profile, });
+                const user =  await selectFirstUser({ [`${USERS_TABLE}.id`]: inserted.id });
 
                 done(null, user);
             }
