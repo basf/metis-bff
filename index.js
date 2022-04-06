@@ -12,11 +12,24 @@ const { dev, backend } = require('./config');
 
 const sseMiddleware = require('./middlewares/sse');
 
+const { USERS_TABLE, selectFirstUser } = require('./services/db');
+
 const secure = !dev;
 
 const app = express();
 
 secure && app.set('trust proxy', 1); // if nginx used
+
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: id });
+        
+        done(null, user);
+    } catch(err) {
+        done(err, null);
+    }
+});
 
 bff(app, {
     security: {
@@ -28,11 +41,12 @@ bff(app, {
         secure,
     },
     session: {
-        persist: true,
+        persist: false,
+        resave: true,
         cookie: {
             secure: false, // TODO FIXME?
             httpOnly: true,
-            sameSite: true,
+            sameSite: false,
             maxAge: 86400000,
         },
     },
@@ -55,10 +69,10 @@ bff(app, {
 });
 
 app.use((err, req, res, next) => {
-    const status = err.status || 400;
+    const status = err.status || 500;
     const error = err || { status, error: getReasonPhrase(status) };
 
-    console.error(JSON.stringify(error).substr(0, 500) + '...');
+    console.error(error);
 
     if (res.headersSent) {
         res.sse.sendTo([ error ], 'errors');

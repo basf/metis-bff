@@ -19,10 +19,12 @@ async function del(req, res, next) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
-    res.status(202).json({});
+    res.status(StatusCodes.ACCEPTED).json({});
 
     try {
         await deleteAndClearDataSource(req.user.id, req.params.id);
+
+        req.session.datasources = req.session.datasources.filter(datasource => datasource.id !== req.params.id);
 
         const output = await getAndPrepareDataSources(req.session.datasources);
     
