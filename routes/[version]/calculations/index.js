@@ -23,12 +23,12 @@ module.exports = {
 async function post(req, res, next) {
 
     if (!req.body.dataId) {
-        return next({ status: StatusCodes.BAD_REQUEST });
+        return next({ status: StatusCodes.BAD_REQUEST, error: 'Required field `dataId` is not provided.' });
     }
 
     const engine = req.body.engine, input = req.body.input || {};
 
-    res.status(202).json({});
+    res.status(StatusCodes.ACCEPTED).json({});
 
     try {
         const updateHook = `${req.protocol}://${req.get('host')}${webhooks.calc_update}`;
@@ -42,16 +42,13 @@ async function post(req, res, next) {
         res.sse.sendTo(output, 'calculations');
 
     } catch(error) {
-        //console.log(error);
-        //res.sse.sendTo([ error ], 'errors');
-
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
 }
 
 async function get(req, res, next) {
 
-    res.status(202).json({});
+    res.status(StatusCodes.ACCEPTED).json({});
 
     try {
         const output = await getAndPrepareCalculations(req.session.calculations);
@@ -59,9 +56,6 @@ async function get(req, res, next) {
         res.sse.sendTo(output, 'calculations');
 
     } catch(error) {
-        //console.log(error);
-        //res.sse.sendTo([ error ], 'errors');
-
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
 }

@@ -19,10 +19,12 @@ async function del(req, res, next) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
-    res.status(202).json({});
+    res.status(StatusCodes.ACCEPTED).json({});
 
     try {
         await deleteAndClearCalculation(req.user.id, req.params.id);
+
+        req.session.calculations = req.session.calculations.filter(calculation => calculation.id !== req.params.id);
 
         const output = await getAndPrepareCalculations(req.session.calculations);
     

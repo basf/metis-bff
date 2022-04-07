@@ -22,7 +22,7 @@ async function post(req, res, next) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
-    res.status(202).json({});
+    res.status(StatusCodes.ACCEPTED).json({});
 
     const calculation = await db.select().from(USER_CALCULATIONS_TABLE).where({ uuid }).first();
 

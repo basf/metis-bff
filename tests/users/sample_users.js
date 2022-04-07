@@ -6,28 +6,28 @@ db(USERS_TABLE).insert([
 
     {
         email: 'eb@tilde.pro',
-        firstname: 'Evgeny',
-        lastname: 'Blokhin',
+        firstName: 'Evgeny',
+        lastName: 'Blokhin',
     },
     {
         email: 'robot@absolidix.com',
-        firstname: 'Robot',
-        lastname: 'Account',
+        firstName: 'Robot',
+        lastName: 'Account',
     },
     {
         email: 'pm@tilde.pro',
-        firstname: 'Pavel',
-        lastname: 'Malyshev',
+        firstName: 'Pavel',
+        lastName: 'Malyshev',
     },
     {
         email: 'av@tilde.pro',
-        firstname: 'Alexander',
-        lastname: 'Volkov',
+        firstName: 'Alexander',
+        lastName: 'Volkov',
     },
     {
         email: 'os@tilde.pro',
-        firstname: 'Oleg',
-        lastname: 'Sugin',
+        firstName: 'Oleg',
+        lastName: 'Sugin',
     },
 
 ], ['*']).then(console.log).catch(console.error);

@@ -20,17 +20,17 @@ module.exports = {
 async function post(req, res, next) {
 
     if (!req.body.content) {
-        return next({ status: StatusCodes.BAD_REQUEST });
+        return next({ status: StatusCodes.BAD_REQUEST, error: 'Required field `content` is not provided.'  });
     } 
 
-    res.status(202).json({});
+    res.status(StatusCodes.ACCEPTED).json({});
 
     try {
         const contents = Array.isArray(req.body.content) ? req.body.content : [ req.body.content ];
 
         for (const content of contents) {
             const datasource = await createAndSaveDataSource(req.user.id, content);
-            req.session.datasources.push(datasource);
+            req.session.datasources.push(datasource);    
         }
 
         const output = await getAndPrepareDataSources(req.session.datasources);
@@ -43,7 +43,7 @@ async function post(req, res, next) {
 
 async function get(req, res, next) {
 
-    res.status(202).json({});
+    res.status(StatusCodes.ACCEPTED).json({});
 
     try {
         const output = await getAndPrepareDataSources(req.session.datasources);
