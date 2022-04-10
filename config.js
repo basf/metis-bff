@@ -16,6 +16,7 @@ const backend = {
 };
 
 module.exports = {
+	PORT: process.env.PORT || 3000,
 	oauth: {
 		github: {
 			clientID: process.env.GITHUB_CLIENT_ID || oauth.github.client || 'unset',

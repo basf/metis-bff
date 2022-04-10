@@ -6,9 +6,7 @@ const bff = require('express-bff');
 const passport = require('passport');
 const { getReasonPhrase } = require('http-status-codes');
 
-const { PORT = 3000 } = process.env;
-
-const { dev, backend } = require('./config');
+const { dev, backend, PORT } = require('./config');
 
 const sseMiddleware = require('./middlewares/sse');
 
