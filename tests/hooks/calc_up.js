@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 
-const axios = require('axios');
 const EventEmitter = require('events');
 const EventSource = require('eventsource');
+const axios = require('axios');
 
 const { db, USER_CALCULATIONS_TABLE } = require('./../../services/db');
-const { PORT } = require('./config');
+const { PORT } = require('./../../config');
 
 const emitter = new EventEmitter();
 
 const calcTimer = '\n🏁 Сalculation completed in';
 
-const HOST = 'http://localhost';
+const HOST = `http://localhost:${PORT}`;
 
 async function calcUP() {
 	try {
-		const auth = await axios.post(`${HOST}:${PORT}/v0/auth`, {
+		const auth = await axios.post(`${HOST}/v0/auth`, {
 			email: 'member@test.com',
 			password: '123123'
 		});
@@ -26,7 +26,7 @@ async function calcUP() {
 		// const optimade = await axios.get('https://api.mpds.io/v1/structures?filter=nelements=2');
 		// console.log(optimade.data.data[0]);
 
-		const es = new EventSource(`${HOST}:${PORT}/stream`, {
+		const es = new EventSource(`${HOST}/stream`, {
 			withCredentials: true,
 			https: false,
 			headers: { Cookie }
@@ -52,7 +52,7 @@ async function calcUP() {
 			}
 		});
 
-		axios.post(`${HOST}:${PORT}/v0/calculations`, {
+		axios.post(`${HOST}/v0/calculations`, {
 			dataId: 1, engine: 'dummy',
 		}, {
 			headers: { Cookie }
@@ -61,10 +61,8 @@ async function calcUP() {
 		console.time(calcTimer);
 
 		emitter.on('uuid', async (uuid) => {
-			// console.log('emmiter', uuid);
 			if (uuid) {
-				const hook = await axios.post(`${HOST}:${PORT}/v0/webhooks/calc_update`, { uuid, status: 100 });
-				// console.log('hook', hook.data);
+				await axios.post(`${HOST}/v0/webhooks/calc_update`, { uuid, status: 100 });
 			} else {
 				cleanUP(es);
 			}
