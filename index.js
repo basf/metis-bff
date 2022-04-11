@@ -6,9 +6,7 @@ const bff = require('express-bff');
 const passport = require('passport');
 const { getReasonPhrase } = require('http-status-codes');
 
-const { PORT = 3000 } = process.env;
-
-const { dev, backend } = require('./config');
+const { dev, backend, PORT } = require('./config');
 
 const sseMiddleware = require('./middlewares/sse');
 
@@ -24,7 +22,7 @@ passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: id });
-        
+
         done(null, user);
     } catch(err) {
         done(err, null);
@@ -56,9 +54,9 @@ bff(app, {
     api: {
         dir: path.join(__dirname, 'routes'),
     },
-	proxy: {
-		target: backend.baseURL,
-	},
+    proxy: {
+        target: backend.baseURL,
+    },
     static: false,
     ssr: false,
     middlewares: [

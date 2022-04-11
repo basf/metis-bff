@@ -1,8 +1,8 @@
 {
   "name": "bscience-bff",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "",
+  "description": "Project Metis: user and data management layer (backend-for-frontend)",
   "main": "index.js",
   "scripts": {
     "dev": "env NODE_ENV=development node index.js",
@@ -30,5 +30,8 @@
     "passport-oauth2": "^1.6.1",
     "passport-orcid": "^0.0.4",
     "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "eventsource": "^2.0.0"
   }
 }
