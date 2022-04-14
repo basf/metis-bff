@@ -1,4 +1,8 @@
-const { insertUserCalculation, deleteUserCalculation, selectDataSourceByUserId } = require('../../../services/db');
+const {
+    insertUserCalculation,
+    deleteUserCalculation,
+    selectDataSourceByUserId,
+} = require('../../../services/db');
 const { runCalculation, getCalculations, cancelCalculation } = require('../../../services/backend');
 
 module.exports = {
@@ -8,7 +12,6 @@ module.exports = {
 };
 
 async function runAndSaveCalculation(userId, dataId, engine, input, updateHook) {
-
     const datasource = await selectDataSourceByUserId(userId, { id: dataId });
 
     if (!datasource.uuid) {
@@ -25,12 +28,14 @@ async function runAndSaveCalculation(userId, dataId, engine, input, updateHook) 
 }
 
 async function getAndPrepareCalculations(calculations = []) {
-
-    const { uuids, calc } = calculations.reduce((acc, { uuid, ...other }) => {
-        acc.uuids.push(uuid);
-        acc.calc.push(other);
-        return acc;
-    }, { uuids: [], calc: [] });
+    const { uuids, calc } = calculations.reduce(
+        (acc, { uuid, ...other }) => {
+            acc.uuids.push(uuid);
+            acc.calc.push(other);
+            return acc;
+        },
+        { uuids: [], calc: [] }
+    );
 
     if (!uuids.length) return [];
 

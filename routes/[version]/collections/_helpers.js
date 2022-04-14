@@ -1,7 +1,7 @@
-const { 
+const {
     USER_COLLECTONS_TABLE,
     selectCollections,
-    upsertUserCollection, 
+    upsertUserCollection,
     delsertSharedCollectionUsers,
     delsertCollectionDataSources,
 } = require('../../../services/db');
@@ -16,14 +16,14 @@ async function saveCollection(userId, data) {
     const upserted = await upsertUserCollection(userId, collectionData);
 
     if (!upserted.id) {
-        throw new Error('Collection is not saved.');      
+        throw new Error('Collection is not saved.');
     }
 
     const selected = await selectCollections({ id: upserted.id, userId });
     const collection = selected[0];
 
     if (!collection) {
-        throw new Error('Collection is not retrieved.');      
+        throw new Error('Collection is not retrieved.');
     }
 
     if (dataSources) {
@@ -32,7 +32,9 @@ async function saveCollection(userId, data) {
 
     if (users) {
         if (collection.visibility !== 'community') {
-            throw new Error('Only collections visible for community can be shared with a specific users.');
+            throw new Error(
+                'Only collections visible for community can be shared with a specific users.'
+            );
         }
 
         await delsertSharedCollectionUsers(collection.id, users);

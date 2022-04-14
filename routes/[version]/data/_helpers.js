@@ -18,11 +18,14 @@ async function createAndSaveDataSource(userId, content) {
 }
 
 async function getAndPrepareDataSources(datasources = []) {
-    const { uuids, ds } = datasources.reduce((acc, { uuid, ...other }) => {
-        acc.uuids.push(uuid);
-        acc.ds.push(other);
-        return acc;
-    }, { uuids: [], ds: [] });
+    const { uuids, ds } = datasources.reduce(
+        (acc, { uuid, ...other }) => {
+            acc.uuids.push(uuid);
+            acc.ds.push(other);
+            return acc;
+        },
+        { uuids: [], ds: [] }
+    );
 
     if (!uuids.length) return [];
 

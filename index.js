@@ -24,7 +24,7 @@ passport.deserializeUser(async (id, done) => {
         const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: id });
 
         done(null, user);
-    } catch(err) {
+    } catch (err) {
         done(err, null);
     }
 });
@@ -59,11 +59,7 @@ bff(app, {
     },
     static: false,
     ssr: false,
-    middlewares: [
-        passport.initialize(),
-        passport.session(),
-        sseMiddleware,
-    ]
+    middlewares: [passport.initialize(), passport.session(), sseMiddleware],
 });
 
 app.use((err, req, res, next) => {
@@ -73,7 +69,7 @@ app.use((err, req, res, next) => {
     console.error(error);
 
     if (res.headersSent) {
-        res.sse.sendTo([ error ], 'errors');
+        res.sse.sendTo({ reqId: req.id, data: [error] }, 'errors');
     } else {
         res.status(status).json(error);
     }

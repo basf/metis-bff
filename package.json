@@ -17,7 +17,7 @@
     "axios": "^0.26.1",
     "bcrypt": "^5.0.1",
     "express": "^4.17.3",
-    "express-bff": "^0.10.1",
+    "express-bff": "^1.0.0",
     "http-status-codes": "^2.2.0",
     "ini": "^2.0.0",
     "knex": "^1.0.4",

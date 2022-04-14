@@ -3,7 +3,13 @@ const LocalStrategy = require('passport-local').Strategy;
 
 const { StatusCodes } = require('http-status-codes');
 
-const { USERS_TABLE, USERS_EMAILS_TABLE, selectFirstUser, compareStringHash, upsertUser } = require('../../../services/db');
+const {
+    USERS_TABLE,
+    USERS_EMAILS_TABLE,
+    selectFirstUser,
+    compareStringHash,
+    upsertUser,
+} = require('../../../services/db');
 const { checkAuth } = require('../../../middlewares/auth');
 
 const { sendVerifyEmail } = require('./_middlewares');
@@ -11,47 +17,37 @@ const { sendVerifyEmail } = require('./_middlewares');
 const privateFields = ['password', 'emailCode', 'roleId'];
 
 passport.use(
-    new LocalStrategy({
-        usernameField: 'email',
-        passReqToCallback: true,
-    }, async (req, email, password, done) => {
+    new LocalStrategy(
+        {
+            usernameField: 'email',
+            passReqToCallback: true,
+        },
+        async (req, email, password, done) => {
+            try {
+                const user = await selectFirstUser({ [`${USERS_EMAILS_TABLE}.email`]: email });
+                const match = user ? await compareStringHash(password, user.password) : false;
 
-        try {
-            const user = await selectFirstUser({ [`${USERS_EMAILS_TABLE}.email`]: email });
-            const match = user ? await compareStringHash(password, user.password) : false;
-
-            if (user && match) {
-                done(null, user);
-            } else {
-                done(new Error('Bad credentials'), null);
+                if (user && match) {
+                    done(null, user);
+                } else {
+                    done({ status: StatusCodes.BAD_REQUEST, error: 'Bad credentials' }, null);
+                }
+            } catch (err) {
+                done(err, null);
             }
-        } catch(err) {
-            done(err, null);
         }
-    })
+    )
 );
 
 module.exports = {
-    get: [
-        checkAuth,
-        get,
-    ],
-    put: [
-        checkAuth,
-        put,
-        sendVerifyEmail,
-        get,
-    ],
-    post: [
-        passport.authenticate('local'),
-        post,
-    ],
+    get: [checkAuth, get],
+    put: [checkAuth, put, sendVerifyEmail, get],
+    post: [passport.authenticate('local'), post],
     delete: del,
 };
 
-
 async function get(req, res, next) {
-    const userDTO = Object.entries(req.user).reduce((dto, [ key, val ]) => {
+    const userDTO = Object.entries(req.user).reduce((dto, [key, val]) => {
         if (!privateFields.includes(key)) dto[key] = val;
         return dto;
     }, {});
@@ -60,7 +56,6 @@ async function get(req, res, next) {
 }
 
 async function put(req, res, next) {
-
     try {
         const upserted = await upsertUser({ ...req.body, id: req.user.id });
 
@@ -69,8 +64,7 @@ async function put(req, res, next) {
         }
 
         req.user = await selectFirstUser({ [`${USERS_TABLE}.id`]: req.user.id });
-
-    } catch(error) {
+    } catch (error) {
         return next({ error });
     }
 
