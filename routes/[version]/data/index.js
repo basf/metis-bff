@@ -5,51 +5,48 @@ const { getUserDataSources } = require('../../../middlewares/db');
 const { createAndSaveDataSource, getAndPrepareDataSources } = require('./_helpers');
 
 module.exports = {
-    get: [
-        checkAuth,
-        getUserDataSources,   
-        get,
-    ],
-    post: [
-        checkAuth,
-        getUserDataSources,
-        post,
-    ],
+    get: [checkAuth, getUserDataSources, get],
+    post: [checkAuth, getUserDataSources, post],
 };
 
 async function post(req, res, next) {
-
     if (!req.body.content) {
-        return next({ status: StatusCodes.BAD_REQUEST, error: 'Required field `content` is not provided.'  });
-    } 
+        return next({
+            status: StatusCodes.BAD_REQUEST,
+            error: 'Required field `content` is not provided.',
+        });
+    }
 
-    res.status(StatusCodes.ACCEPTED).json({});
+    const reqId = req.id;
+
+    res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
-        const contents = Array.isArray(req.body.content) ? req.body.content : [ req.body.content ];
+        const contents = Array.isArray(req.body.content) ? req.body.content : [req.body.content];
 
         for (const content of contents) {
             const datasource = await createAndSaveDataSource(req.user.id, content);
-            req.session.datasources.push(datasource);    
+            req.session.datasources.push(datasource);
         }
 
-        const output = await getAndPrepareDataSources(req.session.datasources);
+        const data = await getAndPrepareDataSources(req.session.datasources);
 
-        res.sse.sendTo(output, 'datasources');
-    } catch(error) {
+        res.sse.sendTo({ reqId, data }, 'datasources');
+    } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
 }
 
 async function get(req, res, next) {
+    const reqId = req.id;
 
-    res.status(StatusCodes.ACCEPTED).json({});
+    res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
-        const output = await getAndPrepareDataSources(req.session.datasources);
+        const data = await getAndPrepareDataSources(req.session.datasources);
 
-        res.sse.sendTo(output, 'datasources');
-    } catch(error) {
+        res.sse.sendTo({ reqId, data }, 'datasources');
+    } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
 }

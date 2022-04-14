@@ -7,7 +7,7 @@ const api = axios.create({
     baseURL: config.baseURL,
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Key': config.key,
+        Key: config.key,
     },
     transformRequest: [
         (data, headers) => {

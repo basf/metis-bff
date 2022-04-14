@@ -1,7 +1,7 @@
 const fs = require('fs');
 const ini = require('ini');
 
-const { oauth, db, api, webhooks, mail } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'))
+const { oauth, db, api, webhooks, mail } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -21,18 +21,18 @@ module.exports = {
         github: {
             clientID: process.env.GITHUB_CLIENT_ID || oauth.github.client || 'unset',
             clientSecret: process.env.GITHUB_CLIENT_SECRET || oauth.github.secret || 'unset',
-            callbackURL: process.env.GITHUB_CALLBACK_URL || oauth.github.callback  || 'unset',
+            callbackURL: process.env.GITHUB_CALLBACK_URL || oauth.github.callback || 'unset',
             scope: process.env.GITHUB_SCOPE || oauth.github.scope,
         },
         linkedin: {
-            clientID: process.env.LINKEDIN_CLIENT_ID ||oauth.linkedin.client || 'unset',
+            clientID: process.env.LINKEDIN_CLIENT_ID || oauth.linkedin.client || 'unset',
             clientSecret: process.env.LINKEDIN_CLIENT_SECRET || oauth.linkedin.secret || 'unset',
             callbackURL: process.env.LINKEDIN_CALLBACK_URL || oauth.linkedin.callback || 'unset',
             scope: process.env.LINKEDIN_SCOPE || oauth.linkedin.scope,
         },
         orcid: {
             clientID: process.env.ORCID_CLIENT_ID || oauth.orcid.client || 'unset',
-            clientSecret: process.env.ORCID_CLIENT_SECRET ||  oauth.orcid.secret || 'unset',
+            clientSecret: process.env.ORCID_CLIENT_SECRET || oauth.orcid.secret || 'unset',
             callbackURL: process.env.ORCID_CALLBACK_URL || oauth.orcid.callback || 'unset',
         },
         basf: {

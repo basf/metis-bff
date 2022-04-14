@@ -4,7 +4,12 @@ const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
 const OAuth2Strategy = require('passport-oauth2').Strategy;
 
-const { USERS_TABLE, USER_OAUTHS_TABLE, selectFirstUser, upsertUser } = require('../../../services/db');
+const {
+    USERS_TABLE,
+    USER_OAUTHS_TABLE,
+    selectFirstUser,
+    upsertUser,
+} = require('../../../services/db');
 const { oauth } = require('../../../config');
 
 const { sendVerifyEmail } = require('./_middlewares');
@@ -12,7 +17,7 @@ const { sendVerifyEmail } = require('./_middlewares');
 module.exports = {
     get: [
         (req, res, next) => {
-            if ( ! req.session.redirectURL) {
+            if (!req.session.redirectURL) {
                 req.session.redirectURL = req.headers.origin || req.headers.referer;
                 req.session.save();
             }
@@ -26,8 +31,8 @@ module.exports = {
                 req.session.save();
                 res.redirect(redirectURL);
             }
-        }
-    ]
+        },
+    ],
 };
 
 passport.use(new GitHubStrategy(oauth.github, handleCallback('github')));
@@ -48,10 +53,9 @@ function handleCallback(provider) {
      * @param {Object} params
      * @param {Object} profile
      * @param {Function} done
-    */
+     */
     return async (...args) => {
-
-        let [ done, profile, params ] = args.reverse();
+        let [done, profile, params] = args.reverse();
 
         if (!profile || !Object.keys(profile).length) {
             profile = params;
@@ -59,10 +63,12 @@ function handleCallback(provider) {
 
         const providerId = provider === 'orcid' ? profile.orcid : profile.id;
 
-        if ( ! profile || ! providerId) return done(new Error('OAuth profile is incorrect'), null);
+        if (!profile || !providerId) return done(new Error('OAuth profile is incorrect'), null);
 
         const email = /*profile.email || (profile.emails.length && profile.emails[0].value) ||*/ '';
-        let [ firstName = '', lastName = '' ] = (profile.displayName || profile.name || '').split(' ');
+        let [firstName = '', lastName = ''] = (profile.displayName || profile.name || '').split(
+            ' '
+        );
 
         if (!firstName && !lastName) {
             firstName = profile.username || profile.login;
@@ -71,18 +77,25 @@ function handleCallback(provider) {
         try {
             const user = await selectFirstUser({
                 [`${USER_OAUTHS_TABLE}.provider`]: provider,
-                [`${USER_OAUTHS_TABLE}.providerId`]: providerId,  
+                [`${USER_OAUTHS_TABLE}.providerId`]: providerId,
             });
 
             if (user) {
                 done(null, user);
             } else {
-                const inserted = await upsertUser({ firstName, lastName, email, provider, providerId, profile, });
-                const user =  await selectFirstUser({ [`${USERS_TABLE}.id`]: inserted.id });
+                const inserted = await upsertUser({
+                    firstName,
+                    lastName,
+                    email,
+                    provider,
+                    providerId,
+                    profile,
+                });
+                const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: inserted.id });
 
                 done(null, user);
             }
-        } catch(err) {
+        } catch (err) {
             done(err, null);
         }
     };
