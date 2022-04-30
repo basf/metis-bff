@@ -11,9 +11,8 @@ const HOST = `http://localhost:${PORT}`;
 const PROVIDER = 'https://aiida.materialscloud.org/3dd/optimade/v1/structures?filter=nelements=2';
 const USER = {
     email: 'member@test.com',
-    password: '123123'
+    password: '123123',
 };
-
 
 async function calcUP() {
     try {
@@ -25,7 +24,7 @@ async function calcUP() {
         const es = new EventSource(`${HOST}/stream`, {
             withCredentials: true,
             https: false,
-            headers
+            headers,
         });
 
         es.addEventListener('datasources', async (e) => {

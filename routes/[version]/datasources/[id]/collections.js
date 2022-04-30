@@ -8,7 +8,8 @@ module.exports = {
         checkAuth,
         patch,
         getUserCollections,
-        (req, res) => res.sse.sendTo({ reqId: req.id, data: req.session.collections }, 'collections')
+        (req, res) =>
+            res.sse.sendTo({ reqId: req.id, data: req.session.collections }, 'collections'),
     ],
 };
 
