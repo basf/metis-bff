@@ -1,9 +1,9 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { checkAuth } = require('../../../middlewares/auth');
-const { getUserDataSources } = require('../../../middlewares/db');
+const { checkAuth } = require('../../../../middlewares/auth');
+const { getUserDataSources } = require('../../../../middlewares/db');
 
-const { deleteAndClearDataSource, getAndPrepareDataSources } = require('./_helpers');
+const { deleteAndClearDataSource, getAndPrepareDataSources } = require('../_helpers');
 
 module.exports = {
     delete: [checkAuth, getUserDataSources, del],

@@ -129,6 +129,7 @@ module.exports = {
     selectUserCollectionsByDataSources,
     delsertSharedCollectionUsers,
     delsertCollectionDataSources,
+    delsertDataSourceCollections,
     selectSharedCollectionsByUserId,
     selectSharedDataSourcesByUserId,
     selectPublicAndCollectionsByUserId,
@@ -354,6 +355,27 @@ async function delsertCollectionDataSources(collectionId, dataSourceIds) {
     } else {
         const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
             .where('collectionId', collectionId)
+            .del();
+        return [];
+    }
+}
+
+async function delsertDataSourceCollections(dataSourceId, collections) {
+    if (collections.length) {
+        const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
+            .where('dataSourceId', dataSourceId)
+            .whereNotIn('collectionId', collections)
+            .del();
+
+        const inserts = collections.map((collectionId) => ({ dataSourceId, collectionId }));
+
+        return db(USER_COLLECTONS_DATASOURCES_TABLE)
+            .insert(inserts, ['collectionId'])
+            .onConflict(['collectionId', 'dataSourceId'])
+            .ignore();
+    } else {
+        const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
+            .where('dataSourceId', dataSourceId)
             .del();
         return [];
     }
