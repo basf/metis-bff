@@ -75,6 +75,8 @@ app.use((err, req, res, next) => {
     }
 });
 
+console.log(`***Running ${process.execPath} as of ${process.version}***`);
+
 app.listen(PORT, () => {
     console.log(`App in dev-mode=${dev} listens to http://localhost:${PORT}`);
 });

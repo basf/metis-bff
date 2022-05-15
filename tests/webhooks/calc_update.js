@@ -7,84 +7,91 @@ const { db, USER_CALCULATIONS_TABLE } = require('./../../services/db');
 const { PORT } = require('./../../config');
 
 const TIMER = '\n🏁 Сalculation completed in';
-const HOST = `http://localhost:${PORT}`;
-const PROVIDER = 'https://aiida.materialscloud.org/3dd/optimade/v1/structures?filter=nelements=2';
+const BFF_HOST = `http://localhost:${PORT}`;
+const PROVIDER = 'https://nomad-lab.eu/prod/rae/optimade/v1/structures?filter=nelements=1';
 const USER = {
     email: 'member@test.com',
     password: '123123',
 };
 
-async function calcUP() {
+async function calc() {
     try {
-        const auth = await axios.post(`${HOST}/v0/auth`, USER);
+        const auth = await axios.post(`${BFF_HOST}/v0/auth`, USER);
         const Cookie = auth.headers['set-cookie'][0].match(/^(.*?);/)[1];
         const headers = { Cookie };
         // console.log('auth', Cookie);
 
-        const es = new EventSource(`${HOST}/stream`, {
+        const es = new EventSource(`${BFF_HOST}/stream`, {
             withCredentials: true,
             https: false,
             headers,
         });
 
         es.addEventListener('datasources', async (e) => {
-            // console.log(e.data);
-            if (e.data.length > 2) {
-                const dataId = JSON.parse(e.data)[0].id;
+            const answer = JSON.parse(e.data);
 
-                axios.post(`${HOST}/v0/calculations`, { dataId }, { headers });
+            if (answer.data.length) {
+                const dataId = answer.data[0].id;
+
+                axios.post(`${BFF_HOST}/v0/calculations`, { dataId }, { headers });
 
                 console.log('🚀 Calculation start');
                 console.time(TIMER);
+
             } else {
                 const optimade = await axios.get(PROVIDER);
                 const content = JSON.stringify(optimade.data.data[0]);
 
-                axios.post(`${HOST}/v0/data`, { content }, { headers });
+                axios.post(`${BFF_HOST}/v0/datasources`, { content }, { headers });
             }
         });
 
-        let count = 0;
         es.addEventListener('calculations', async (e) => {
-            if (e.data.length > 2) {
-                const { id, progress } = JSON.parse(e.data)[0];
+            const answer = JSON.parse(e.data);
 
-                //TODO - Make progress clear points by 50 || 100
-                console.log('CalcID:', id, 'progress:', progress + count);
-                count += 1;
+            if (answer.data.length) {
+                const { id, progress } = answer.data[0];
+
+                console.log('CalcID:', id, 'progress:', progress);
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
                 const { uuid } = await db(USER_CALCULATIONS_TABLE).where({ id }).first();
-
                 if (uuid) {
-                    axios.post(`${HOST}/v0/webhooks/calc_update`, { uuid, status: 100 });
+                    console.log('Awaiting for an incoming webhook to BFF...');
+
+                    if (progress == 100) {
+                        // NB issue an artificial hook to receive update with no calculation
+                        axios.post(`${BFF_HOST}/v0/webhooks/calc_update`, { uuid, progress: 110 });
+                    }
+
                 } else {
-                    cleanUP(es);
+                    cleanup(es);
                     process.exit(1);
                 }
             } else {
                 console.timeEnd(TIMER);
-                cleanUP(es);
+                cleanup(es);
                 process.exit(1);
             }
         });
 
         es.addEventListener('errors', async (e) => {
             if (e.data.length > 2) {
-                console.error(JSON.parse(e.data));
-                cleanUP(es);
+                console.error(e.data);
+                cleanup(es);
                 process.exit(1);
             }
         });
 
-        axios.get(`${HOST}/v0/data`, { headers });
+        axios.get(`${BFF_HOST}/v0/datasources`, { headers });
     } catch (e) {
         console.error(e);
     }
 }
 
-calcUP();
+calc();
 
-function cleanUP(es) {
+function cleanup(es) {
     es.removeEventListener('calculations');
     es.removeEventListener('datasources');
     es.removeEventListener('errors');
