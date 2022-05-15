@@ -110,6 +110,7 @@ module.exports = {
     hashString,
     selectFirstUser,
     compareStringHash,
+
     deleteUserCollection,
     deleteUserDataSource,
     upsertUserCollection,
@@ -136,6 +137,7 @@ module.exports = {
     searchUsers,
     upsertUser,
     selectUsersByIds,
+
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
     COLORS_ENUM,

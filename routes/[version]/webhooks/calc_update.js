@@ -17,9 +17,9 @@ function is_valid_uuid(uuid) {
 }
 
 async function post(req, res, next) {
-    const { uuid, status } = req.body;
+    const { uuid, progress } = req.body;
 
-    if (!uuid || !is_valid_uuid(uuid) || !status) {
+    if (!uuid || !is_valid_uuid(uuid) || !progress) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
@@ -30,12 +30,11 @@ async function post(req, res, next) {
     if (!calculation) {
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,
-            error: 'Calculation are not available for provided UUID',
+            error: 'Calculation is not available for provided UUID',
         });
     }
 
     const userId = calculation.userId;
-
     const calculations = await selectCalculationsByUserId(userId);
     const output = await getAndPrepareCalculations(calculations);
 
