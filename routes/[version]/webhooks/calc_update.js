@@ -42,7 +42,7 @@ async function post(req, res, next) {
         ({ session }) => {
             return userId && session.passport && userId === session.passport.user;
         },
-        output,
+        { reqId: req.id, data: output },
         'calculations'
     );
 }
