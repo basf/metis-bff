@@ -1,5 +1,6 @@
 const {
     USER_COLLECTONS_TABLE,
+    SHARED_COLLECTION_VISIBILITY,
     selectCollections,
     upsertUserCollection,
     delsertSharedCollectionUsers,
@@ -31,9 +32,9 @@ async function saveCollection(userId, data) {
     }
 
     if (users) {
-        if (collection.visibility !== 'community') {
+        if (collection.visibility !== SHARED_COLLECTION_VISIBILITY) {
             throw new Error(
-                'Only collections visible for community can be shared with a specific users.'
+                'This type of collection cannot be shared between the users.'
             );
         }
 

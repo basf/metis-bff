@@ -62,17 +62,23 @@ const COLLECTION_JOINED_FIELDS = [
     `${USERS_TABLE}.lastName as userLastName`,
     `${COLLECTONS_TYPES_TABLE}.slug as typeSlug`,
     `${COLLECTONS_TYPES_TABLE}.label as typeLabel`,
-    `${COLLECTONS_TYPES_TABLE}.color as typeColor`,
+    `${COLLECTONS_TYPES_TABLE}.flavor as typeFlavor`,
 ];
 
 const DEFAULT_USER_ROLE = 'member';
 const ADMIN_USER_ROLE = 'admin';
-const PUBLIC_COLLECTION_VISIBILITY = 'public';
-const SHARED_COLLECTION_VISIBILITY = 'community';
+
+const PUBLIC_COLLECTION_VISIBILITY = 'community';
+const SHARED_COLLECTION_VISIBILITY = 'shared';
 const PRIVATE_COLLECTION_VISIBILITY = 'private';
 
-const OAUTH_PROVIDERS_ENUM = ['basf', 'github', 'linkedin', 'orcid'];
-const COLORS_ENUM = [
+const OAUTH_PROVIDERS_ENUM = [
+    'basf',
+    'github',
+    'linkedin',
+    'orcid'
+];
+const FLAVORS_ENUM = [
     'red',
     'pink',
     'purple',
@@ -140,7 +146,7 @@ module.exports = {
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
-    COLORS_ENUM,
+    FLAVORS_ENUM,
     USER_COLLECTONS_DATASOURCES_TABLE,
     USER_SHARED_COLLECTONS_TABLE,
     USER_CALCULATIONS_TABLE,

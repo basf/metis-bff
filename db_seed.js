@@ -20,7 +20,7 @@ const {
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
-    COLORS_ENUM,
+    FLAVORS_ENUM,
 } = require('./services/db');
 
 const FOREIGN_KEY_LENGTH = 11;
@@ -51,7 +51,7 @@ Promise.all([
     .then(() =>
         Promise.all([
             db.schema.dropTableIfExists(USER_ROLES_TABLE),
-            db.schema.raw('DROP TYPE IF EXISTS collection_colors'),
+            db.schema.raw('DROP TYPE IF EXISTS collection_flavors'),
             db.schema.raw('DROP TYPE IF EXISTS oauth_providers'),
             db.schema.raw('DROP TYPE IF EXISTS collection_visibility'),
         ])
@@ -64,9 +64,9 @@ Promise.all([
                         table.increments('id');
                         table.string('slug', NAME_LENGTH).unique();
                         table.string('label', NAME_LENGTH);
-                        table.enu('color', COLORS_ENUM, {
+                        table.enu('flavor', FLAVORS_ENUM, {
                             useNative: true,
-                            enumName: 'collection_colors',
+                            enumName: 'collection_flavors',
                         });
                         table.timestamps(false, true, true);
                     });
@@ -291,22 +291,22 @@ Promise.all([
                 {
                     slug: 'red',
                     label: 'Red',
-                    color: 'red',
+                    flavor: 'red',
                 },
                 {
                     slug: 'blue',
                     label: 'Blue',
-                    color: 'blue',
+                    flavor: 'blue',
                 },
                 {
                     slug: 'green',
                     label: 'Green',
-                    color: 'green',
+                    flavor: 'green',
                 },
                 {
                     slug: 'orange',
                     label: 'Orange',
-                    color: 'orange',
+                    flavor: 'orange',
                 },
             ],
             ['id', 'slug']
