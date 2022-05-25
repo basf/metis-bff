@@ -8,6 +8,7 @@ const {
     selectDataSourcesByUserIdAndRole,
     selectCollectionsByUserIdAndRole,
     selectCalculationsByUserIdAndRole,
+    selectUserDataSourcesByCollections
 } = require('../services/db');
 
 module.exports = {
@@ -18,10 +19,20 @@ module.exports = {
 
 async function getUserDataSources(req, res, next) {
     try {
-        req.session.datasources = await selectDataSourcesByUserIdAndRole(
-            req.user.id,
-            req.user.roleSlug
-        );
+        if ('collectionIds' in req.query) {
+            const collectionIds = req.query.collectionIds.includes(',')
+                ? req.query.collectionIds.split([','])
+                : [req.query.collectionIds];
+            req.session.datasources = await selectUserDataSourcesByCollections(
+                req.user.id,
+                collectionIds
+            );
+        } else {
+            req.session.datasources = await selectDataSourcesByUserIdAndRole(
+                req.user.id,
+                req.user.roleSlug
+            );
+        }
     } catch (error) {
         return next({ error });
     }
