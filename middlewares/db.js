@@ -19,9 +19,9 @@ module.exports = {
 
 async function getUserDataSources(req, res, next) {
     try {
-        if ('collectionIds' in req.query) {
+        if ('collectionIds' in req.query && req.query.collectionIds) {
             const collectionIds = req.query.collectionIds.includes(',')
-                ? req.query.collectionIds.split([','])
+                ? req.query.collectionIds.split(',')
                 : [req.query.collectionIds];
             req.session.datasources = await selectUserDataSourcesByCollections(
                 req.user.id,
