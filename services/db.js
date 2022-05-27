@@ -134,6 +134,7 @@ module.exports = {
     selectCollectionsByUserIdAndRole,
     selectCalculationsByUserIdAndRole,
     selectUserCollectionsByDataSources,
+    selectUserDataSourcesByCollections,
     delsertSharedCollectionUsers,
     delsertCollectionDataSources,
     delsertDataSourceCollections,
@@ -283,6 +284,18 @@ function selectUserCollectionsByDataSources(userId, dataSourceIds = [], query = 
                 .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, SHARED_COLLECTION_VISIBILITY);
         })
         .whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
+}
+
+function selectUserDataSourcesByCollections(userId, collectionIds = []) {
+    return db(USER_DATASOURCES_TABLE)
+        .join(
+            USER_COLLECTONS_DATASOURCES_TABLE,
+            `${USER_DATASOURCES_TABLE}.id`,
+            `${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`
+        )
+        .select(...DATASOURCE_FIELDS)
+        .where(`${USER_DATASOURCES_TABLE}.userId`, userId)
+        .whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`, collectionIds);
 }
 
 function selectCollections(query = {}) {
