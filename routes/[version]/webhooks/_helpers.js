@@ -7,7 +7,9 @@ const { db,
 
 const { getAndPrepareCalculations } = require('../calculations/_helpers');
 
-export async function getAndPrepareCalculationsWithResult(userId, calculations, result) {
+module.exports = { getAndPrepareCalculationsWithResult };
+
+async function getAndPrepareCalculationsWithResult(userId, calculations, result) {
     const output = await getAndPrepareCalculations(calculations);
     // result processing
     for (const data of result) {
