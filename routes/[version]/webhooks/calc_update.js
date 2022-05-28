@@ -1,8 +1,12 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { db, USER_CALCULATIONS_TABLE, selectCalculationsByUserId } = require('../../../services/db');
+const { db,
+    USER_CALCULATIONS_TABLE,
+    selectCalculationsByUserId,
+} = require('../../../services/db');
 
 const { getAndPrepareCalculations } = require('../calculations/_helpers');
+const { getAndPrepareCalculationsWithResult } = require('./_helpers');
 
 module.exports = {
     post,
@@ -17,7 +21,7 @@ function is_valid_uuid(uuid) {
 }
 
 async function post(req, res, next) {
-    const { uuid, progress } = req.body;
+    const { uuid, progress, result } = req.body;
 
     if (!uuid || !is_valid_uuid(uuid) || !progress) {
         return next({ status: StatusCodes.BAD_REQUEST });
@@ -36,7 +40,9 @@ async function post(req, res, next) {
 
     const userId = calculation.userId;
     const calculations = await selectCalculationsByUserId(userId);
-    const output = await getAndPrepareCalculations(calculations);
+    const output = result
+        ? await getAndPrepareCalculationsWithResult(userId, calculations, result)
+        : await getAndPrepareCalculations(calculations);
 
     res.sse.send(
         ({ session }) => {
