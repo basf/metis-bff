@@ -41,7 +41,7 @@ async function post(req, res, next) {
     const userId = calculation.userId;
     const calculations = await selectCalculationsByUserId(userId);
     const output = result
-        ? await getAndPrepareCalculationsWithResult(userId, calculations, result)
+        ? await getAndPrepareCalculationsWithResult(userId, uuid, calculations, result)
         : await getAndPrepareCalculations(calculations);
 
     res.sse.send(

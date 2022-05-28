@@ -10,9 +10,9 @@ const { getAndPrepareDataSources } = require('../datasources/_helpers');
 
 module.exports = { getAndPrepareCalculationsWithResult };
 
-async function getAndPrepareCalculationsWithResult(userId, calculations, result) {
-    const output = await getAndPrepareCalculations(calculations);
+async function getAndPrepareCalculationsWithResult(userId, uuid, calculations, result) {
     let dataSources = [];
+    const output = await getAndPrepareCalculations(calculations);
     // result processing
     for (const data of result) {
         const { parentUUID, uuid } = data;
@@ -23,7 +23,7 @@ async function getAndPrepareCalculationsWithResult(userId, calculations, result)
         dataSources.push(dataSource);
     }
     // add result to calculations SSE output
-    const calcId = calculations.find(c => c.uuid === uuid).id;
     result = await getAndPrepareDataSources(dataSources);
+    const calcId = calculations.find(c => c.uuid === uuid).id;
     return output.map(calc => calc.id === calcId ? { ...calc, result } : calc);
 }
