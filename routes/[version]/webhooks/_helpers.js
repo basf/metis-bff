@@ -1,3 +1,4 @@
+const { StatusCodes } = require('http-status-codes');
 const { db,
     USER_DATASOURCES_TABLE,
     insertUserDataSource,
@@ -13,17 +14,22 @@ module.exports = { getAndPrepareCalculationsWithResult };
 async function getAndPrepareCalculationsWithResult(userId, uuid, calculations, result) {
     let dataSources = [];
     const output = await getAndPrepareCalculations(calculations);
-    // result processing
-    for (const data of result) {
-        const { parentUUID, uuid } = data;
-        const parentDataSourceId = await db(USER_DATASOURCES_TABLE).where({ uuid: parentUUID }).first('id');
-        const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSourceId]);
-        const dataSource = await insertUserDataSource(userId, { uuid });
-        const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, parentCollections);
-        dataSources.push(dataSource);
+    try {
+        // result processing
+        for (const data of result) {
+            const { parentUUID, uuid } = data;
+            const parentDataSourceId = await db(USER_DATASOURCES_TABLE).where({ uuid: parentUUID }).first('id');
+            const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSourceId]);
+            const dataSource = await insertUserDataSource(userId, { uuid });
+            const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, parentCollections);
+            dataSources.push(dataSource);
+        }
+        // prepare result datasources without uuids
+        result = await getAndPrepareDataSources(dataSources);
+        // add result to calculations SSE output
+        const calcId = calculations.find(c => c.uuid === uuid).id;
+        return output.map(calc => calc.id === calcId ? { ...calc, result } : calc);
+    } catch (error) {
+        return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error });
     }
-    // add result to calculations SSE output
-    result = await getAndPrepareDataSources(dataSources);
-    const calcId = calculations.find(c => c.uuid === uuid).id;
-    return output.map(calc => calc.id === calcId ? { ...calc, result } : calc);
 }
