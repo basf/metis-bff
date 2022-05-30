@@ -25,12 +25,21 @@ module.exports = {
     mailer,
 };
 
+function checkMailOptions(mailOptions) {
+    return mailOptions && Object.keys(mailOptions)
+        && Object.keys(mailOptions).every(key => mailOptions[key]);
+}
+
 async function sendMail(options) {
-    try {
-        return mailer.sendMail(options);
-    } catch (err) {
-        console.log('ERROR: Send Mail', err);
-        throw err;
+    if (checkMailOptions(mailOptions)) {
+        try {
+            return mailer.sendMail(options);
+        } catch (err) {
+            console.log('ERROR: Send Mail', err);
+            throw err;
+        }
+    } else {
+        console.error('ERROR: Mail Options:', mailOptions);
     }
 }
 
