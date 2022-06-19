@@ -35,11 +35,11 @@ async function sendMail(options) {
         try {
             return mailer.sendMail(options);
         } catch (err) {
-            console.log('ERROR: Send Mail', err);
+            console.error('ERROR: mail sending failed', err);
             throw err;
         }
     } else {
-        console.error('ERROR: Mail Options:', mailOptions);
+        console.error('ERROR: mail options invalid');
     }
 }
 
