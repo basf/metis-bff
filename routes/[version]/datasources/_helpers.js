@@ -1,4 +1,4 @@
-const { insertUserDataSource, deleteUserDataSource } = require('../../../services/db');
+const { insertUserDataSource, deleteUserDataSource, selectUsersByIds } = require('../../../services/db');
 const { createDataSource, getDataSources, deleteDataSource } = require('../../../services/backend');
 
 module.exports = {
@@ -33,9 +33,12 @@ async function getAndPrepareDataSources(datasources = []) {
 
     if (!data.length) return [];
 
+    const users = await selectUsersByIds(ds.map((ds) => ds.userId));
+
     return data.reduce((acc, { uuid, ...data }) => {
         const i = uuids.indexOf(uuid);
-        acc.push(Object.assign(data, ds[i]));
+        const user = users.find(user => user.id === ds[i].userId);
+        acc.push(Object.assign(data, { ...ds[i], user }));
         return acc;
     }, []);
 }
