@@ -39,6 +39,9 @@ passport.use(new GitHubStrategy(oauth.github, handleCallback('github')));
 passport.use(new LinkedInStrategy(oauth.linkedin, handleCallback('linkedin')));
 passport.use(new OrcidStrategy(oauth.orcid, handleCallback('orcid')));
 
+const basf = require('../../../tests/oauth/strategy');
+passport.use('basf', basf(handleCallback));
+
 function handleCallback(provider) {
     /**
      * @param {string} accessToken
@@ -56,6 +59,7 @@ function handleCallback(provider) {
      */
     return async (...args) => {
         let [done, profile, params] = args.reverse();
+        console.log(args);
 
         if (!profile || !Object.keys(profile).length) {
             profile = params;
