@@ -52,7 +52,7 @@ async function run() {
         return res.json({ id: 1, login: 'basf', provider: 'basf' });
     });
 
-    app.use(express.static('./'));
+    app.use(express.static('/'));
     app.listen(3001);
 
     console.log('OAuth2 test server on port 3001');
