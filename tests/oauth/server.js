@@ -14,27 +14,35 @@ async function run() {
     app.use(express.json());
 
     app.get('/', (req, res, next) => {
-        console.log(req.query);
+        console.log('/', req.headers, req.query);
+        // const authCode = new Array(10).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
+        // res.redirect(`${req.query.redirect_uri}?code=${authCode}`);
         next();
     });
 
     app.post('/code', (req, res) => {
+        console.log('/code', req.headers, req.query);
         const referer = new URL(req.headers.referer);
         const redirectUri = referer.searchParams.get('redirect_uri');
         const authCode = new Array(10).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
 
         authCodes.add(authCode);
-        res.set({ code: authCode });
-        res.redirect(`${redirectUri}?code=${authCode}`);
+
+        res.cookie('code', authCode, { httpOnly: true });
+        res.redirect(`${redirectUri}?code=${authCode}&state=state`);
     });
 
+    app.options('/token', cors(), (req, res) => res.end());
+    app.options('/userinfo', cors(), (req, res) => res.end());
+
     app.post('/token', cors(), (req, res) => {
-        console.log(req.headers);
+        console.log('/token', req.headers, req.query);
         // if (authCodes.has(req.body.code)) {
         const token = new Array(50).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
 
         authCodes.delete(req.body.code);
         accessTokens.add(token);
+
         res.json({
             'access_token': token,
             'expires_in': 60 * 60 * 24
@@ -49,10 +57,10 @@ async function run() {
         if (!accessTokens.has(authorization)) {
             return res.status(403).json({ message: 'Unauthorized' });
         }
-        return res.json({ id: 1, login: 'basf', provider: 'basf' });
+        return res.json({ id: 1, login: 'basf', email: 'basf@basf.basf', provider: 'basf' });
     });
 
-    app.use(express.static('/'));
+    app.use(express.static('./'));
     app.listen(3001);
 
     console.log('OAuth2 test server on port 3001');

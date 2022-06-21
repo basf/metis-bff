@@ -1,10 +1,22 @@
 <html>
+    <style>
+        form {
+            max-width: 300px;
+            margin: auto;
+            text-align: center;
+        }
+
+        legend {
+            margin: auto;
+        }
+    </style>
 
     <body>
-        <div>Authorize OAuth Test App?</div>
-
         <form action="/code" method="POST">
-            <button type="submit">OK</button>
+            <fieldset>
+                <legend>Autorize OAuth Test App?</legend>
+                <button type="submit">Autorize</button>
+            </fieldset>
         </form>
     </body>
 
