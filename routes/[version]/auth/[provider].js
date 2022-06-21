@@ -3,6 +3,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
 const OAuth2Strategy = require('passport-oauth2').Strategy;
+const BasfStrategy = require('../../../tests/oauth/strategy');
 
 const {
     USERS_TABLE,
@@ -38,9 +39,7 @@ module.exports = {
 passport.use(new GitHubStrategy(oauth.github, handleCallback('github')));
 passport.use(new LinkedInStrategy(oauth.linkedin, handleCallback('linkedin')));
 passport.use(new OrcidStrategy(oauth.orcid, handleCallback('orcid')));
-
-const basf = require('../../../tests/oauth/strategy');
-passport.use('basf', basf(handleCallback));
+passport.use(new BasfStrategy(oauth.basf, handleCallback('basf')));
 
 function handleCallback(provider) {
     /**

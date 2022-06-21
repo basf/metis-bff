@@ -11,17 +11,9 @@ async function run() {
     const authCodes = new Set();
     const accessTokens = new Set();
 
-    app.use(express.json());
-
-    app.get('/', (req, res, next) => {
-        console.log('/', req.headers, req.query);
-        // const authCode = new Array(10).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
-        // res.redirect(`${req.query.redirect_uri}?code=${authCode}`);
-        next();
-    });
+    app.use(express.urlencoded({ extended: true }));
 
     app.post('/code', (req, res) => {
-        console.log('/code', req.headers, req.query);
         const referer = new URL(req.headers.referer);
         const redirectUri = referer.searchParams.get('redirect_uri');
         const authCode = new Array(10).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
@@ -36,20 +28,16 @@ async function run() {
     app.options('/userinfo', cors(), (req, res) => res.end());
 
     app.post('/token', cors(), (req, res) => {
-        console.log('/token', req.headers, req.query);
-        // if (authCodes.has(req.body.code)) {
-        const token = new Array(50).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
+        if (authCodes.has(req.body.code)) {
+            const token = new Array(50).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
 
-        authCodes.delete(req.body.code);
-        accessTokens.add(token);
+            authCodes.delete(req.body.code);
+            accessTokens.add(`Bearer ${token}`);
 
-        res.json({
-            'access_token': token,
-            'expires_in': 60 * 60 * 24
-        });
-        // } else {
-        //     res.status(400).json({ message: 'Invalid auth token' });
-        // }
+            res.json({ 'access_token': token, 'expires_in': 60 * 60 * 24 });
+        } else {
+            res.status(400).json({ message: 'Invalid auth token' });
+        }
     });
 
     app.get('/userinfo', cors(), (req, res) => {
