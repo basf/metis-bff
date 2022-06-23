@@ -5,8 +5,7 @@ const { db,
     selectCalculationsByUserId,
 } = require('../../../services/db');
 
-const { getAndPrepareCalculations } = require('../calculations/_helpers');
-const { getAndPrepareCalculationsWithResult } = require('./_helpers');
+const { getAndPrepareCalculations, getAndPrepareCalculationsWithResult } = require('../calculations/_helpers');
 
 module.exports = {
     post,
