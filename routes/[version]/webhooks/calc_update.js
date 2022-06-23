@@ -43,6 +43,10 @@ async function post(req, res, next) {
         ? await getAndPrepareCalculationsWithResult(userId, uuid, calculations, result)
         : await getAndPrepareCalculations(calculations);
 
+    if (output.error) {
+        return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error: output.error });
+    }
+
     res.sse.send(
         ({ session }) => {
             return userId && session.passport && userId === session.passport.user;

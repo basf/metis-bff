@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 
-const {
+const { db,
     USER_DATASOURCES_TABLE,
     insertUserDataSource,
     insertUserCalculation,
@@ -24,7 +24,7 @@ async function runAndSaveCalculation(userId, dataId, engine, input, updateHook) 
     const datasource = await selectDataSourceByUserId(userId, { id: dataId });
 
     if (!datasource || !datasource.uuid) {
-        throw 'Data Source UUID is not available';
+        throw 'Data source UUID is not available';
     }
 
     const { data = {} } = await runCalculation(datasource.uuid, engine, input, updateHook);
@@ -66,19 +66,20 @@ async function getAndPrepareCalculationsWithResult(userId, uuid, calculations, r
         // result processing
         for (const data of result) {
             const { parent, uuid } = data;
-            const parentDataSourceId = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
-            const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSourceId]);
+            const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
+            const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSource.id]);
             const dataSource = await insertUserDataSource(userId, { uuid });
             const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, parentCollections);
             dataSources.push(dataSource);
         }
         // prepare result datasources without uuids
-        result = await getAndPrepareDataSources(dataSources);
-        // add result to calculations SSE output
+        const prepared = await getAndPrepareDataSources(dataSources);
+        // add prepared to calculations SSE output
         const calcId = calculations.find(c => c.uuid === uuid).id;
-        return output.map(calc => calc.id === calcId ? { ...calc, result } : calc);
+        return output.map(calc => calc.id === calcId ? { ...calc, prepared } : calc);
+
     } catch (error) {
-        return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error });
+        return { error }
     }
 }
 
