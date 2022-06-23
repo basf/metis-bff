@@ -1,13 +1,22 @@
+const { StatusCodes } = require('http-status-codes');
+
 const {
+    USER_DATASOURCES_TABLE,
+    insertUserDataSource,
     insertUserCalculation,
     deleteUserCalculation,
     selectDataSourceByUserId,
+    selectUserCollectionsByDataSources,
+    delsertDataSourceCollections
 } = require('../../../services/db');
+
 const { runCalculation, getCalculations, cancelCalculation } = require('../../../services/backend');
+const { getAndPrepareDataSources } = require('../datasources/_helpers');
 
 module.exports = {
     deleteAndClearCalculation,
     getAndPrepareCalculations,
+    getAndPrepareCalculationsWithResult,
     runAndSaveCalculation,
 };
 
@@ -48,6 +57,29 @@ async function getAndPrepareCalculations(calculations = []) {
         acc.push(Object.assign(data, calc[i]));
         return acc;
     }, []);
+}
+
+async function getAndPrepareCalculationsWithResult(userId, uuid, calculations, result) {
+    let dataSources = [];
+    const output = await getAndPrepareCalculations(calculations);
+    try {
+        // result processing
+        for (const data of result) {
+            const { parent, uuid } = data;
+            const parentDataSourceId = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
+            const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSourceId]);
+            const dataSource = await insertUserDataSource(userId, { uuid });
+            const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, parentCollections);
+            dataSources.push(dataSource);
+        }
+        // prepare result datasources without uuids
+        result = await getAndPrepareDataSources(dataSources);
+        // add result to calculations SSE output
+        const calcId = calculations.find(c => c.uuid === uuid).id;
+        return output.map(calc => calc.id === calcId ? { ...calc, result } : calc);
+    } catch (error) {
+        return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error });
+    }
 }
 
 async function deleteAndClearCalculation(userId, id) {
