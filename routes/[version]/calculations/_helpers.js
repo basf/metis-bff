@@ -2,6 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 
 const {
     USER_DATASOURCES_TABLE,
+    insertUserDataSource,
     insertUserCalculation,
     deleteUserCalculation,
     selectDataSourceByUserId,
