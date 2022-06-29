@@ -1,5 +1,3 @@
-const { StatusCodes } = require('http-status-codes');
-
 const { db,
     USER_DATASOURCES_TABLE,
     insertUserDataSource,
@@ -59,27 +57,35 @@ async function getAndPrepareCalculations(calculations = []) {
     }, []);
 }
 
-async function getAndPrepareCalculationsWithResult(userId, uuid, calculations, result) {
-    let dataSources = [];
+async function getAndPrepareCalculationsWithResult(userId, calculations, progress, result) {
     const output = await getAndPrepareCalculations(calculations);
+
+    let dataSources = [], results = [];
+
     try {
-        // result processing
-        for (const data of result) {
-            const { parent, uuid } = data;
-            const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
-            const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSource.id]);
-            const dataSource = await insertUserDataSource(userId, { uuid });
-            const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, parentCollections);
-            dataSources.push(dataSource);
+        if (result) {
+
+            // result database processing
+            for (const data of result) {
+                const { parent, uuid } = data;
+                const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
+                const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSource.id]);
+                const dataSource = await insertUserDataSource(userId, { uuid });
+                const collectionIds = parentCollections.map(({ id }) => id);
+                const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);
+                dataSources.push(dataSource);
+            }
+
+            // get & prepare result datasources from sci. backend
+            const preparedData = await getAndPrepareDataSources(dataSources);
+            results = preparedData.map(dataSource => ({ ...dataSource, progress }));
         }
-        // prepare result datasources without uuids
-        const prepared = await getAndPrepareDataSources(dataSources);
-        // add prepared to calculations SSE output
-        const calcId = calculations.find(c => c.uuid === uuid).id;
-        return output.map(calc => calc.id === calcId ? { ...calc, prepared } : calc);
+
+        // mix results to calculations output
+        return [...output, { data: results }];
 
     } catch (error) {
-        return { error }
+        return { error };
     }
 }
 

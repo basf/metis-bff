@@ -381,14 +381,14 @@ async function delsertCollectionDataSources(collectionId, dataSourceIds) {
     }
 }
 
-async function delsertDataSourceCollections(dataSourceId, collections) {
-    if (collections.length) {
+async function delsertDataSourceCollections(dataSourceId, collectionIds) {
+    if (collectionIds.length) {
         const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
             .where('dataSourceId', dataSourceId)
-            .whereNotIn('collectionId', collections)
+            .whereNotIn('collectionId', collectionIds)
             .del();
 
-        const inserts = collections.map((collectionId) => ({ dataSourceId, collectionId }));
+        const inserts = collectionIds.map((collectionId) => ({ dataSourceId, collectionId }));
 
         return db(USER_COLLECTONS_DATASOURCES_TABLE)
             .insert(inserts, ['collectionId'])
