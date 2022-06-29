@@ -5,7 +5,7 @@ const { db,
     selectCalculationsByUserId,
 } = require('../../../services/db');
 
-const { getAndPrepareCalculations, getAndPrepareCalculationsWithResult } = require('../calculations/_helpers');
+const { getAndPrepareCalculationsWithResult } = require('../calculations/_helpers');
 
 module.exports = {
     post,
@@ -39,9 +39,7 @@ async function post(req, res, next) {
 
     const userId = calculation.userId;
     const calculations = await selectCalculationsByUserId(userId);
-    const output = result
-        ? await getAndPrepareCalculationsWithResult(userId, uuid, calculations, result)
-        : await getAndPrepareCalculations(calculations);
+    const output = await getAndPrepareCalculationsWithResult(userId, calculations, progress, result);
 
     if (output.error) {
         return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error: output.error });
