@@ -76,7 +76,7 @@ async function getAndPrepareCalculationsWithResult(userId, calculations, progres
                 dataSources.push(dataSource);
             }
 
-            // get & prepare result datasources from scince server
+            // get & prepare result datasources from sci. backend
             const preparedData = await getAndPrepareDataSources(dataSources);
             results = preparedData.map(dataSource => ({ ...dataSource, progress }));
         }
