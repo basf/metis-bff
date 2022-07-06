@@ -31,13 +31,7 @@ async function saveCollection(userId, data) {
         await delsertCollectionDataSources(collection.id, dataSources);
     }
 
-    if (users) {
-        if (collection.visibility !== SHARED_COLLECTION_VISIBILITY) {
-            throw new Error(
-                'This type of collection cannot be shared between the users.'
-            );
-        }
-
+    if (users && collection.visibility === SHARED_COLLECTION_VISIBILITY) {
         await delsertSharedCollectionUsers(collection.id, users);
     }
 
