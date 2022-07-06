@@ -8,10 +8,10 @@ const USERS_TABLE = dbConfig.tprefix + 'users';
 const USER_CALCULATIONS_TABLE = dbConfig.tprefix + 'user_calculations';
 const USER_DATASOURCES_TABLE = dbConfig.tprefix + 'user_datasources';
 const USERS_EMAILS_TABLE = dbConfig.tprefix + 'users_emails';
-const USER_OAUTHS_TABLE = dbConfig.tprefix + 'user_oauths';
+const USER_OAUTHS_TABLE = dbConfig.tprefix + 'users_oauths';
 const USER_ROLES_TABLE = dbConfig.tprefix + 'user_roles';
 const USER_COLLECTONS_TABLE = dbConfig.tprefix + 'user_collections';
-const USER_SHARED_COLLECTONS_TABLE = dbConfig.tprefix + 'user_shared_collections';
+const USER_SHARED_COLLECTONS_TABLE = dbConfig.tprefix + 'user_collections_shared';
 const USER_COLLECTONS_DATASOURCES_TABLE = dbConfig.tprefix + 'user_collections_datasources';
 const COLLECTONS_TYPES_TABLE = dbConfig.tprefix + 'collection_types';
 
