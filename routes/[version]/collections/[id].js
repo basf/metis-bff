@@ -17,7 +17,7 @@ async function del(req, res, next) {
         const collection = await deleteUserCollection(req.user.id, req.params.id);
 
         if (collection) {
-            req.session.collections = req.session.collections.filter(
+            req.session.collections.data = req.session.collections.data.filter(
                 ({ id }) => id !== collection.id
             );
         }

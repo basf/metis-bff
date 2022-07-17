@@ -2,7 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 
 const { checkAuth } = require('../../../middlewares/auth');
 const { getUserCollections } = require('../../../middlewares/db');
-const { saveCollection } = require('./_helpers');
+const { getAndPrepareCollections, saveCollection } = require('./_helpers');
 
 module.exports = {
     get: [checkAuth, getUserCollections, get],
@@ -44,7 +44,9 @@ async function get(req, res, next) {
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
-        res.sse.sendTo({ reqId, data: req.session.collections }, 'collections');
+        const data = await getAndPrepareCollections(req.session.collections);
+
+        res.sse.sendTo({ reqId, data }, 'collections');
     } catch (error) {
         return next({ error });
     }

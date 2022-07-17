@@ -18,7 +18,7 @@ async function createAndSaveDataSource(userId, content) {
 }
 
 async function getAndPrepareDataSources(datasources = { data: [], total: 0 }) {
-    console.log(datasources);
+
     const { uuids, ds } = datasources.data.reduce(
         (acc, { uuid, ...other }) => {
             acc.uuids.push(uuid);

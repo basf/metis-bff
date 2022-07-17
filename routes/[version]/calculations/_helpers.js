@@ -4,8 +4,7 @@ const { db,
     insertUserCalculation,
     deleteUserCalculation,
     selectDataSourceByUserId,
-    selectCollections,
-    // selectUserCollectionsByDataSources,
+    selectUserCollections,
     delsertDataSourceCollections
 } = require('../../../services/db');
 
@@ -70,7 +69,7 @@ async function getAndPrepareCalculationsWithResult(userId, calculations, progres
             for (const data of result) {
                 const { parent, uuid } = data;
                 const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
-                const parentCollections = await selectCollections({ id: userId }, { dataSourceIds: [parentDataSource.id] });
+                const parentCollections = await selectUserCollections({ id: userId }, { dataSourceIds: [parentDataSource.id] });
                 const dataSource = await insertUserDataSource(userId, { uuid });
                 const collectionIds = parentCollections.data.map(({ id }) => id);
                 const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);

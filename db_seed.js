@@ -4,12 +4,12 @@ const {
     db,
     hashString,
 
-    USER_COLLECTONS_DATASOURCES_TABLE,
-    USER_SHARED_COLLECTONS_TABLE,
+    USER_COLLECTIONS_DATASOURCES_TABLE,
+    USER_SHARED_COLLECTIONS_TABLE,
     USER_CALCULATIONS_TABLE,
     USER_DATASOURCES_TABLE,
-    COLLECTONS_TYPES_TABLE,
-    USER_COLLECTONS_TABLE,
+    COLLECTIONS_TYPES_TABLE,
+    USER_COLLECTIONS_TABLE,
     USERS_EMAILS_TABLE,
     USER_OAUTHS_TABLE,
     USER_ROLES_TABLE,
@@ -29,13 +29,13 @@ const EMAIL_LENGTH = 320;
 const PASSWORD_LENGTH = 60;
 
 Promise.all([
-    db.schema.dropTableIfExists(USER_COLLECTONS_DATASOURCES_TABLE),
-    db.schema.dropTableIfExists(USER_SHARED_COLLECTONS_TABLE),
+    db.schema.dropTableIfExists(USER_COLLECTIONS_DATASOURCES_TABLE),
+    db.schema.dropTableIfExists(USER_SHARED_COLLECTIONS_TABLE),
 ])
     .then(() =>
         Promise.all([
             db.schema.dropTableIfExists(USER_DATASOURCES_TABLE),
-            db.schema.dropTableIfExists(USER_COLLECTONS_TABLE),
+            db.schema.dropTableIfExists(USER_COLLECTIONS_TABLE),
             db.schema.dropTableIfExists(USER_CALCULATIONS_TABLE),
             db.schema.dropTableIfExists(USERS_EMAILS_TABLE),
             db.schema.dropTableIfExists(USER_OAUTHS_TABLE),
@@ -45,7 +45,7 @@ Promise.all([
     .then(() =>
         Promise.all([
             db.schema.dropTableIfExists(USERS_TABLE),
-            db.schema.dropTableIfExists(COLLECTONS_TYPES_TABLE),
+            db.schema.dropTableIfExists(COLLECTIONS_TYPES_TABLE),
         ])
     )
     .then(() =>
@@ -58,9 +58,9 @@ Promise.all([
     )
     .then(() =>
         Promise.all([
-            db.schema.hasTable(COLLECTONS_TYPES_TABLE).then((exists) => {
+            db.schema.hasTable(COLLECTIONS_TYPES_TABLE).then((exists) => {
                 if (!exists) {
-                    return db.schema.createTable(COLLECTONS_TYPES_TABLE, (table) => {
+                    return db.schema.createTable(COLLECTIONS_TYPES_TABLE, (table) => {
                         table.increments('id');
                         table.string('slug', NAME_LENGTH).unique();
                         table.string('label', NAME_LENGTH);
@@ -71,7 +71,7 @@ Promise.all([
                         table.timestamps(false, true, true);
                     });
                 } else {
-                    console.log('COLLECTONS_TYPES_TABLE AFTER TABLE');
+                    console.log('COLLECTIONS_TYPES_TABLE AFTER TABLE');
                 }
             }),
             db.schema.hasTable(USER_ROLES_TABLE).then((exists) => {
@@ -197,9 +197,9 @@ Promise.all([
                     console.log('USER_DATASOURCES_TABLE AFTER TABLE');
                 }
             }),
-            db.schema.hasTable(USER_COLLECTONS_TABLE).then((exists) => {
+            db.schema.hasTable(USER_COLLECTIONS_TABLE).then((exists) => {
                 if (!exists) {
-                    return db.schema.createTable(USER_COLLECTONS_TABLE, (table) => {
+                    return db.schema.createTable(USER_COLLECTIONS_TABLE, (table) => {
                         table.increments('id');
                         table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
                         table.integer('typeId', FOREIGN_KEY_LENGTH).unsigned().index();
@@ -221,20 +221,20 @@ Promise.all([
                         table
                             .foreign('typeId', 'fk_typeId')
                             .references('id')
-                            .inTable(COLLECTONS_TYPES_TABLE)
+                            .inTable(COLLECTIONS_TYPES_TABLE)
                             .onDelete('CASCADE');
                     });
                 } else {
-                    console.log('USER_COLLECTONS_TABLE AFTER TABLE');
+                    console.log('USER_COLLECTIONS_TABLE AFTER TABLE');
                 }
             }),
         ])
     )
     .then(() =>
         Promise.all([
-            db.schema.hasTable(USER_SHARED_COLLECTONS_TABLE).then((exists) => {
+            db.schema.hasTable(USER_SHARED_COLLECTIONS_TABLE).then((exists) => {
                 if (!exists) {
-                    return db.schema.createTable(USER_SHARED_COLLECTONS_TABLE, (table) => {
+                    return db.schema.createTable(USER_SHARED_COLLECTIONS_TABLE, (table) => {
                         table.integer('collectionId', FOREIGN_KEY_LENGTH).unsigned().index();
                         table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
                         table.jsonb('permissions').nullable();
@@ -251,16 +251,16 @@ Promise.all([
                         table
                             .foreign('collectionId', 'fk_collectionId')
                             .references('id')
-                            .inTable(USER_COLLECTONS_TABLE)
+                            .inTable(USER_COLLECTIONS_TABLE)
                             .onDelete('CASCADE');
                     });
                 } else {
-                    console.log('USER_SHARED_COLLECTONS_TABLE AFTER TABLE');
+                    console.log('USER_SHARED_COLLECTIONS_TABLE AFTER TABLE');
                 }
             }),
-            db.schema.hasTable(USER_COLLECTONS_DATASOURCES_TABLE).then((exists) => {
+            db.schema.hasTable(USER_COLLECTIONS_DATASOURCES_TABLE).then((exists) => {
                 if (!exists) {
-                    return db.schema.createTable(USER_COLLECTONS_DATASOURCES_TABLE, (table) => {
+                    return db.schema.createTable(USER_COLLECTIONS_DATASOURCES_TABLE, (table) => {
                         table.integer('collectionId').unsigned().index();
                         table.integer('dataSourceId').unsigned().index();
                         table.timestamps(false, true, true);
@@ -271,7 +271,7 @@ Promise.all([
                         table
                             .foreign('collectionId', 'fk_collectionId')
                             .references('id')
-                            .inTable(USER_COLLECTONS_TABLE)
+                            .inTable(USER_COLLECTIONS_TABLE)
                             .onDelete('CASCADE');
                         table
                             .foreign('dataSourceId', 'fk_dataSourceId')
@@ -280,13 +280,13 @@ Promise.all([
                             .onDelete('CASCADE');
                     });
                 } else {
-                    console.log('USER_COLLECTONS_DATASOURCES_TABLE AFTER TABLE');
+                    console.log('USER_COLLECTIONS_DATASOURCES_TABLE AFTER TABLE');
                 }
             }),
         ])
     )
     .then(() => {
-        return db(COLLECTONS_TYPES_TABLE).insert(
+        return db(COLLECTIONS_TYPES_TABLE).insert(
             [
                 {
                     slug: 'red',
