@@ -1,7 +1,7 @@
 const {
-    USER_COLLECTONS_TABLE,
     SHARED_COLLECTION_VISIBILITY,
     selectCollections,
+    // selectCollectionsByUserIdAndRole,
     upsertUserCollection,
     delsertSharedCollectionUsers,
     delsertCollectionDataSources,
@@ -11,17 +11,18 @@ module.exports = {
     saveCollection,
 };
 
-async function saveCollection(userId, data) {
+async function saveCollection(user, data) {
     const { dataSources = null, users = null, ...collectionData } = data;
 
-    const upserted = await upsertUserCollection(userId, collectionData);
+    const upserted = await upsertUserCollection(user.id, collectionData);
 
     if (!upserted.id) {
         throw new Error('Collection is not saved.');
     }
 
-    const selected = await selectCollections({ id: upserted.id, userId });
-    const collection = selected[0];
+    // const selected = await selectCollections({ id: upserted.id, userId });
+    const selected = await selectCollections(user, { collectionIds: [upserted.id] });
+    const collection = selected.data[0];
 
     if (!collection) {
         throw new Error('Collection is not retrieved.');

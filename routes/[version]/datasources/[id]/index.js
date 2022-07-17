@@ -21,7 +21,7 @@ async function del(req, res, next) {
     try {
         await deleteAndClearDataSource(req.user.id, req.params.id);
 
-        req.session.datasources = req.session.datasources.filter(
+        req.session.datasources.data = req.session.datasources.data.filter(
             (datasource) => datasource.id !== req.params.id
         );
 

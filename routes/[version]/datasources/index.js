@@ -26,7 +26,7 @@ async function post(req, res, next) {
 
         for (const content of contents) {
             const datasource = await createAndSaveDataSource(req.user.id, content);
-            req.session.datasources.push(datasource);
+            req.session.datasources.data.push(datasource);
         }
 
         const data = await getAndPrepareDataSources(req.session.datasources);

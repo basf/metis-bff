@@ -4,7 +4,8 @@ const { db,
     insertUserCalculation,
     deleteUserCalculation,
     selectDataSourceByUserId,
-    selectUserCollectionsByDataSources,
+    selectCollections,
+    // selectUserCollectionsByDataSources,
     delsertDataSourceCollections
 } = require('../../../services/db');
 
@@ -69,16 +70,17 @@ async function getAndPrepareCalculationsWithResult(userId, calculations, progres
             for (const data of result) {
                 const { parent, uuid } = data;
                 const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
-                const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSource.id]);
+                const parentCollections = await selectCollections({ id: userId }, { dataSourceIds: [parentDataSource.id] });
                 const dataSource = await insertUserDataSource(userId, { uuid });
-                const collectionIds = parentCollections.map(({ id }) => id);
+                const collectionIds = parentCollections.data.map(({ id }) => id);
                 const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);
                 dataSources.push(dataSource);
+                console.log(parentDataSource, parentCollections, dataSource, dataSources);
             }
 
             // get & prepare result datasources from sci. backend
-            const preparedData = await getAndPrepareDataSources(dataSources);
-            results = preparedData.map(dataSource => ({ ...dataSource, progress }));
+            const preparedData = await getAndPrepareDataSources({ data: dataSources, total: dataSources.length });
+            results = preparedData.data.map(dataSource => ({ ...dataSource, progress }));
         }
 
         // mix results to calculations output

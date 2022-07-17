@@ -17,8 +17,9 @@ async function createAndSaveDataSource(userId, content) {
     return insertUserDataSource(userId, { uuid: data.uuid });
 }
 
-async function getAndPrepareDataSources(datasources = []) {
-    const { uuids, ds } = datasources.reduce(
+async function getAndPrepareDataSources(datasources = { data: [], total: 0 }) {
+    console.log(datasources);
+    const { uuids, ds } = datasources.data.reduce(
         (acc, { uuid, ...other }) => {
             acc.uuids.push(uuid);
             acc.ds.push(other);
@@ -27,20 +28,22 @@ async function getAndPrepareDataSources(datasources = []) {
         { uuids: [], ds: [] }
     );
 
-    if (!uuids.length) return [];
+    if (!uuids.length) return { data: [], total: 0 };
 
-    const { data = [] } = await getDataSources(uuids);
+    let { data = [] } = await getDataSources(uuids);
 
-    if (!data.length) return [];
+    if (!data.length) return { data: [], total: 0 };
 
     const users = await selectUsersByIds(ds.map((ds) => ds.userId));
 
-    return data.reduce((acc, { uuid, ...data }) => {
+    data = data.reduce((acc, { uuid, ...data }) => {
         const i = uuids.indexOf(uuid);
         const user = users.find(user => user.id === ds[i].userId);
         acc.push(Object.assign(data, { ...ds[i], user }));
         return acc;
     }, []);
+
+    return { total: datasources.total, data };
 }
 
 async function deleteAndClearDataSource(userId, id) {

@@ -350,6 +350,12 @@ Promise.all([
                     roleId: adminRole.id,
                     password,
                 },
+                {
+                    firstName: 'Test',
+                    lastName: 'Test',
+                    roleId: memberRole.id,
+                    password,
+                },
             ],
             ['id']
         );
@@ -357,9 +363,11 @@ Promise.all([
     .then(async ([member, admin]) => {
         const memberEmail = 'member@test.com';
         const adminEmail = 'admin@test.com';
+        const testEmail = 'test@test.com';
 
         const code1 = await hashString(memberEmail);
         const code2 = await hashString(adminEmail);
+        const code3 = await hashString(testEmail);
 
         return db(USERS_EMAILS_TABLE).insert([
             {
@@ -371,6 +379,11 @@ Promise.all([
                 userId: admin.id,
                 email: adminEmail,
                 code: code2,
+            },
+            {
+                userId: member.id,
+                email: testEmail,
+                code: code3,
             },
         ]);
     });

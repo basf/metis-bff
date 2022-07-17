@@ -1,14 +1,16 @@
 const { StatusCodes } = require('http-status-codes');
 
 const {
+    COLLECTONS_TYPES_TABLE,
     SHARED_COLLECTION_VISIBILITY,
     USER_SHARED_COLLECTONS_TABLE,
     USER_COLLECTONS_DATASOURCES_TABLE,
     db,
-    selectDataSourcesByUserIdAndRole,
-    selectCollectionsByUserIdAndRole,
-    selectCalculationsByUserIdAndRole,
-    selectUserDataSourcesByCollections
+    selectCollections,
+    selectDataSources,
+    // selectDataSourcesByUserIdAndRole,
+    // selectCollectionsByUserIdAndRole,
+    selectCalculationsByUserIdAndRole
 } = require('../services/db');
 
 module.exports = {
@@ -19,20 +21,16 @@ module.exports = {
 
 async function getUserDataSources(req, res, next) {
     try {
-        if ('collectionIds' in req.query && req.query.collectionIds) {
-            const collectionIds = req.query.collectionIds.includes(',')
-                ? req.query.collectionIds.split(',')
-                : [req.query.collectionIds];
-            req.session.datasources = await selectUserDataSourcesByCollections(
-                req.user.id,
-                collectionIds
-            );
-        } else {
-            req.session.datasources = await selectDataSourcesByUserIdAndRole(
-                req.user.id,
-                req.user.roleSlug
-            );
-        }
+        const { collectionIds, page, limit } = req.query;
+        const query = {
+            collectionIds: collectionIds ? collectionIds.includes(',')
+                ? collectionIds.split(',')
+                : [collectionIds] : [],
+            offset: (page - 1) * limit,
+            limit
+        };
+
+        req.session.datasources = await selectDataSources(req.user, query);
     } catch (error) {
         return next({ error });
     }
@@ -68,14 +66,28 @@ async function getUserCalculations(req, res, next) {
 }
 
 async function getUserCollections(req, res, next) {
-    try {
-        const collections = await selectCollectionsByUserIdAndRole(req.user.id, req.user.roleSlug);
+    const { collectionIds, page, limit, visibility, type } = req.query;
+    const query = {
+        collectionIds: collectionIds ? collectionIds.includes(',')
+            ? collectionIds.split(',')
+            : [collectionIds] : [],
+        offset: (page - 1) * limit,
+        limit,
+        visibility,
+        type
+    };
 
-        const collectionIds = collections.map(({ id }) => id);
-        const sharedCollectionIds = collections.reduce((ids, { visibility, id }) => {
+    try {
+        const collections = await selectCollections(req.user, query);
+        console.log(await selectCollections(req.user, { dataSourceIds: [61, 62, 63] }));
+        const collectionIds = collections.data.map(({ id }) => id);
+        const collectionTypeIds = collections.data.map(({ typeId }) => typeId);
+        const sharedCollectionIds = collections.data.reduce((ids, { visibility, id }) => {
             if (visibility === SHARED_COLLECTION_VISIBILITY) ids.push(id);
             return ids;
         }, []);
+
+        collections.types = await db.select().from(COLLECTONS_TYPES_TABLE).whereIn('id', collectionTypeIds);
 
         let dataSources = collectionIds.length
             ? await db(USER_COLLECTONS_DATASOURCES_TABLE).whereIn('collectionId', collectionIds)
@@ -85,7 +97,7 @@ async function getUserCollections(req, res, next) {
             ? await db(USER_SHARED_COLLECTONS_TABLE).whereIn('collectionId', sharedCollectionIds)
             : [];
 
-        for (let collection of collections) {
+        for (let collection of collections.data) {
             collection.dataSources = [];
             dataSources = dataSources.filter(({ dataSourceId, collectionId }) => {
                 const related = collectionId === collection.id;

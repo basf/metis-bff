@@ -127,20 +127,15 @@ module.exports = {
     deleteUserCalculation,
     selectCollectionTypes,
     selectCollections,
+    selectDataSources,
     selectDataSourceByUserId,
     selectDataSourcesByUserId,
     selectCalculationsByUserId,
-    selectDataSourcesByUserIdAndRole,
-    selectCollectionsByUserIdAndRole,
     selectCalculationsByUserIdAndRole,
-    selectUserCollectionsByDataSources,
-    selectUserDataSourcesByCollections,
+    // selectUserCollectionsByDataSources,
     delsertSharedCollectionUsers,
     delsertCollectionDataSources,
     delsertDataSourceCollections,
-    selectSharedCollectionsByUserId,
-    selectSharedDataSourcesByUserId,
-    selectPublicAndCollectionsByUserId,
     searchUsers,
     upsertUser,
     selectUsersByIds,
@@ -231,134 +226,122 @@ function selectCalculationsByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE)
     }
 }
 
-function selectSharedDataSourcesByUserId(userId, query = {}) {
-    return db(USER_DATASOURCES_TABLE)
-        .join(
+async function selectDataSources(user, query = {}) {
+    const { collectionIds = [], dataSourceIds = [], offset, limit } = query;
+
+    const model = db(USER_DATASOURCES_TABLE)
+        .leftJoin(
             USER_COLLECTONS_DATASOURCES_TABLE,
             `${USER_DATASOURCES_TABLE}.id`,
             `${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`
         )
-        .join(
+        .leftJoin(
             USER_SHARED_COLLECTONS_TABLE,
             `${USER_SHARED_COLLECTONS_TABLE}.collectionId`,
             `${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`
         )
-        .select(...DATASOURCE_FIELDS)
-        .where({
-            ...addTablePrefix(USER_DATASOURCES_TABLE, query),
-            [`${USER_SHARED_COLLECTONS_TABLE}.userId`]: userId,
-        });
-}
-
-async function selectDataSourcesByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE) {
-    if (roleSlug === ADMIN_USER_ROLE) {
-        return db(USER_DATASOURCES_TABLE).select(...DATASOURCE_FIELDS);
-    } else {
-        return (
-            await Promise.allSettled([
-                selectDataSourcesByUserId(userId),
-                selectSharedDataSourcesByUserId(userId),
-            ])
-        ).reduce((datasources, result) => datasources.concat(result.value || []), []);
-    }
-}
-
-function selectUserCollectionsByDataSources(userId, dataSourceIds = [], query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .join(
-            USER_COLLECTONS_DATASOURCES_TABLE,
-            `${USER_COLLECTONS_TABLE}.id`,
-            `${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`
-        )
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
         .leftJoin(
-            COLLECTONS_TYPES_TABLE,
-            `${COLLECTONS_TYPES_TABLE}.id`,
-            `${USER_COLLECTONS_TABLE}.typeId`
+            USER_COLLECTONS_TABLE,
+            `${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`,
+            `${USER_COLLECTONS_TABLE}.id`
         )
-        .select(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, ...COLLECTION_JOINED_FIELDS)
-        .where(addTablePrefix(USER_COLLECTONS_TABLE, query))
         .where((builder) => {
-            builder
-                .where(`${USER_COLLECTONS_TABLE}.userId`, userId)
-                .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, SHARED_COLLECTION_VISIBILITY);
+            if (user.roleSlug !== ADMIN_USER_ROLE)
+                builder
+                    .where(`${USER_DATASOURCES_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_SHARED_COLLECTONS_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
         })
-        .whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
+        .where((builder) => {
+            if (collectionIds.length)
+                builder.whereIn(`${USER_COLLECTONS_TABLE}.id`, collectionIds);
+        });
+
+    const totalCount = await model.clone().count();
+    const total = totalCount[0]['count'];
+
+    const data = await model.clone()
+        .limit(limit || total, { skipBinding: true })
+        .offset(offset || 0, { skipBinding: true })
+        .select(...DATASOURCE_FIELDS);
+
+    return { total, data };
 }
 
-function selectUserDataSourcesByCollections(userId, collectionIds = []) {
-    return db(USER_DATASOURCES_TABLE)
+async function selectCollections(user, query = {}) {
+    const { collectionIds = [], dataSourceIds = [], offset, limit, visibility, type } = query;
+
+    const model = db(USER_COLLECTONS_TABLE)
         .join(
-            USER_COLLECTONS_DATASOURCES_TABLE,
-            `${USER_DATASOURCES_TABLE}.id`,
-            `${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`
+            USERS_TABLE,
+            `${USERS_TABLE}.id`,
+            `${USER_COLLECTONS_TABLE}.userId`
         )
-        .select(...DATASOURCE_FIELDS)
-        .where(`${USER_DATASOURCES_TABLE}.userId`, userId)
-        .whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`, collectionIds);
-}
-
-function selectCollections(query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
         .leftJoin(
-            COLLECTONS_TYPES_TABLE,
-            `${COLLECTONS_TYPES_TABLE}.id`,
-            `${USER_COLLECTONS_TABLE}.typeId`
-        )
-        .select(...COLLECTION_JOINED_FIELDS)
-        .where(addTablePrefix(USER_COLLECTONS_TABLE, query));
-}
-
-async function selectCollectionsByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE) {
-    if (roleSlug === ADMIN_USER_ROLE) {
-        return selectCollections();
-    } else {
-        return (
-            await Promise.allSettled([
-                selectPublicAndCollectionsByUserId(userId),
-                selectSharedCollectionsByUserId(userId),
-            ])
-        ).reduce((collections, result) => collections.concat(result.value || []), []);
-    }
-}
-
-function selectPublicAndCollectionsByUserId(userId, query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
-        .leftJoin(
-            COLLECTONS_TYPES_TABLE,
-            `${COLLECTONS_TYPES_TABLE}.id`,
-            `${USER_COLLECTONS_TABLE}.typeId`
-        )
-        .select(...COLLECTION_JOINED_FIELDS)
-        .where({
-            ...addTablePrefix(USER_COLLECTONS_TABLE, query),
-            [`${USER_COLLECTONS_TABLE}.userId`]: userId,
-        })
-        .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
-}
-
-function selectSharedCollectionsByUserId(userId, query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .join(
             USER_SHARED_COLLECTONS_TABLE,
             `${USER_COLLECTONS_TABLE}.id`,
             `${USER_SHARED_COLLECTONS_TABLE}.collectionId`
         )
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
         .leftJoin(
             COLLECTONS_TYPES_TABLE,
             `${COLLECTONS_TYPES_TABLE}.id`,
             `${USER_COLLECTONS_TABLE}.typeId`
         )
-        .select(...COLLECTION_JOINED_FIELDS)
-        .where({
-            ...addTablePrefix(USER_COLLECTONS_TABLE, query),
-            [`${USER_COLLECTONS_TABLE}.visibility`]: SHARED_COLLECTION_VISIBILITY,
-            [`${USER_SHARED_COLLECTONS_TABLE}.userId`]: userId,
-        });
+        .leftJoin(
+            USER_COLLECTONS_DATASOURCES_TABLE,
+            `${USER_COLLECTONS_TABLE}.id`,
+            `${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`
+        )
+        .where((builder) => {
+            if (user.roleSlug !== ADMIN_USER_ROLE)
+                builder
+                    .where(`${USER_COLLECTONS_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_SHARED_COLLECTONS_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
+        })
+        .where((builder) => {
+            if (type) builder.where(`${COLLECTONS_TYPES_TABLE}.slug`, type);
+            if (visibility) builder.where(`${USER_COLLECTONS_TABLE}.visibility`, visibility);
+            if (collectionIds.length)
+                builder.whereIn(`${USER_COLLECTONS_TABLE}.id`, collectionIds);
+            if (dataSourceIds.length)
+                builder.whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
+        })
+        .distinct();
+
+    const totalCount = await model.clone().count();
+    const total = totalCount[0]['count'];
+
+    const data = await model.clone()
+        .limit(limit || total, { skipBinding: true })
+        .offset(offset || 0, { skipBinding: true })
+        .select(...COLLECTION_JOINED_FIELDS);
+
+    return { total, data };
 }
+
+// function selectUserCollectionsByDataSources(userId, dataSourceIds = [], query = {}) {
+//     return db(USER_COLLECTONS_TABLE)
+//         .join(
+//             USER_COLLECTONS_DATASOURCES_TABLE,
+//             `${USER_COLLECTONS_TABLE}.id`,
+//             `${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`
+//         )
+//         .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
+//         .leftJoin(
+//             COLLECTONS_TYPES_TABLE,
+//             `${COLLECTONS_TYPES_TABLE}.id`,
+//             `${USER_COLLECTONS_TABLE}.typeId`
+//         )
+//         .select(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, ...COLLECTION_JOINED_FIELDS)
+//         .where(addTablePrefix(USER_COLLECTONS_TABLE, query))
+//         .where((builder) => {
+//             builder
+//                 .where(`${USER_COLLECTONS_TABLE}.userId`, userId)
+//                 .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, SHARED_COLLECTION_VISIBILITY);
+//         })
+//         .whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
+// }
 
 async function delsertCollectionDataSources(collectionId, dataSourceIds) {
     if (dataSourceIds.length) {
