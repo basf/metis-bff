@@ -17,19 +17,22 @@ const COLLECTIONS_TYPES_TABLE = dbConfig.tprefix + 'collection_types';
 
 const DEFAULT_FIELDS = ['id', 'userId', 'uuid', 'createdAt', 'updatedAt'];
 
+const USER_SHORT_FIELDS = [
+    `${USERS_TABLE}.id`,
+    `${USERS_TABLE}.firstName`,
+    `${USERS_TABLE}.lastName`,
+    `${USERS_EMAILS_TABLE}.email`,
+];
+
 const DATASOURCE_FIELDS = [
     `${USER_DATASOURCES_TABLE}.id`,
     `${USER_DATASOURCES_TABLE}.userId`,
     `${USER_DATASOURCES_TABLE}.uuid`,
     `${USER_DATASOURCES_TABLE}.createdAt`,
     `${USER_DATASOURCES_TABLE}.updatedAt`,
-];
-
-const USER_SHORT_FIELDS = [
-    `${USERS_TABLE}.id`,
-    `${USERS_TABLE}.firstName`,
-    `${USERS_TABLE}.lastName`,
-    `${USERS_EMAILS_TABLE}.email`,
+    `${USERS_TABLE}.firstName as userFirstName`,
+    `${USERS_TABLE}.lastName as userLastName`,
+    `${USERS_EMAILS_TABLE}.email as userEmail`
 ];
 
 const USER_JOINED_FIELDS = [
@@ -252,6 +255,16 @@ async function selectUserDataSources(user, query = {}) {
             `${COLLECTIONS_TYPES_TABLE}.id`,
             `${USER_COLLECTIONS_TABLE}.typeId`
         )
+        .innerJoin(
+            USERS_TABLE,
+            `${USER_DATASOURCES_TABLE}.userId`,
+            `${USERS_TABLE}.id`,
+        )
+        .innerJoin(
+            USERS_EMAILS_TABLE,
+            `${USER_DATASOURCES_TABLE}.userId`,
+            `${USERS_EMAILS_TABLE}.userId`
+        )
         .where((builder) => {
             if (user.roleSlug !== ADMIN_USER_ROLE)
                 builder
@@ -271,7 +284,9 @@ async function selectUserDataSources(user, query = {}) {
     const count = await model.clone().count().countDistinct([`${USER_DATASOURCES_TABLE}.id`]);
     const total = count[0]['count'];
 
-    const data = await model.clone().distinctOn([`${USER_DATASOURCES_TABLE}.id`])
+    const data = await model.clone()
+        .orderBy(`${USER_DATASOURCES_TABLE}.id`, 'asc')
+        .distinctOn([`${USER_DATASOURCES_TABLE}.id`])
         .limit(limit || total, { skipBinding: true })
         .offset(offset || 0, { skipBinding: true })
         .select(...DATASOURCE_FIELDS);
@@ -322,7 +337,9 @@ async function selectUserCollections(user, query = {}) {
     const count = await model.clone().countDistinct([`${USER_COLLECTIONS_TABLE}.id`]);
     const total = count[0]['count'];
 
-    const data = await model.clone().distinctOn([`${USER_COLLECTIONS_TABLE}.id`])
+    const data = await model.clone()
+        .orderBy(`${USER_COLLECTIONS_TABLE}.id`, 'asc')
+        .distinctOn([`${USER_COLLECTIONS_TABLE}.id`])
         .limit(limit || total, { skipBinding: true })
         .offset(offset || 0, { skipBinding: true })
         .select(...COLLECTION_JOINED_FIELDS);

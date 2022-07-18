@@ -30,20 +30,17 @@ async function getAndPrepareDataSources(datasources = { data: [], total: 0 }) {
 
     if (!uuids.length) return { data: [], total: 0 };
 
-    let { data = [] } = await getDataSources(uuids);
+    const { data = [] } = await getDataSources(uuids);
 
     if (!data.length) return { data: [], total: 0 };
 
-    const users = await selectUsersByIds(ds.map((ds) => ds.userId));
-
-    data = data.reduce((acc, { uuid, ...data }) => {
+    datasources.data = data.reduce((acc, { uuid, ...data }) => {
         const i = uuids.indexOf(uuid);
-        const user = users.find(user => user.id === ds[i].userId);
-        acc.push(Object.assign(data, { ...ds[i], user }));
+        acc.push(Object.assign(data, ds[i]));
         return acc;
     }, []);
 
-    return { total: datasources.total, data };
+    return datasources;
 }
 
 async function deleteAndClearDataSource(userId, id) {
