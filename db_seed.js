@@ -360,7 +360,7 @@ Promise.all([
             ['id']
         );
     })
-    .then(async ([member, admin]) => {
+    .then(async ([member, admin, test]) => {
         const memberEmail = 'member@test.com';
         const adminEmail = 'admin@test.com';
         const testEmail = 'test@test.com';
@@ -381,7 +381,7 @@ Promise.all([
                 code: code2,
             },
             {
-                userId: member.id,
+                userId: test.id,
                 email: testEmail,
                 code: code3,
             },
