@@ -5,19 +5,12 @@ const { db,
     selectCalculationsByUserId,
 } = require('../../../services/db');
 
+const { is_valid_uuid } = require('./_helpers');
 const { getAndPrepareCalculationsWithResult } = require('../calculations/_helpers');
 
 module.exports = {
     post,
 };
-
-function is_valid_uuid(uuid) {
-    uuid = '' + uuid;
-    uuid = uuid.match(
-        '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-    );
-    return uuid !== null;
-}
 
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
@@ -29,7 +22,6 @@ async function post(req, res, next) {
     res.status(StatusCodes.ACCEPTED).json({ reqId: req.id });
 
     const calculation = await db.select().from(USER_CALCULATIONS_TABLE).where({ uuid }).first();
-
     if (!calculation) {
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,
