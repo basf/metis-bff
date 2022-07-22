@@ -32,7 +32,7 @@ async function put(req, res, next) {
             req.session.collections.data[i] = collection;
         }
 
-        res.sse.sendTo({ reqId, data: req.session.collections }, 'collections');
+        res.sse.sendTo({ reqId, ...req.session.collections }, 'collections');
     } catch (error) {
         return next({ error });
     }
@@ -46,7 +46,7 @@ async function get(req, res, next) {
     try {
         const data = await getAndPrepareCollections(req.session.collections);
 
-        res.sse.sendTo({ reqId, data }, 'collections');
+        res.sse.sendTo({ reqId, ...data }, 'collections');
     } catch (error) {
         return next({ error });
     }

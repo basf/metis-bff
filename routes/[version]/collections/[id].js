@@ -22,7 +22,7 @@ async function del(req, res, next) {
             );
         }
 
-        res.sse.sendTo({ reqId, data: req.session.collections }, 'collections');
+        res.sse.sendTo({ reqId, ...req.session.collections }, 'collections');
     } catch (error) {
         return next({ error });
     }
