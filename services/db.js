@@ -8,7 +8,7 @@ const USERS_TABLE = dbConfig.tprefix + 'users';
 const USER_CALCULATIONS_TABLE = dbConfig.tprefix + 'user_calculations';
 const USER_DATASOURCES_TABLE = dbConfig.tprefix + 'user_datasources';
 const USERS_EMAILS_TABLE = dbConfig.tprefix + 'users_emails';
-const USER_OAUTHS_TABLE = dbConfig.tprefix + 'users_oauths';
+const USERS_OAUTHS_TABLE = dbConfig.tprefix + 'users_oauths';
 const USER_ROLES_TABLE = dbConfig.tprefix + 'user_roles';
 const USER_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections';
 const USER_SHARED_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections_shared';
@@ -49,7 +49,7 @@ const USER_JOINED_FIELDS = [
     `${USERS_EMAILS_TABLE}.email`,
     `${USERS_EMAILS_TABLE}.code as emailCode`,
     `${USERS_EMAILS_TABLE}.verified as emailVerified`,
-    `${USER_OAUTHS_TABLE}.provider`,
+    `${USERS_OAUTHS_TABLE}.provider`,
 ];
 
 const COLLECTION_JOINED_FIELDS = [
@@ -155,7 +155,7 @@ module.exports = {
     COLLECTIONS_TYPES_TABLE,
     USER_COLLECTIONS_TABLE,
     USERS_EMAILS_TABLE,
-    USER_OAUTHS_TABLE,
+    USERS_OAUTHS_TABLE,
     USER_ROLES_TABLE,
     USERS_TABLE,
     ADMIN_USER_ROLE,
@@ -431,7 +431,7 @@ function selectFirstUser(query = {}) {
     return db(USERS_TABLE)
         .leftJoin(USER_ROLES_TABLE, `${USERS_TABLE}.roleId`, `${USER_ROLES_TABLE}.id`)
         .leftJoin(USERS_EMAILS_TABLE, `${USERS_TABLE}.id`, `${USERS_EMAILS_TABLE}.userId`)
-        .leftJoin(USER_OAUTHS_TABLE, `${USERS_TABLE}.id`, `${USER_OAUTHS_TABLE}.userId`)
+        .leftJoin(USERS_OAUTHS_TABLE, `${USERS_TABLE}.id`, `${USERS_OAUTHS_TABLE}.userId`)
         .select(...USER_JOINED_FIELDS)
         .where(query)
         .first();
@@ -471,7 +471,7 @@ async function upsertUser({ email, provider, providerId, profile, ...user }) {
         }
 
         if (provider && providerId) {
-            await db(USER_OAUTHS_TABLE)
+            await db(USERS_OAUTHS_TABLE)
                 .insert({
                     profile: JSON.stringify(profile),
                     providerId,

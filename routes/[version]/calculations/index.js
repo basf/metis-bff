@@ -20,9 +20,10 @@ async function post(req, res, next) {
         });
     }
 
-    const reqId = req.id;
-    const engine = req.body.engine,
-        input = req.body.input || {};
+    const reqId = req.id,
+        engine = req.body.engine,
+        input = req.body.input || {},
+        workflow = req.body.workflow;
 
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
@@ -34,6 +35,7 @@ async function post(req, res, next) {
             req.body.dataId,
             engine,
             input,
+            workflow,
             updateHook
         );
 
