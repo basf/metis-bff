@@ -11,7 +11,7 @@ const {
     COLLECTIONS_TYPES_TABLE,
     USER_COLLECTIONS_TABLE,
     USERS_EMAILS_TABLE,
-    USER_OAUTHS_TABLE,
+    USERS_OAUTHS_TABLE,
     USER_ROLES_TABLE,
     USERS_TABLE,
 
@@ -38,7 +38,7 @@ Promise.all([
             db.schema.dropTableIfExists(USER_COLLECTIONS_TABLE),
             db.schema.dropTableIfExists(USER_CALCULATIONS_TABLE),
             db.schema.dropTableIfExists(USERS_EMAILS_TABLE),
-            db.schema.dropTableIfExists(USER_OAUTHS_TABLE),
+            db.schema.dropTableIfExists(USERS_OAUTHS_TABLE),
         ])
     )
 
@@ -136,9 +136,9 @@ Promise.all([
                     console.log('USERS_EMAILS_TABLE AFTER TABLE');
                 }
             }),
-            db.schema.hasTable(USER_OAUTHS_TABLE).then((exists) => {
+            db.schema.hasTable(USERS_OAUTHS_TABLE).then((exists) => {
                 if (!exists) {
-                    return db.schema.createTable(USER_OAUTHS_TABLE, (table) => {
+                    return db.schema.createTable(USERS_OAUTHS_TABLE, (table) => {
                         table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
                         table.enu('provider', OAUTH_PROVIDERS_ENUM, {
                             useNative: true,
@@ -158,7 +158,7 @@ Promise.all([
                             .onDelete('CASCADE');
                     });
                 } else {
-                    console.log('USER_OAUTHS_TABLE AFTER TABLE');
+                    console.log('USERS_OAUTHS_TABLE AFTER TABLE');
                 }
             }),
             db.schema.hasTable(USER_CALCULATIONS_TABLE).then((exists) => {

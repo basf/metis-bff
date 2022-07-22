@@ -6,7 +6,7 @@ const OAuth2Strategy = require('passport-oauth2').Strategy;
 
 const {
     USERS_TABLE,
-    USER_OAUTHS_TABLE,
+    USERS_OAUTHS_TABLE,
     selectFirstUser,
     upsertUser,
 } = require('../../../services/db');
@@ -76,8 +76,8 @@ function handleCallback(provider) {
 
         try {
             const user = await selectFirstUser({
-                [`${USER_OAUTHS_TABLE}.provider`]: provider,
-                [`${USER_OAUTHS_TABLE}.providerId`]: providerId,
+                [`${USERS_OAUTHS_TABLE}.provider`]: provider,
+                [`${USERS_OAUTHS_TABLE}.providerId`]: providerId,
             });
 
             if (user) {
