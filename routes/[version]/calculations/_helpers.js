@@ -18,14 +18,14 @@ module.exports = {
     runAndSaveCalculation,
 };
 
-async function runAndSaveCalculation(userId, dataId, engine, input, updateHook) {
+async function runAndSaveCalculation(userId, dataId, engine, input, workflow, updateHook) {
     const datasource = await selectDataSourceByUserId(userId, { id: dataId });
 
     if (!datasource || !datasource.uuid) {
         throw 'Data source UUID is not available';
     }
 
-    const { data = {} } = await runCalculation(datasource.uuid, engine, input, updateHook);
+    const { data = {} } = await runCalculation(datasource.uuid, engine, input, workflow, updateHook);
 
     if (!data.uuid) {
         throw 'Calculation UUID is not available';
