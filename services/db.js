@@ -120,27 +120,27 @@ module.exports = {
     selectFirstUser,
     compareStringHash,
 
+    selectUserDataSources,
+    insertUserDataSource,
+    deleteUserDataSource,
+    delsertDataSourceCollections,
+    selectDataSourceByUserId, // ??
+    selectDataSourcesByUserId, // ??
+
     selectUserCollections,
     insertUserCollection,
     updateUserCollection,
     upsertUserCollection,
     deleteUserCollection,
+    delsertSharedCollectionUsers,
+    delsertCollectionDataSources,
     selectCollectionTypes,
-
-    selectUserDataSources,
-    insertUserDataSource,
-    deleteUserDataSource,
 
     insertUserCalculation,
     deleteUserCalculation,
-    selectDataSourceByUserId,
-    selectDataSourcesByUserId,
-
     selectCalculationsByUserId,
     selectCalculationsByUserIdAndRole,
-    delsertSharedCollectionUsers,
-    delsertCollectionDataSources,
-    delsertDataSourceCollections,
+
     searchUsers,
     upsertUser,
     selectUsersByIds,
@@ -285,28 +285,30 @@ async function selectUserDataSources(user, query = {}) {
     const total = +count[0]['count'];
 
     const data = await model.clone()
-        .orderBy(`${USER_DATASOURCES_TABLE}.id`, 'asc')
+        // .orderBy(`${USER_DATASOURCES_TABLE}.id`, 'asc')
         .distinctOn([`${USER_DATASOURCES_TABLE}.id`])
         .limit(limit || total, { skipBinding: true })
         .offset((total > +limit ? offset : 0), { skipBinding: true })
         .select([
             ...DATASOURCE_FIELDS,
-            // db.raw(`array_agg(json_build_object(
-            //     'id', ${USER_COLLECTIONS_TABLE}.id, 
-            //     'title', ${USER_COLLECTIONS_TABLE}.title, 
-            //     'typeFlavor', ${COLLECTIONS_TYPES_TABLE}.flavor
-            // )) as collections`),
+            db.raw(`COALESCE(JSON_AGG(JSON_BUILD_OBJECT(
+                'id', ${USER_COLLECTIONS_TABLE}.id, 
+                'title', ${USER_COLLECTIONS_TABLE}.title, 
+                'typeFlavor', ${COLLECTIONS_TYPES_TABLE}.flavor
+            )) FILTER (WHERE ${USER_COLLECTIONS_TABLE}.id IS NOT NULL), '[]') as collections`),
+            // DISTINCT ${USER_COLLECTIONS_TABLE}.id
             // db.raw(`array_agg(${USER_COLLECTIONS_TABLE}.id) as collections`)
-        ]);
-    // .groupBy(
-    //     `${USER_DATASOURCES_TABLE}.id`,
-    //     `${USER_COLLECTIONS_TABLE}.id`,
-    //     `${USER_COLLECTIONS_TABLE}.title`,
-    //     `${COLLECTIONS_TYPES_TABLE}.flavor`,
-    //     `${USERS_TABLE}.firstName`,
-    //     `${USERS_TABLE}.lastName`,
-    //     `${USERS_EMAILS_TABLE}.email`
-    // );
+        ])
+        // .distinctOn([`${USER_COLLECTIONS_TABLE}.id`])
+        .groupBy(
+            `${USER_DATASOURCES_TABLE}.id`,
+            // `${USER_COLLECTIONS_TABLE}.id`,
+            // `${USER_COLLECTIONS_TABLE}.title`,
+            // `${COLLECTIONS_TYPES_TABLE}.flavor`,
+            `${USERS_TABLE}.firstName`,
+            `${USERS_TABLE}.lastName`,
+            `${USERS_EMAILS_TABLE}.email`
+        );
 
     return { data, total };
 }
@@ -360,6 +362,15 @@ async function selectUserCollections(user, query = {}) {
         .limit(limit || total, { skipBinding: true })
         .offset((+total > +limit ? offset : 0), { skipBinding: true })
         .select(...COLLECTION_JOINED_FIELDS);
+    // .groupBy(
+    //     `${USER_COLLECTIONS_TABLE}.id`,
+    //     `${USER_COLLECTIONS_TABLE}.title`,
+    //     `${COLLECTIONS_TYPES_TABLE}.label`,
+    //     `${COLLECTIONS_TYPES_TABLE}.slug`,
+    //     `${COLLECTIONS_TYPES_TABLE}.flavor`,
+    //     `${USERS_TABLE}.firstName`,
+    //     `${USERS_TABLE}.lastName`,
+    // );
 
     return { data, total };
 }
