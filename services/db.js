@@ -276,7 +276,7 @@ async function selectUserDataSources(user, query = {}) {
             if (type) builder.where(`${COLLECTIONS_TYPES_TABLE}.slug`, type);
             if (visibility) builder.where(`${USER_COLLECTIONS_TABLE}.visibility`, visibility);
             if (collectionIds.length)
-                builder.whereIn(`${USER_COLLECTIONS_TABLE}.id`, collectionIds);
+                builder.whereIn(`${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`, collectionIds);
             if (dataSourceIds.length)
                 builder.whereIn(`${USER_COLLECTIONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
         });
@@ -288,21 +288,19 @@ async function selectUserDataSources(user, query = {}) {
         .orderBy(`${USER_DATASOURCES_TABLE}.id`, 'asc')
         .distinctOn([`${USER_DATASOURCES_TABLE}.id`])
         .limit(limit || total, { skipBinding: true })
-        .offset(offset || 0, { skipBinding: true })
-        .select([
-            ...DATASOURCE_FIELDS,
-            db.raw(`COALESCE(JSON_AGG(DISTINCT JSONB_BUILD_OBJECT(
-                'id', ${USER_COLLECTIONS_TABLE}.id, 
-                'title', ${USER_COLLECTIONS_TABLE}.title, 
-                'visibility', ${USER_COLLECTIONS_TABLE}.visibility,
-                'typeFlavor', ${COLLECTIONS_TYPES_TABLE}.flavor
-            )) FILTER (WHERE ${USER_COLLECTIONS_TABLE}.id IS NOT NULL), '[]') as collections`),
-        ])
+        .offset(+total > +limit ? offset : 0, { skipBinding: true })
+        .select(...DATASOURCE_FIELDS)
+        // .select([
+        //     ...DATASOURCE_FIELDS,
+        //     db.raw(`COALESCE(JSON_AGG(DISTINCT JSONB_BUILD_OBJECT(
+        //         'id', ${USER_COLLECTIONS_TABLE}.id, 
+        //         'title', ${USER_COLLECTIONS_TABLE}.title, 
+        //         'visibility', ${USER_COLLECTIONS_TABLE}.visibility,
+        //         'typeFlavor', ${COLLECTIONS_TYPES_TABLE}.flavor
+        //     )) FILTER (WHERE ${USER_COLLECTIONS_TABLE}.id IS NOT NULL), '[]') as collections`),
+        // ])
         .groupBy(
             `${USER_DATASOURCES_TABLE}.id`,
-            // `${USER_COLLECTIONS_TABLE}.id`,
-            // `${USER_COLLECTIONS_TABLE}.title`,
-            // `${COLLECTIONS_TYPES_TABLE}.flavor`,
             `${USERS_TABLE}.firstName`,
             `${USERS_TABLE}.lastName`,
             `${USERS_EMAILS_TABLE}.email`
@@ -369,7 +367,6 @@ async function selectUserCollections(user, query = {}) {
         ])
         .groupBy(
             `${USER_COLLECTIONS_TABLE}.id`,
-            // `${USER_COLLECTIONS_TABLE}.title`,
             `${COLLECTIONS_TYPES_TABLE}.label`,
             `${COLLECTIONS_TYPES_TABLE}.slug`,
             `${COLLECTIONS_TYPES_TABLE}.flavor`,
