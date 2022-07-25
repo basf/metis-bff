@@ -25,6 +25,8 @@ async function post(req, res, next) {
         input = req.body.input || {},
         workflow = req.body.workflow;
 
+    console.log('Got workflow param: ' + workflow);
+
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
@@ -44,6 +46,7 @@ async function post(req, res, next) {
         const data = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.sendTo({ reqId, data }, 'calculations');
+
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -58,6 +61,7 @@ async function get(req, res, next) {
         const data = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.sendTo({ reqId, data }, 'calculations');
+
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }

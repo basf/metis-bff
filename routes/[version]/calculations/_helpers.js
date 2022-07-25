@@ -14,7 +14,7 @@ const { getAndPrepareDataSources } = require('../datasources/_helpers');
 module.exports = {
     deleteAndClearCalculation,
     getAndPrepareCalculations,
-    getAndPrepareCalculationsWithResult,
+    getAndPrepareCalcResults,
     runAndSaveCalculation,
 };
 
@@ -57,36 +57,36 @@ async function getAndPrepareCalculations(calculations = []) {
     }, []);
 }
 
-async function getAndPrepareCalculationsWithResult(userId, calculations, progress, result) {
+async function getAndPrepareCalcResults(userId, calculations, progress, result) {
     const output = await getAndPrepareCalculations(calculations);
 
-    let dataSources = [], results = [];
+    let dataSources = [],
+        results = [];
 
-    try {
-        if (result) {
+    if (result) {
+        for (const data of result) {
+            const { parent, uuid } = data;
+            if (!parent || !uuid)
+                return { error: 'Invalid result given' };
 
-            // result database processing
-            for (const data of result) {
-                const { parent, uuid } = data;
-                const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
-                const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSource.id]);
-                const dataSource = await insertUserDataSource(userId, { uuid });
-                const collectionIds = parentCollections.map(({ id }) => id);
-                const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);
-                dataSources.push(dataSource);
-            }
+            const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
+            if (!parentDataSource)
+                return { error: 'Absent parent datasource' };
 
-            // get & prepare result datasources from sci. backend
-            const preparedData = await getAndPrepareDataSources(dataSources);
-            results = preparedData.map(dataSource => ({ ...dataSource, progress }));
+            const parentCollections = await selectUserCollectionsByDataSources(userId, [parentDataSource.id]);
+            const dataSource = await insertUserDataSource(userId, { uuid });
+            const collectionIds = parentCollections.map(({ id }) => id);
+            const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);
+            dataSources.push(dataSource);
         }
 
-        // mix results to calculations output
-        return [...output, { data: results }];
-
-    } catch (error) {
-        return { error };
+        // get & prepare result datasources from sci. backend
+        const preparedData = await getAndPrepareDataSources(dataSources);
+        results = preparedData.map(dataSource => ({ ...dataSource, progress }));
     }
+
+    // mix results to calculations output
+    return [...output, { data: results }];
 }
 
 async function deleteAndClearCalculation(userId, id) {

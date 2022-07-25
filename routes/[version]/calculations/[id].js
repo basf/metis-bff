@@ -28,6 +28,7 @@ async function del(req, res, next) {
         const data = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.sendTo({ reqId, data }, 'calculations');
+
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
