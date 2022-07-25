@@ -34,8 +34,6 @@ async function getAndPrepareDataSources(datasources = { data: [], total: 0 }) {
 
     if (!data.length) return { data: [], total: 0 };
 
-
-
     datasources.data = data.reduce((acc, { uuid, ...data }) => {
         const i = uuids.indexOf(uuid);
         acc.push(Object.assign(data, ds[i]));
