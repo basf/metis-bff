@@ -9,7 +9,7 @@ module.exports = {
         patch,
         getUserCollections,
         (req, res) =>
-            res.sse.sendTo({ reqId: req.id, ...req.session.collections }, 'collections'),
+            res.sse.sendTo({ reqId: req.id, ...req.session.collections }, 'filters'),
     ],
 };
 
