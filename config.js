@@ -4,7 +4,7 @@ const ini = require('ini');
 const { oauth, db, api, webhooks, mail } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
 
 const dev = process.env.NODE_ENV === 'development';
-const ouathTest = process.env.OAUTH_TEST;
+const oauthTest = process.env.OAUTH_TEST;
 
 const _api = dev ? api.dev : api.prod;
 
@@ -36,7 +36,7 @@ module.exports = {
             clientSecret: process.env.ORCID_CLIENT_SECRET || oauth.orcid.secret || 'unset',
             callbackURL: process.env.ORCID_CALLBACK_URL || oauth.orcid.callback || 'unset',
         },
-        basf: (ouathTest ? {
+        basf: (oauthTest ? {
             authorizationURL: 'http://localhost:3001/',
             tokenURL: 'http://localhost:3001/token',
             clientID: 'basf',
