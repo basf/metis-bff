@@ -2,14 +2,18 @@ const { StatusCodes } = require('http-status-codes');
 const { checkAuth } = require('../../../../middlewares/auth');
 const { getUserCollections } = require('../../../../middlewares/db');
 const { delsertDataSourceCollections } = require('../../../../services/db');
+const { getAndPrepareCollections } = require('../../collections/_helpers');
 
 module.exports = {
     patch: [
         checkAuth,
         patch,
         getUserCollections,
-        (req, res) =>
-            res.sse.sendTo({ reqId: req.id, ...req.session.collections }, 'filters'),
+        async (req, res) => {
+            const reqId = req.id;
+            const data = await getAndPrepareCollections(req.session.collections);
+            res.sse.sendTo({ reqId, ...data }, 'filters');
+        }
     ],
 };
 

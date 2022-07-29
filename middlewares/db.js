@@ -40,6 +40,15 @@ async function getUserDataSources(req, res, next) {
 
 async function getUserCalculations(req, res, next) {
     try {
+        const { collectionIds, page, limit } = req.query;
+        const query = {
+            ...req.query,
+            collectionIds: collectionIds ? collectionIds.includes(',')
+                ? collectionIds.split(',')
+                : [collectionIds] : [],
+            offset: (page - 1) * limit,
+        };
+
         req.session.calculations = await selectCalculationsByUserIdAndRole(
             req.user.id,
             req.user.roleSlug
@@ -68,6 +77,7 @@ async function getUserCollections(req, res, next) {
                 : [collectionIds] : [],
             offset: (page - 1) * limit,
         };
+
         req.session.collections = await selectUserCollections(req.user, query);
     } catch (error) {
         return next({ error });
