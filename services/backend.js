@@ -26,6 +26,7 @@ module.exports = {
     getCalculations,
     runCalculation,
     getDataSources,
+    getEngines,
     api,
 };
 
@@ -51,4 +52,8 @@ async function cancelCalculation(uuid) {
 
 async function getCalculations(uuids) {
     return api.post('/calculations/status', { uuid: uuids.join(':') });
+}
+
+async function getEngines() {
+    return api.get('/calculations/supported');
 }
