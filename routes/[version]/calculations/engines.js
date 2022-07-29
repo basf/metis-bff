@@ -7,7 +7,7 @@ module.exports = {
 async function get(req, res, next) {
     try {
         const output = await getEngines();
-        res.json(output);
+        res.json(output.data);
     } catch (error) {
         return next({ error });
     }
