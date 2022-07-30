@@ -73,10 +73,11 @@ const SHARED_COLLECTION_VISIBILITY = 'shared';
 const PRIVATE_COLLECTION_VISIBILITY = 'private';
 
 const OAUTH_PROVIDERS_ENUM = [
-    'basf',
+    'dummy',
     'github',
     'linkedin',
-    'orcid'
+    'orcid',
+    'mpds',
 ];
 const FLAVORS_ENUM = [
     'red',

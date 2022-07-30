@@ -6,6 +6,9 @@
 - `npm -v >= 7`
 - Postgres (any relatively new)
 
+To upgrade `node` run `npm install -g n && n lts` and re-start shell
+
+
 ## Installation
 
 ```bash
@@ -14,6 +17,7 @@ npm install
 node db_seed.js
 ```
 
+
 ## Running
 
 # For development mode run following command:
@@ -21,6 +25,7 @@ node db_seed.js
 ```bash
 npm run dev
 ```
+
 
 # For production mode run following command:
 
