@@ -10,6 +10,7 @@ const {
     compareStringHash,
     upsertUser,
 } = require('../../../services/db');
+
 const { checkAuth } = require('../../../middlewares/auth');
 
 const { sendVerifyEmail } = require('./_middlewares');

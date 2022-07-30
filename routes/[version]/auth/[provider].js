@@ -1,9 +1,12 @@
 const passport = require('passport');
+
 const GitHubStrategy = require('passport-github2').Strategy;
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
-const OAuth2Strategy = require('passport-oauth2').Strategy;
-const BasfStrategy = require('../../../tests/oauth/strategy');
+const MPDSStrategy = require('./mpds');
+
+//const OAuth2Strategy = require('passport-oauth2').Strategy;
+//const DummyStrategy = require('../../../tests/oauth/strategy');
 
 const {
     USERS_TABLE,
@@ -11,9 +14,10 @@ const {
     selectFirstUser,
     upsertUser,
 } = require('../../../services/db');
-const { oauth } = require('../../../config');
 
+const { oauth } = require('../../../config');
 const { sendVerifyEmail } = require('./_middlewares');
+const { sendCustomWebHook } = require('./custom_webhook'); // TODO custom MPDS webhook
 
 module.exports = {
     get: [
@@ -39,7 +43,9 @@ module.exports = {
 passport.use(new GitHubStrategy(oauth.github, handleCallback('github')));
 passport.use(new LinkedInStrategy(oauth.linkedin, handleCallback('linkedin')));
 passport.use(new OrcidStrategy(oauth.orcid, handleCallback('orcid')));
-passport.use(new BasfStrategy(oauth.basf, handleCallback('basf')));
+passport.use(new MPDSStrategy(oauth.mpds, handleCallback('mpds')));
+
+//passport.use(new DummyStrategy(oauth.dummy, handleCallback('dummy')));
 
 function handleCallback(provider) {
     /**
@@ -58,7 +64,6 @@ function handleCallback(provider) {
      */
     return async (...args) => {
         let [done, profile, params] = args.reverse();
-        console.log(args);
 
         if (!profile || !Object.keys(profile).length) {
             profile = params;
@@ -68,13 +73,19 @@ function handleCallback(provider) {
 
         if (!profile || !providerId) return done(new Error('OAuth profile is incorrect'), null);
 
-        const email = /*profile.email || (profile.emails.length && profile.emails[0].value) ||*/ '';
+        const email = profile.email || (profile.emails.length && profile.emails[0].value) || '';
         let [firstName = '', lastName = ''] = (profile.displayName || profile.name || '').split(
             ' '
         );
 
         if (!firstName && !lastName) {
+
             firstName = profile.username || profile.login;
+
+            if (provider === 'mpds'){
+                firstName = profile.first_name;
+                lastName = profile.last_name;
+            }
         }
 
         try {
@@ -85,6 +96,7 @@ function handleCallback(provider) {
 
             if (user) {
                 done(null, user);
+
             } else {
                 const inserted = await upsertUser({
                     firstName,
@@ -94,10 +106,13 @@ function handleCallback(provider) {
                     providerId,
                     profile,
                 });
-                const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: inserted.id });
 
+                const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: inserted.id });
                 done(null, user);
+
+                if (provider === 'mpds') sendCustomWebHook(user.id, user.email); // TODO custom MPDS webhook
             }
+
         } catch (err) {
             done(err, null);
         }
