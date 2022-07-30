@@ -27,6 +27,7 @@ module.exports = {
     runCalculation,
     getDataSources,
     getDataSourceResult,
+    getEngines,
     api,
 };
 
@@ -56,4 +57,8 @@ async function getCalculations(uuids) {
 
 async function getDataSourceResult(uuid) {
     return api.post('/data/examine', { uuid });
+}
+
+async function getEngines() {
+    return api.get('/calculations/supported');
 }
