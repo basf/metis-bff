@@ -43,6 +43,8 @@ module.exports = {
             clientSecret: 'basf',
             callbackURL: 'http://localhost:3000/v0/auth/basf',
         } : {
+            authorizationURL: process.env.BASF_AUTH_URL || oauth.basf.auth_url || 'unset', // ???
+            tokenURL: process.env.BASF_TOKEN_URL || oauth.basf.token_url || 'unset', // ???
             clientID: process.env.BASF_CLIENT_ID || oauth.basf.client || 'unset',
             clientSecret: process.env.BASF_CLIENT_SECRET || oauth.basf.secret || 'unset',
             callbackURL: process.env.BASF_CALLBACK_URL || oauth.basf.callback || 'unset',

@@ -26,8 +26,8 @@ const USER_SHORT_FIELDS = [
 
 const DATASOURCE_FIELDS = [
     `${USER_DATASOURCES_TABLE}.id`,
-    `${USER_DATASOURCES_TABLE}.userId`,
     `${USER_DATASOURCES_TABLE}.uuid`,
+    `${USER_DATASOURCES_TABLE}.userId`,
     `${USER_DATASOURCES_TABLE}.createdAt`,
     `${USER_DATASOURCES_TABLE}.updatedAt`,
     `${USERS_TABLE}.firstName as userFirstName`,
@@ -63,6 +63,13 @@ const COLLECTION_JOINED_FIELDS = [
     `${USER_COLLECTIONS_TABLE}.updatedAt`,
     `${USERS_TABLE}.firstName as userFirstName`,
     `${USERS_TABLE}.lastName as userLastName`,
+    `${COLLECTIONS_TYPES_TABLE}.slug as typeSlug`,
+    `${COLLECTIONS_TYPES_TABLE}.label as typeLabel`,
+    `${COLLECTIONS_TYPES_TABLE}.flavor as typeFlavor`,
+];
+
+const COLLECTION_TYPES_FIELDS = [
+    `${COLLECTIONS_TYPES_TABLE}.id`,
     `${COLLECTIONS_TYPES_TABLE}.slug as typeSlug`,
     `${COLLECTIONS_TYPES_TABLE}.label as typeLabel`,
     `${COLLECTIONS_TYPES_TABLE}.flavor as typeFlavor`,
@@ -235,26 +242,6 @@ async function selectUserDataSources(user, query = {}) {
     const { collectionIds = [], dataSourceIds = [], offset, limit, visibility, type } = query;
 
     const model = db(USER_DATASOURCES_TABLE)
-        .leftJoin(
-            USER_COLLECTIONS_DATASOURCES_TABLE,
-            `${USER_DATASOURCES_TABLE}.id`,
-            `${USER_COLLECTIONS_DATASOURCES_TABLE}.dataSourceId`
-        )
-        .leftJoin(
-            USER_COLLECTIONS_TABLE,
-            `${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`,
-            `${USER_COLLECTIONS_TABLE}.id`
-        )
-        .leftJoin(
-            USER_SHARED_COLLECTIONS_TABLE,
-            `${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`,
-            `${USER_SHARED_COLLECTIONS_TABLE}.collectionId`,
-        )
-        .leftJoin(
-            COLLECTIONS_TYPES_TABLE,
-            `${USER_COLLECTIONS_TABLE}.typeId`,
-            `${COLLECTIONS_TYPES_TABLE}.id`,
-        )
         .innerJoin(
             USERS_TABLE,
             `${USER_DATASOURCES_TABLE}.userId`,
@@ -262,8 +249,23 @@ async function selectUserDataSources(user, query = {}) {
         )
         .innerJoin(
             USERS_EMAILS_TABLE,
-            `${USER_DATASOURCES_TABLE}.userId`,
+            `${USERS_TABLE}.id`,
             `${USERS_EMAILS_TABLE}.userId`
+        )
+        .leftJoin(
+            USER_COLLECTIONS_TABLE,
+            `${USERS_TABLE}.id`,
+            `${USER_COLLECTIONS_TABLE}.userId`
+        )
+        .leftJoin(
+            USER_SHARED_COLLECTIONS_TABLE,
+            `${USERS_TABLE}.id`,
+            `${USER_SHARED_COLLECTIONS_TABLE}.userId`,
+        )
+        .leftJoin(
+            COLLECTIONS_TYPES_TABLE,
+            `${USER_COLLECTIONS_TABLE}.typeId`,
+            `${COLLECTIONS_TYPES_TABLE}.id`,
         )
         .where((builder) => {
             if (user.roleSlug !== ADMIN_USER_ROLE)
@@ -273,7 +275,7 @@ async function selectUserDataSources(user, query = {}) {
                     .orWhere(`${USER_COLLECTIONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
         })
         .where((builder) => {
-            if (type) builder.where(`${COLLECTIONS_TYPES_TABLE}.slug`, type);
+            if (type) builder.where(`${COLLECTIONS_TYPES_TABLE}.id`, type);
             if (visibility) builder.where(`${USER_COLLECTIONS_TABLE}.visibility`, visibility);
             if (collectionIds.length)
                 builder.whereIn(`${USER_COLLECTIONS_TABLE}.id`, collectionIds);
@@ -281,30 +283,26 @@ async function selectUserDataSources(user, query = {}) {
                 builder.whereIn(`${USER_DATASOURCES_TABLE}.id`, dataSourceIds);
         });
 
-    const count = await model.clone().count().countDistinct([`${USER_DATASOURCES_TABLE}.id`]);
+    const count = await model.clone().count().countDistinct(`${USER_DATASOURCES_TABLE}.id`);
     const total = +count[0]['count'];
 
     const data = await model.clone()
-        .orderBy(`${USER_DATASOURCES_TABLE}.id`, 'asc')
-        .distinctOn([`${USER_DATASOURCES_TABLE}.id`])
-        .limit(limit || total)
-        .offset(offset || 0)
         .select(...DATASOURCE_FIELDS)
-        // .select([
-        //     ...DATASOURCE_FIELDS,
-        //     db.raw(`COALESCE(JSON_AGG(DISTINCT JSONB_BUILD_OBJECT(
-        //         'id', ${USER_COLLECTIONS_TABLE}.id,
-        //         'title', ${USER_COLLECTIONS_TABLE}.title,
-        //         'visibility', ${USER_COLLECTIONS_TABLE}.visibility,
-        //         'typeFlavor', ${COLLECTIONS_TYPES_TABLE}.flavor
-        //     )) FILTER (WHERE ${USER_COLLECTIONS_TABLE}.id IS NOT NULL), '[]') as collections`),
-        // ])
+        .distinctOn(`${USER_DATASOURCES_TABLE}.id`)
+        .orderBy([
+            `${USER_DATASOURCES_TABLE}.id`,
+            `${USERS_TABLE}.firstName`,
+            `${USERS_TABLE}.lastName`,
+            `${USERS_EMAILS_TABLE}.email`
+        ])
         .groupBy(
             `${USER_DATASOURCES_TABLE}.id`,
             `${USERS_TABLE}.firstName`,
             `${USERS_TABLE}.lastName`,
             `${USERS_EMAILS_TABLE}.email`
-        );
+        )
+        .limit(limit || total)
+        .offset(offset || 0);
 
     const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
 
@@ -343,7 +341,7 @@ async function selectUserCollections(user, query = {}) {
                     .orWhere(`${USER_COLLECTIONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
         })
         .where((builder) => {
-            if (type) builder.where(`${COLLECTIONS_TYPES_TABLE}.slug`, type);
+            if (type) builder.where(`${COLLECTIONS_TYPES_TABLE}.id`, type);
             if (visibility) builder.where(`${USER_COLLECTIONS_TABLE}.visibility`, visibility);
             if (collectionIds.length)
                 builder.whereIn(`${USER_COLLECTIONS_TABLE}.id`, collectionIds);
@@ -351,21 +349,13 @@ async function selectUserCollections(user, query = {}) {
                 builder.whereIn(`${USER_COLLECTIONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
         });
 
-    const count = await model.clone().countDistinct([`${USER_COLLECTIONS_TABLE}.id`]);
+    const count = await model.clone().countDistinct(`${USER_COLLECTIONS_TABLE}.id`);
     const total = +count[0]['count'];
 
     const data = await model.clone()
-        .orderBy(`${USER_COLLECTIONS_TABLE}.id`, 'asc')
-        .distinctOn([`${USER_COLLECTIONS_TABLE}.id`])
-        .limit(limit || total)
-        .offset(offset || 0)
         .select(...COLLECTION_JOINED_FIELDS)
-        // .select([
-        //     ...COLLECTION_JOINED_FIELDS,
-        //     db.raw(`ARRAY_AGG(DISTINCT ${USER_COLLECTIONS_DATASOURCES_TABLE}."dataSourceId") as "dataSources"`),
-        //     db.raw(`COALESCE(ARRAY_AGG(DISTINCT ${USER_SHARED_COLLECTIONS_TABLE}."userId")
-        //         FILTER (WHERE ${USER_SHARED_COLLECTIONS_TABLE}."userId" IS NOT NULL)) as "users"`),
-        // ])
+        .distinctOn(`${USER_COLLECTIONS_TABLE}.id`)
+        .orderBy(`${USER_COLLECTIONS_TABLE}.id`, 'asc')
         .groupBy(
             `${USER_COLLECTIONS_TABLE}.id`,
             `${COLLECTIONS_TYPES_TABLE}.label`,
@@ -373,7 +363,16 @@ async function selectUserCollections(user, query = {}) {
             `${COLLECTIONS_TYPES_TABLE}.flavor`,
             `${USERS_TABLE}.firstName`,
             `${USERS_TABLE}.lastName`,
-        );
+        )
+        .limit(limit || total)
+        .offset(offset || 0);
+
+    // .select([
+    //     ...COLLECTION_JOINED_FIELDS,
+    //     db.raw(`ARRAY_AGG(DISTINCT ${USER_COLLECTIONS_DATASOURCES_TABLE}."dataSourceId") as "dataSources"`),
+    //     db.raw(`COALESCE(ARRAY_AGG(DISTINCT ${USER_SHARED_COLLECTIONS_TABLE}."userId")
+    //         FILTER (WHERE ${USER_SHARED_COLLECTIONS_TABLE}."userId" IS NOT NULL)) as "users"`),
+    // ])
 
     const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
 
