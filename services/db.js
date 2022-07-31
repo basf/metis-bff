@@ -242,6 +242,26 @@ async function selectUserDataSources(user, query = {}) {
     const { collectionIds = [], dataSourceIds = [], offset, limit, visibility, type } = query;
 
     const model = db(USER_DATASOURCES_TABLE)
+        .leftJoin(
+            USER_COLLECTIONS_DATASOURCES_TABLE,
+            `${USER_DATASOURCES_TABLE}.id`,
+            `${USER_COLLECTIONS_DATASOURCES_TABLE}.dataSourceId`
+        )
+        .leftJoin(
+            USER_COLLECTIONS_TABLE,
+            `${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`,
+            `${USER_COLLECTIONS_TABLE}.id`
+        )
+        .leftJoin(
+            USER_SHARED_COLLECTIONS_TABLE,
+            `${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`,
+            `${USER_SHARED_COLLECTIONS_TABLE}.collectionId`,
+        )
+        .leftJoin(
+            COLLECTIONS_TYPES_TABLE,
+            `${USER_COLLECTIONS_TABLE}.typeId`,
+            `${COLLECTIONS_TYPES_TABLE}.id`,
+        )
         .innerJoin(
             USERS_TABLE,
             `${USER_DATASOURCES_TABLE}.userId`,
@@ -249,23 +269,8 @@ async function selectUserDataSources(user, query = {}) {
         )
         .innerJoin(
             USERS_EMAILS_TABLE,
-            `${USERS_TABLE}.id`,
+            `${USER_DATASOURCES_TABLE}.userId`,
             `${USERS_EMAILS_TABLE}.userId`
-        )
-        .leftJoin(
-            USER_COLLECTIONS_TABLE,
-            `${USERS_TABLE}.id`,
-            `${USER_COLLECTIONS_TABLE}.userId`
-        )
-        .leftJoin(
-            USER_SHARED_COLLECTIONS_TABLE,
-            `${USERS_TABLE}.id`,
-            `${USER_SHARED_COLLECTIONS_TABLE}.userId`,
-        )
-        .leftJoin(
-            COLLECTIONS_TYPES_TABLE,
-            `${USER_COLLECTIONS_TABLE}.typeId`,
-            `${COLLECTIONS_TYPES_TABLE}.id`,
         )
         .where((builder) => {
             if (user.roleSlug !== ADMIN_USER_ROLE)
@@ -289,12 +294,7 @@ async function selectUserDataSources(user, query = {}) {
     const data = await model.clone()
         .select(...DATASOURCE_FIELDS)
         .distinctOn(`${USER_DATASOURCES_TABLE}.id`)
-        .orderBy([
-            `${USER_DATASOURCES_TABLE}.id`,
-            `${USERS_TABLE}.firstName`,
-            `${USERS_TABLE}.lastName`,
-            `${USERS_EMAILS_TABLE}.email`
-        ])
+        .orderBy(`${USER_DATASOURCES_TABLE}.id`)
         .groupBy(
             `${USER_DATASOURCES_TABLE}.id`,
             `${USERS_TABLE}.firstName`,
