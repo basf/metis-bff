@@ -68,13 +68,6 @@ const COLLECTION_JOINED_FIELDS = [
     `${COLLECTIONS_TYPES_TABLE}.flavor as typeFlavor`,
 ];
 
-const COLLECTION_TYPES_FIELDS = [
-    `${COLLECTIONS_TYPES_TABLE}.id`,
-    `${COLLECTIONS_TYPES_TABLE}.slug as typeSlug`,
-    `${COLLECTIONS_TYPES_TABLE}.label as typeLabel`,
-    `${COLLECTIONS_TYPES_TABLE}.flavor as typeFlavor`,
-];
-
 const DEFAULT_USER_ROLE = 'member';
 const ADMIN_USER_ROLE = 'admin';
 
@@ -143,6 +136,7 @@ module.exports = {
     delsertCollectionDataSources,
     selectCollectionTypes,
 
+    selectUserCalculations,
     insertUserCalculation,
     deleteUserCalculation,
     selectCalculationsByUserId,
@@ -231,6 +225,37 @@ function selectFirstByUserId(table, defaultFields = DEFAULT_FIELDS) {
 }
 
 function selectCalculationsByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE) {
+    if (roleSlug === ADMIN_USER_ROLE) {
+        return db(USER_CALCULATIONS_TABLE).select(...DEFAULT_FIELDS);
+    } else {
+        return selectCalculationsByUserId(userId);
+    }
+}
+
+async function selectUserCalculations(user, query = {}) {
+    const { collectionIds = [], dataSourceIds = [], offset, limit, visibility, type } = query;
+
+    const model = db(USER_CALCULATIONS_TABLE)
+        .where((builder) => {
+            if (user.roleSlug !== ADMIN_USER_ROLE)
+                builder.where(`${USER_DATASOURCES_TABLE}.userId`, user.id);
+        });
+
+    const count = await model.clone().count().countDistinct(`${USER_CALCULATIONS_TABLE}.id`);
+    const total = +count[0]['count'];
+
+    const data = await model.clone()
+        .select(...DEFAULT_FIELDS)
+        .distinctOn(`${USER_CALCULATIONS_TABLE}.id`)
+        .orderBy(`${USER_CALCULATIONS_TABLE}.id`)
+        .groupBy(`${USER_CALCULATIONS_TABLE}.id`)
+        .limit(limit || total)
+        .offset(offset || 0);
+
+    const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
+
+    return { data, total, types };
+
     if (roleSlug === ADMIN_USER_ROLE) {
         return db(USER_CALCULATIONS_TABLE).select(...DEFAULT_FIELDS);
     } else {

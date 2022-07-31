@@ -14,6 +14,7 @@ module.exports = {
 
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
+    console.log(result);
 
     if (!uuid || !is_valid_uuid(uuid) || !progress) {
         return next({ status: StatusCodes.BAD_REQUEST });
@@ -41,7 +42,7 @@ async function post(req, res, next) {
         ({ session }) => {
             return userId && session.passport && userId === session.passport.user;
         },
-        { reqId: req.id, data: output },
+        { reqId: req.id, ...output },
         'calculations'
     );
 

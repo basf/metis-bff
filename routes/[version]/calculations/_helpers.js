@@ -34,8 +34,8 @@ async function runAndSaveCalculation(userId, dataId, engine, input, workflow, up
     return insertUserCalculation(userId, { uuid: data.uuid });
 }
 
-async function getAndPrepareCalculations(calculations = []) {
-    const { uuids, calc } = calculations.reduce(
+async function getAndPrepareCalculations(calculations = { data: [], total: 0 }) {
+    const { uuids, calc } = calculations.data.reduce(
         (acc, { uuid, ...other }) => {
             acc.uuids.push(uuid);
             acc.calc.push(other);
@@ -44,17 +44,19 @@ async function getAndPrepareCalculations(calculations = []) {
         { uuids: [], calc: [] }
     );
 
-    if (!uuids.length) return [];
+    if (!uuids.length) return { data: [], total: 0 };
 
     const { data = [] } = await getCalculations(uuids);
 
-    if (!data.length) return [];
+    if (!data.length) return { data: [], total: 0 };
 
-    return data.reduce((acc, { uuid, ...data }) => {
+    calculations.data = data.reduce((acc, { uuid, ...data }) => {
         const i = uuids.indexOf(uuid);
         acc.push(Object.assign(data, calc[i]));
         return acc;
     }, []);
+
+    return calculations;
 }
 
 async function getAndPrepareCalcResults(userId, calculations, progress, result) {
@@ -70,29 +72,28 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
                 return { error: 'Invalid result given' };
 
             // result database processing
-            for (const data of result) {
-                const { parent, uuid } = data;
-                const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
-                const parentCollections = await selectUserCollections({ id: userId }, { dataSourceIds: [parentDataSource.id] });
-                const dataSource = await insertUserDataSource(userId, { uuid });
-                const collectionIds = parentCollections.data.map(({ id }) => id);
-                const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);
-                dataSources.push(dataSource);
-                console.log(parentDataSource, parentCollections, dataSource, dataSources);
-            }
+            const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
+            if (!parentDataSource)
+                return { error: 'Absent parent datasource' };
 
-            // get & prepare result datasources from sci. backend
-            const preparedData = await getAndPrepareDataSources({ data: dataSources, total: dataSources.length });
-            results = preparedData.data.map(dataSource => ({ ...dataSource, progress }));
+            const parentCollections = await selectUserCollections({ id: userId }, { dataSourceIds: [parentDataSource.id] });
+            const collectionIds = parentCollections.data.map(({ id }) => id);
+            const dataSource = await insertUserDataSource(userId, { uuid });
+            const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);
+
+            dataSources.push(dataSource);
+            console.log(parentDataSource, parentCollections, dataSource, dataSources);
         }
 
         // get & prepare result datasources from sci. backend
         const preparedData = await getAndPrepareDataSources(dataSources);
-        results = preparedData.map(dataSource => ({ ...dataSource, progress }));
+        results = preparedData.data.map(dataSource => ({ ...dataSource, progress }));
     }
 
     // mix results to calculations output
-    return [...output, { data: results }];
+    output.data.push(results);
+
+    return output;
 }
 
 async function deleteAndClearCalculation(userId, id) {

@@ -1,9 +1,9 @@
 const { StatusCodes } = require('http-status-codes');
 
 const {
-    selectUserCollections,
     selectUserDataSources,
-    selectCalculationsByUserIdAndRole
+    selectUserCollections,
+    selectUserCalculations
 } = require('../services/db');
 
 module.exports = {
@@ -49,10 +49,7 @@ async function getUserCalculations(req, res, next) {
             offset: (page - 1) * limit,
         };
 
-        req.session.calculations = await selectCalculationsByUserIdAndRole(
-            req.user.id,
-            req.user.roleSlug
-        );
+        req.session.calculations = await selectUserCalculations(req.user, query);
     } catch (error) {
         return next({ error });
     }
