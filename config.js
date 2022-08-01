@@ -4,8 +4,6 @@ const ini = require('ini');
 const { oauth, db, api, webhooks, mail } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
 
 const dev = process.env.NODE_ENV === 'development';
-const oauthTest = process.env.OAUTH_TEST;
-
 const _api = dev ? api.dev : api.prod;
 
 const backend = {
@@ -49,6 +47,21 @@ module.exports = {
             clientSecret: process.env.BASF_CLIENT_SECRET || oauth.basf.secret || 'unset',
             callbackURL: process.env.BASF_CALLBACK_URL || oauth.basf.callback || 'unset',
         }),
+        mpds: {
+            authorizationURL: process.env.MPDS_AUTH_URL || oauth.mpds.authorize_url || 'unset',
+            tokenURL: process.env.MPDS_ACCESS_TOKEN_URL || oauth.mpds.access_token_url || 'unset',
+            clientID: process.env.MPDS_CLIENT_ID || oauth.mpds.client || 'unset',
+            clientSecret: process.env.MPDS_CLIENT_SECRET || oauth.mpds.secret || 'unset',
+            callbackURL: process.env.MPDS_CALLBACK_URL || oauth.mpds.callback || 'unset',
+            userProfileURL: process.env.MPDS_USER_PROFILE_URL || oauth.mpds.user_profile_url || 'unset',
+        },
+        dummy: {
+            authorizationURL: process.env.DUMMY_AUTH_URL || oauth.dummy.authorize_url || 'unset',
+            tokenURL: process.env.DUMMY_ACCESS_TOKEN_URL || oauth.dummy.access_token_url || 'unset',
+            clientID: process.env.DUMMY_CLIENT_ID || oauth.dummy.client || 'unset',
+            clientSecret: process.env.DUMMY_CLIENT_SECRET || oauth.dummy.secret || 'unset',
+            callbackURL: process.env.DUMMY_CALLBACK_URL || oauth.dummy.callback || 'unset',
+        },
     },
     db: {
         client: 'pg',

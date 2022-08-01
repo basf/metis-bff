@@ -27,6 +27,13 @@ async function post(req, res, next) {
 
     console.log('Got workflow param: ' + workflow);
 
+    if (req.session.calculations.length > 15){
+        return next({
+            status: StatusCodes.PAYMENT_REQUIRED,
+            error: 'Sorry, your computing resources quota is exceeded.'
+        });
+    }
+
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
