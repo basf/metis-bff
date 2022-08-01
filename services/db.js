@@ -232,13 +232,13 @@ function selectCalculationsByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE)
     }
 }
 
-async function selectUserCalculations(user, query = {}) {
-    const { collectionIds = [], dataSourceIds = [], offset, limit, visibility, type } = query;
+async function selectUserCalculations(user, query) {
+    const { collectionIds, dataSourceIds, offset, limit, visibility, type } = prepareQuery(query);
 
     const model = db(USER_CALCULATIONS_TABLE)
         .where((builder) => {
             if (user.roleSlug !== ADMIN_USER_ROLE)
-                builder.where(`${USER_DATASOURCES_TABLE}.userId`, user.id);
+                builder.where(`${USER_CALCULATIONS_TABLE}.userId`, user.id);
         });
 
     const count = await model.clone().count().countDistinct(`${USER_CALCULATIONS_TABLE}.id`);
@@ -255,16 +255,10 @@ async function selectUserCalculations(user, query = {}) {
     const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
 
     return { data, total, types };
-
-    if (roleSlug === ADMIN_USER_ROLE) {
-        return db(USER_CALCULATIONS_TABLE).select(...DEFAULT_FIELDS);
-    } else {
-        return selectCalculationsByUserId(userId);
-    }
 }
 
-async function selectUserDataSources(user, query = {}) {
-    const { collectionIds = [], dataSourceIds = [], offset, limit, visibility, type } = query;
+async function selectUserDataSources(user, query) {
+    const { collectionIds, dataSourceIds, offset, limit, visibility, type } = prepareQuery(query);
 
     const model = db(USER_DATASOURCES_TABLE)
         .leftJoin(
@@ -334,8 +328,8 @@ async function selectUserDataSources(user, query = {}) {
     return { data, total, types };
 }
 
-async function selectUserCollections(user, query = {}) {
-    const { collectionIds = [], dataSourceIds = [], offset, limit, visibility, type } = query;
+async function selectUserCollections(user, query) {
+    const { collectionIds, dataSourceIds, offset, limit, visibility, type } = prepareQuery(query);
 
     const model = db(USER_COLLECTIONS_TABLE)
         .innerJoin(
@@ -553,4 +547,18 @@ function addTablePrefix(TABLE, query = {}) {
         where[`${TABLE}.${field}`] = value;
         return where;
     }, {});
+}
+
+function prepareQuery(query) {
+    if (query) {
+        const { collectionIds, dataSourceIds, page, limit, type, visibility } = query;
+        return {
+            collectionIds: collectionIds ? collectionIds.includes(',')
+                ? collectionIds.split(',')
+                : [collectionIds] : [],
+            dataSourceIds: dataSourceIds || [],
+            offset: +page ? (page - 1) * limit : 0,
+            limit, type, visibility
+        };
+    } else return {};
 }

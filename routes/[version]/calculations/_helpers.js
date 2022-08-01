@@ -62,7 +62,7 @@ async function getAndPrepareCalculations(calculations = { data: [], total: 0 }) 
 async function getAndPrepareCalcResults(userId, calculations, progress, result) {
     const output = await getAndPrepareCalculations(calculations);
 
-    let dataSources = [],
+    let dataSources = { data: [], total: 0 },
         results = [];
 
     if (result) {
@@ -79,10 +79,10 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
             const parentCollections = await selectUserCollections({ id: userId }, { dataSourceIds: [parentDataSource.id] });
             const collectionIds = parentCollections.data.map(({ id }) => id);
             const dataSource = await insertUserDataSource(userId, { uuid });
-            const dataSourceCollections = await delsertDataSourceCollections(dataSource.id, collectionIds);
 
-            dataSources.push(dataSource);
-            console.log(parentDataSource, parentCollections, dataSource, dataSources);
+            await delsertDataSourceCollections(dataSource.id, collectionIds);
+
+            dataSources.data.push(dataSource);
         }
 
         // get & prepare result datasources from sci. backend
@@ -91,7 +91,8 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
     }
 
     // mix results to calculations output
-    output.data.push(results);
+    if (results.length)
+        output.data.push(...results);
 
     return output;
 }
