@@ -6,6 +6,8 @@ const { oauth, db, api, webhooks, mail } = ini.parse(fs.readFileSync('./env.ini'
 const dev = process.env.NODE_ENV === 'development';
 const _api = dev ? api.dev : api.prod;
 
+const oauthTest = process.env.OAUTH_TEST === true;
+
 const backend = {
     key: process.env.API_KEY || _api.key,
     schema: process.env.API_SCHEMA || _api.schema,
