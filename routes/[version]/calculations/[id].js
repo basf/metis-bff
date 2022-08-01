@@ -27,8 +27,6 @@ async function del(req, res, next) {
             (calculation) => calculation.id !== req.params.id
         );
 
-        console.log('req.session.calculations', req.session.calculations);
-
         if (req.session.calculations.data.length <= 1) {
             const page = +req.query.page <= 1 ? 1 : +req.query.page - 1;
             req.session.calculations = await selectUserCalculations(req.user, { ...req.query, page });

@@ -6,8 +6,6 @@ const { oauth, db, api, webhooks, mail } = ini.parse(fs.readFileSync('./env.ini'
 const dev = process.env.NODE_ENV === 'development';
 const _api = dev ? api.dev : api.prod;
 
-const oauthTest = process.env.OAUTH_TEST === true;
-
 const backend = {
     key: process.env.API_KEY || _api.key,
     schema: process.env.API_SCHEMA || _api.schema,
@@ -36,19 +34,6 @@ module.exports = {
             clientSecret: process.env.ORCID_CLIENT_SECRET || oauth.orcid.secret || 'unset',
             callbackURL: process.env.ORCID_CALLBACK_URL || oauth.orcid.callback || 'unset',
         },
-        basf: (oauthTest ? {
-            authorizationURL: 'http://localhost:3001/',
-            tokenURL: 'http://localhost:3001/token',
-            clientID: 'basf',
-            clientSecret: 'basf',
-            callbackURL: 'http://localhost:3000/v0/auth/basf',
-        } : {
-            authorizationURL: process.env.BASF_AUTH_URL || oauth.basf.auth_url || 'unset', // ???
-            tokenURL: process.env.BASF_TOKEN_URL || oauth.basf.token_url || 'unset', // ???
-            clientID: process.env.BASF_CLIENT_ID || oauth.basf.client || 'unset',
-            clientSecret: process.env.BASF_CLIENT_SECRET || oauth.basf.secret || 'unset',
-            callbackURL: process.env.BASF_CALLBACK_URL || oauth.basf.callback || 'unset',
-        }),
         mpds: {
             authorizationURL: process.env.MPDS_AUTH_URL || oauth.mpds.authorize_url || 'unset',
             tokenURL: process.env.MPDS_ACCESS_TOKEN_URL || oauth.mpds.access_token_url || 'unset',

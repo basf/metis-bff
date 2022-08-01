@@ -17,7 +17,6 @@ const {
 
 const { oauth } = require('../../../config');
 const { sendVerifyEmail } = require('./_middlewares');
-const { sendCustomWebHook } = require('./custom_webhook'); // TODO custom MPDS webhook
 
 module.exports = {
     get: [
@@ -82,7 +81,7 @@ function handleCallback(provider) {
 
             firstName = profile.username || profile.login;
 
-            if (provider === 'mpds'){
+            if (provider === 'mpds') {
                 firstName = profile.first_name;
                 lastName = profile.last_name;
             }
@@ -109,8 +108,6 @@ function handleCallback(provider) {
 
                 const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: inserted.id });
                 done(null, user);
-
-                if (provider === 'mpds') sendCustomWebHook(user.id, user.email); // TODO custom MPDS webhook
             }
 
         } catch (err) {

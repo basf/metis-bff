@@ -9,11 +9,7 @@ module.exports = {
         checkAuth,
         patch,
         getUserCollections,
-        async (req, res) => {
-            const reqId = req.id;
-            const data = await getAndPrepareCollections(req.session.collections);
-            res.sse.sendTo({ reqId, ...data }, 'filters');
-        }
+        sendToSse
     ],
 };
 
@@ -26,4 +22,10 @@ async function patch(req, res, next) {
     } catch (error) {
         return next({ error });
     }
+}
+
+async function sendToSse(req, res) {
+    const reqId = req.id;
+    const data = await getAndPrepareCollections(req.session.collections);
+    res.sse.sendTo({ reqId, ...data }, 'filters');
 }
