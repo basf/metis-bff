@@ -1,5 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
+const { selectUserDataSources } = require('../../../../services/db');
+
 const { checkAuth } = require('../../../../middlewares/auth');
 const { getUserDataSources } = require('../../../../middlewares/db');
 const { getDataSourceResult } = require('../../../../services/backend');
@@ -22,14 +24,18 @@ async function del(req, res, next) {
     try {
         await deleteAndClearDataSource(req.user.id, req.params.id);
 
-        req.session.datasources = req.session.datasources.filter(
+        req.session.datasources.data = req.session.datasources.data.filter(
             (datasource) => datasource.id !== req.params.id
         );
 
+        if (req.session.datasources.data.length <= 1) {
+            const page = +req.query.page <= 1 ? 1 : +req.query.page - 1;
+            req.session.datasources = await selectUserDataSources(req.user, { ...req.query, page });
+        }
+
         const data = await getAndPrepareDataSources(req.session.datasources);
 
-        res.sse.sendTo({ reqId, data }, 'datasources');
-
+        res.sse.sendTo({ reqId, ...data }, 'datasources');
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -45,7 +51,7 @@ async function get(req, res, next) {
     );
 
     if (!target.length)
-        return res.status(StatusCodes.FORBIDDEN).json({error: 'Sorry you cannot access this item'});
+        return res.status(StatusCodes.FORBIDDEN).json({ error: 'Sorry you cannot access this item' });
 
     try {
         const { data = {} } = await getDataSourceResult(target[0].uuid);
@@ -53,7 +59,7 @@ async function get(req, res, next) {
         res.header("Content-Type", "text/plain");
         return res.send(JSON.stringify(data, null, 4));
 
-    } catch (error){
+    } catch (error) {
         return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error: 'Sorry invalid data occured' });
     }
 }

@@ -2,15 +2,13 @@ const { StatusCodes } = require('http-status-codes');
 
 const { db,
     USER_CALCULATIONS_TABLE,
-    selectCalculationsByUserId,
+    selectUserCalculations,
 } = require('../../../services/db');
 
 const { is_valid_uuid } = require('./_helpers');
 const { getAndPrepareCalcResults, deleteAndClearCalculation } = require('../calculations/_helpers');
 
-module.exports = {
-    post,
-};
+module.exports = { post };
 
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
@@ -30,7 +28,7 @@ async function post(req, res, next) {
     }
 
     const userId = calculation.userId;
-    const calculations = await selectCalculationsByUserId(userId);
+    const calculations = await selectUserCalculations({ id: userId });
     const output = await getAndPrepareCalcResults(userId, calculations, progress, result);
 
     if (output.error) {
@@ -41,9 +39,9 @@ async function post(req, res, next) {
         ({ session }) => {
             return userId && session.passport && userId === session.passport.user;
         },
-        { reqId: req.id, data: output },
+        { reqId: req.id, ...output },
         'calculations'
     );
 
-    if (progress == 100) await deleteAndClearCalculation(userId, calculation.id); // TODO?
+    if (progress === 100) setTimeout(async () => await deleteAndClearCalculation(userId, calculation.id), 3000); // TODO?
 }

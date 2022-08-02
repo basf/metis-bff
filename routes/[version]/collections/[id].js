@@ -17,12 +17,12 @@ async function del(req, res, next) {
         const collection = await deleteUserCollection(req.user.id, req.params.id);
 
         if (collection) {
-            req.session.collections = req.session.collections.filter(
+            req.session.collections.data = req.session.collections.data.filter(
                 ({ id }) => id !== collection.id
             );
         }
 
-        res.sse.sendTo({ reqId, data: req.session.collections }, 'collections');
+        res.sse.sendTo({ reqId, ...req.session.collections }, 'collections');
     } catch (error) {
         return next({ error });
     }

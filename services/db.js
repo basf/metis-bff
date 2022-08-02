@@ -4,32 +4,35 @@ const bcrypt = require('bcrypt');
 
 const db = require('knex')(dbConfig);
 
-const USERS_TABLE =                       dbConfig.tprefix + 'users';
-const USER_CALCULATIONS_TABLE =           dbConfig.tprefix + 'user_calculations';
-const USER_DATASOURCES_TABLE =            dbConfig.tprefix + 'user_datasources';
-const USERS_EMAILS_TABLE =                dbConfig.tprefix + 'users_emails';
-const USERS_OAUTHS_TABLE =                dbConfig.tprefix + 'users_oauths';
-const USER_ROLES_TABLE =                  dbConfig.tprefix + 'user_roles';
-const USER_COLLECTONS_TABLE =             dbConfig.tprefix + 'user_collections';
-const USER_SHARED_COLLECTONS_TABLE =      dbConfig.tprefix + 'user_collections_shared';
-const USER_COLLECTONS_DATASOURCES_TABLE = dbConfig.tprefix + 'user_collections_datasources';
-const COLLECTONS_TYPES_TABLE =            dbConfig.tprefix + 'collection_types';
+const USERS_TABLE = dbConfig.tprefix + 'users';
+const USER_CALCULATIONS_TABLE = dbConfig.tprefix + 'user_calculations';
+const USER_DATASOURCES_TABLE = dbConfig.tprefix + 'user_datasources';
+const USERS_EMAILS_TABLE = dbConfig.tprefix + 'users_emails';
+const USERS_OAUTHS_TABLE = dbConfig.tprefix + 'users_oauths';
+const USER_ROLES_TABLE = dbConfig.tprefix + 'user_roles';
+const USER_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections';
+const USER_SHARED_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections_shared';
+const USER_COLLECTIONS_DATASOURCES_TABLE = dbConfig.tprefix + 'user_collections_datasources';
+const COLLECTIONS_TYPES_TABLE = dbConfig.tprefix + 'collection_types';
 
 const DEFAULT_FIELDS = ['id', 'userId', 'uuid', 'createdAt', 'updatedAt'];
-
-const DATASOURCE_FIELDS = [
-    `${USER_DATASOURCES_TABLE}.id`,
-    `${USER_DATASOURCES_TABLE}.userId`,
-    `${USER_DATASOURCES_TABLE}.uuid`,
-    `${USER_DATASOURCES_TABLE}.createdAt`,
-    `${USER_DATASOURCES_TABLE}.updatedAt`,
-];
 
 const USER_SHORT_FIELDS = [
     `${USERS_TABLE}.id`,
     `${USERS_TABLE}.firstName`,
     `${USERS_TABLE}.lastName`,
     `${USERS_EMAILS_TABLE}.email`,
+];
+
+const DATASOURCE_FIELDS = [
+    `${USER_DATASOURCES_TABLE}.id`,
+    `${USER_DATASOURCES_TABLE}.uuid`,
+    `${USER_DATASOURCES_TABLE}.userId`,
+    `${USER_DATASOURCES_TABLE}.createdAt`,
+    `${USER_DATASOURCES_TABLE}.updatedAt`,
+    `${USERS_TABLE}.firstName as userFirstName`,
+    `${USERS_TABLE}.lastName as userLastName`,
+    `${USERS_EMAILS_TABLE}.email as userEmail`
 ];
 
 const USER_JOINED_FIELDS = [
@@ -50,19 +53,19 @@ const USER_JOINED_FIELDS = [
 ];
 
 const COLLECTION_JOINED_FIELDS = [
-    `${USER_COLLECTONS_TABLE}.id`,
-    `${USER_COLLECTONS_TABLE}.title`,
-    `${USER_COLLECTONS_TABLE}.description`,
-    `${USER_COLLECTONS_TABLE}.visibility`,
-    `${USER_COLLECTONS_TABLE}.userId`,
-    `${USER_COLLECTONS_TABLE}.typeId`,
-    `${USER_COLLECTONS_TABLE}.createdAt`,
-    `${USER_COLLECTONS_TABLE}.updatedAt`,
+    `${USER_COLLECTIONS_TABLE}.id`,
+    `${USER_COLLECTIONS_TABLE}.title`,
+    `${USER_COLLECTIONS_TABLE}.description`,
+    `${USER_COLLECTIONS_TABLE}.visibility`,
+    `${USER_COLLECTIONS_TABLE}.userId`,
+    `${USER_COLLECTIONS_TABLE}.typeId`,
+    `${USER_COLLECTIONS_TABLE}.createdAt`,
+    `${USER_COLLECTIONS_TABLE}.updatedAt`,
     `${USERS_TABLE}.firstName as userFirstName`,
     `${USERS_TABLE}.lastName as userLastName`,
-    `${COLLECTONS_TYPES_TABLE}.slug as typeSlug`,
-    `${COLLECTONS_TYPES_TABLE}.label as typeLabel`,
-    `${COLLECTONS_TYPES_TABLE}.flavor as typeFlavor`,
+    `${COLLECTIONS_TYPES_TABLE}.slug as typeSlug`,
+    `${COLLECTIONS_TYPES_TABLE}.label as typeLabel`,
+    `${COLLECTIONS_TYPES_TABLE}.flavor as typeFlavor`,
 ];
 
 const DEFAULT_USER_ROLE = 'member';
@@ -104,12 +107,12 @@ const selectDataSourcesByUserId = selectAllByUserId(USER_DATASOURCES_TABLE, DATA
 const selectCalculationsByUserId = selectAllByUserId(USER_CALCULATIONS_TABLE);
 const deleteUserDataSource = deleteFirstByUserId(USER_DATASOURCES_TABLE);
 const deleteUserCalculation = deleteFirstByUserId(USER_CALCULATIONS_TABLE);
-const deleteUserCollection = deleteFirstByUserId(USER_COLLECTONS_TABLE, ['id']);
+const deleteUserCollection = deleteFirstByUserId(USER_COLLECTIONS_TABLE, ['id']);
 const insertUserDataSource = insertByUserId(USER_DATASOURCES_TABLE);
 const insertUserCalculation = insertByUserId(USER_CALCULATIONS_TABLE);
-const insertUserCollection = insertByUserId(USER_COLLECTONS_TABLE, ['id']);
-const upsertUserCollection = upsertByUserId(USER_COLLECTONS_TABLE, ['id']);
-const updateUserCollection = updateByUserId(USER_COLLECTONS_TABLE, ['id']);
+const insertUserCollection = insertByUserId(USER_COLLECTIONS_TABLE, ['id']);
+const upsertUserCollection = upsertByUserId(USER_COLLECTIONS_TABLE, ['id']);
+const updateUserCollection = updateByUserId(USER_COLLECTIONS_TABLE, ['id']);
 const selectDataSourceByUserId = selectFirstByUserId(USER_DATASOURCES_TABLE);
 
 module.exports = {
@@ -118,30 +121,28 @@ module.exports = {
     selectFirstUser,
     compareStringHash,
 
-    deleteUserCollection,
-    deleteUserDataSource,
-    upsertUserCollection,
-    updateUserCollection,
-    insertUserCollection,
+    selectUserDataSources,
     insertUserDataSource,
-    insertUserCalculation,
-    deleteUserCalculation,
-    selectCollectionTypes,
-    selectCollections,
-    selectDataSourceByUserId,
-    selectDataSourcesByUserId,
-    selectCalculationsByUserId,
-    selectDataSourcesByUserIdAndRole,
-    selectCollectionsByUserIdAndRole,
-    selectCalculationsByUserIdAndRole,
-    selectUserCollectionsByDataSources,
-    selectUserDataSourcesByCollections,
+    deleteUserDataSource,
+    delsertDataSourceCollections,
+    selectDataSourceByUserId, // ??
+    selectDataSourcesByUserId, // ??
+
+    selectUserCollections,
+    insertUserCollection,
+    updateUserCollection,
+    upsertUserCollection,
+    deleteUserCollection,
     delsertSharedCollectionUsers,
     delsertCollectionDataSources,
-    delsertDataSourceCollections,
-    selectSharedCollectionsByUserId,
-    selectSharedDataSourcesByUserId,
-    selectPublicAndCollectionsByUserId,
+    selectCollectionTypes,
+
+    selectUserCalculations,
+    insertUserCalculation,
+    deleteUserCalculation,
+    selectCalculationsByUserId,
+    selectCalculationsByUserIdAndRole,
+
     searchUsers,
     upsertUser,
     selectUsersByIds,
@@ -149,12 +150,12 @@ module.exports = {
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
     FLAVORS_ENUM,
-    USER_COLLECTONS_DATASOURCES_TABLE,
-    USER_SHARED_COLLECTONS_TABLE,
+    USER_COLLECTIONS_DATASOURCES_TABLE,
+    USER_SHARED_COLLECTIONS_TABLE,
     USER_CALCULATIONS_TABLE,
     USER_DATASOURCES_TABLE,
-    COLLECTONS_TYPES_TABLE,
-    USER_COLLECTONS_TABLE,
+    COLLECTIONS_TYPES_TABLE,
+    USER_COLLECTIONS_TABLE,
     USERS_EMAILS_TABLE,
     USERS_OAUTHS_TABLE,
     USER_ROLES_TABLE,
@@ -232,150 +233,187 @@ function selectCalculationsByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE)
     }
 }
 
-function selectSharedDataSourcesByUserId(userId, query = {}) {
-    return db(USER_DATASOURCES_TABLE)
-        .join(
-            USER_COLLECTONS_DATASOURCES_TABLE,
-            `${USER_DATASOURCES_TABLE}.id`,
-            `${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`
-        )
-        .join(
-            USER_SHARED_COLLECTONS_TABLE,
-            `${USER_SHARED_COLLECTONS_TABLE}.collectionId`,
-            `${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`
-        )
-        .select(...DATASOURCE_FIELDS)
-        .where({
-            ...addTablePrefix(USER_DATASOURCES_TABLE, query),
-            [`${USER_SHARED_COLLECTONS_TABLE}.userId`]: userId,
-        });
-}
+async function selectUserCalculations(user, query) {
+    const { collectionIds, dataSourceIds, offset, limit, visibility, type } = prepareQuery(query);
 
-async function selectDataSourcesByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE) {
-    if (roleSlug === ADMIN_USER_ROLE) {
-        return db(USER_DATASOURCES_TABLE).select(...DATASOURCE_FIELDS);
-    } else {
-        return (
-            await Promise.allSettled([
-                selectDataSourcesByUserId(userId),
-                selectSharedDataSourcesByUserId(userId),
-            ])
-        ).reduce((datasources, result) => datasources.concat(result.value || []), []);
-    }
-}
-
-function selectUserCollectionsByDataSources(userId, dataSourceIds = [], query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .join(
-            USER_COLLECTONS_DATASOURCES_TABLE,
-            `${USER_COLLECTONS_TABLE}.id`,
-            `${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`
-        )
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
-        .leftJoin(
-            COLLECTONS_TYPES_TABLE,
-            `${COLLECTONS_TYPES_TABLE}.id`,
-            `${USER_COLLECTONS_TABLE}.typeId`
-        )
-        .select(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, ...COLLECTION_JOINED_FIELDS)
-        .where(addTablePrefix(USER_COLLECTONS_TABLE, query))
+    const model = db(USER_CALCULATIONS_TABLE)
         .where((builder) => {
-            builder
-                .where(`${USER_COLLECTONS_TABLE}.userId`, userId)
-                .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, SHARED_COLLECTION_VISIBILITY);
-        })
-        .whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
-}
-
-function selectUserDataSourcesByCollections(userId, collectionIds = []) {
-    return db(USER_DATASOURCES_TABLE)
-        .join(
-            USER_COLLECTONS_DATASOURCES_TABLE,
-            `${USER_DATASOURCES_TABLE}.id`,
-            `${USER_COLLECTONS_DATASOURCES_TABLE}.dataSourceId`
-        )
-        .select(...DATASOURCE_FIELDS)
-        .where(`${USER_DATASOURCES_TABLE}.userId`, userId)
-        .whereIn(`${USER_COLLECTONS_DATASOURCES_TABLE}.collectionId`, collectionIds);
-}
-
-function selectCollections(query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
-        .leftJoin(
-            COLLECTONS_TYPES_TABLE,
-            `${COLLECTONS_TYPES_TABLE}.id`,
-            `${USER_COLLECTONS_TABLE}.typeId`
-        )
-        .select(...COLLECTION_JOINED_FIELDS)
-        .where(addTablePrefix(USER_COLLECTONS_TABLE, query));
-}
-
-async function selectCollectionsByUserIdAndRole(userId, roleSlug = DEFAULT_USER_ROLE) {
-    if (roleSlug === ADMIN_USER_ROLE) {
-        return selectCollections();
-    } else {
-        return (
-            await Promise.allSettled([
-                selectPublicAndCollectionsByUserId(userId),
-                selectSharedCollectionsByUserId(userId),
-            ])
-        ).reduce((collections, result) => collections.concat(result.value || []), []);
-    }
-}
-
-function selectPublicAndCollectionsByUserId(userId, query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
-        .leftJoin(
-            COLLECTONS_TYPES_TABLE,
-            `${COLLECTONS_TYPES_TABLE}.id`,
-            `${USER_COLLECTONS_TABLE}.typeId`
-        )
-        .select(...COLLECTION_JOINED_FIELDS)
-        .where({
-            ...addTablePrefix(USER_COLLECTONS_TABLE, query),
-            [`${USER_COLLECTONS_TABLE}.userId`]: userId,
-        })
-        .orWhere(`${USER_COLLECTONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
-}
-
-function selectSharedCollectionsByUserId(userId, query = {}) {
-    return db(USER_COLLECTONS_TABLE)
-        .join(
-            USER_SHARED_COLLECTONS_TABLE,
-            `${USER_COLLECTONS_TABLE}.id`,
-            `${USER_SHARED_COLLECTONS_TABLE}.collectionId`
-        )
-        .leftJoin(USERS_TABLE, `${USERS_TABLE}.id`, `${USER_COLLECTONS_TABLE}.userId`)
-        .leftJoin(
-            COLLECTONS_TYPES_TABLE,
-            `${COLLECTONS_TYPES_TABLE}.id`,
-            `${USER_COLLECTONS_TABLE}.typeId`
-        )
-        .select(...COLLECTION_JOINED_FIELDS)
-        .where({
-            ...addTablePrefix(USER_COLLECTONS_TABLE, query),
-            [`${USER_COLLECTONS_TABLE}.visibility`]: SHARED_COLLECTION_VISIBILITY,
-            [`${USER_SHARED_COLLECTONS_TABLE}.userId`]: userId,
+            if (user.roleSlug !== ADMIN_USER_ROLE)
+                builder.where(`${USER_CALCULATIONS_TABLE}.userId`, user.id);
         });
+
+    const count = await model.clone().count().countDistinct(`${USER_CALCULATIONS_TABLE}.id`);
+    const total = +count[0]['count'];
+
+    const data = await model.clone()
+        .select(...DEFAULT_FIELDS)
+        .distinctOn(`${USER_CALCULATIONS_TABLE}.id`)
+        .orderBy(`${USER_CALCULATIONS_TABLE}.id`)
+        .groupBy(`${USER_CALCULATIONS_TABLE}.id`)
+        .limit(limit || total)
+        .offset(offset || 0);
+
+    const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
+
+    return { data, total, types };
+}
+
+async function selectUserDataSources(user, query) {
+    const { collectionIds, dataSourceIds, offset, limit, visibility, type } = prepareQuery(query);
+
+    const model = db(USER_DATASOURCES_TABLE)
+        .leftJoin(
+            USER_COLLECTIONS_DATASOURCES_TABLE,
+            `${USER_DATASOURCES_TABLE}.id`,
+            `${USER_COLLECTIONS_DATASOURCES_TABLE}.dataSourceId`
+        )
+        .leftJoin(
+            USER_COLLECTIONS_TABLE,
+            `${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`,
+            `${USER_COLLECTIONS_TABLE}.id`
+        )
+        .leftJoin(
+            USER_SHARED_COLLECTIONS_TABLE,
+            `${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`,
+            `${USER_SHARED_COLLECTIONS_TABLE}.collectionId`,
+        )
+        .leftJoin(
+            COLLECTIONS_TYPES_TABLE,
+            `${USER_COLLECTIONS_TABLE}.typeId`,
+            `${COLLECTIONS_TYPES_TABLE}.id`,
+        )
+        .innerJoin(
+            USERS_TABLE,
+            `${USER_DATASOURCES_TABLE}.userId`,
+            `${USERS_TABLE}.id`,
+        )
+        .innerJoin(
+            USERS_EMAILS_TABLE,
+            `${USER_DATASOURCES_TABLE}.userId`,
+            `${USERS_EMAILS_TABLE}.userId`
+        )
+        .where((builder) => {
+            if (user.roleSlug !== ADMIN_USER_ROLE)
+                builder
+                    .where(`${USER_DATASOURCES_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_SHARED_COLLECTIONS_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_COLLECTIONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
+        })
+        .where((builder) => {
+            if (type) builder.where(`${COLLECTIONS_TYPES_TABLE}.id`, type);
+            if (visibility) builder.where(`${USER_COLLECTIONS_TABLE}.visibility`, visibility);
+            if (collectionIds.length)
+                builder.whereIn(`${USER_COLLECTIONS_TABLE}.id`, collectionIds);
+            if (dataSourceIds.length)
+                builder.whereIn(`${USER_DATASOURCES_TABLE}.id`, dataSourceIds);
+        });
+
+    const count = await model.clone().count().countDistinct(`${USER_DATASOURCES_TABLE}.id`);
+    const total = +count[0]['count'];
+
+    const data = await model.clone()
+        .select(...DATASOURCE_FIELDS)
+        .distinctOn(`${USER_DATASOURCES_TABLE}.id`)
+        .orderBy(`${USER_DATASOURCES_TABLE}.id`)
+        .groupBy(
+            `${USER_DATASOURCES_TABLE}.id`,
+            `${USERS_TABLE}.firstName`,
+            `${USERS_TABLE}.lastName`,
+            `${USERS_EMAILS_TABLE}.email`
+        )
+        .limit(limit || total)
+        .offset(offset || 0);
+
+    const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
+
+    return { data, total, types };
+}
+
+async function selectUserCollections(user, query) {
+    const { collectionIds, dataSourceIds, offset, limit, visibility, type } = prepareQuery(query);
+
+    const model = db(USER_COLLECTIONS_TABLE)
+        .innerJoin(
+            USERS_TABLE,
+            `${USER_COLLECTIONS_TABLE}.userId`,
+            `${USERS_TABLE}.id`,
+        )
+        .leftJoin(
+            USER_SHARED_COLLECTIONS_TABLE,
+            `${USER_COLLECTIONS_TABLE}.id`,
+            `${USER_SHARED_COLLECTIONS_TABLE}.collectionId`
+        )
+        .leftJoin(
+            COLLECTIONS_TYPES_TABLE,
+            `${USER_COLLECTIONS_TABLE}.typeId`,
+            `${COLLECTIONS_TYPES_TABLE}.id`,
+        )
+        .leftJoin(
+            USER_COLLECTIONS_DATASOURCES_TABLE,
+            `${USER_COLLECTIONS_TABLE}.id`,
+            `${USER_COLLECTIONS_DATASOURCES_TABLE}.collectionId`
+        )
+        .where((builder) => {
+            if (user.roleSlug !== ADMIN_USER_ROLE)
+                builder
+                    .where(`${USER_COLLECTIONS_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_SHARED_COLLECTIONS_TABLE}.userId`, user.id)
+                    .orWhere(`${USER_COLLECTIONS_TABLE}.visibility`, PUBLIC_COLLECTION_VISIBILITY);
+        })
+        .where((builder) => {
+            if (type) builder.where(`${COLLECTIONS_TYPES_TABLE}.id`, type);
+            if (visibility) builder.where(`${USER_COLLECTIONS_TABLE}.visibility`, visibility);
+            if (collectionIds.length)
+                builder.whereIn(`${USER_COLLECTIONS_TABLE}.id`, collectionIds);
+            if (dataSourceIds.length)
+                builder.whereIn(`${USER_COLLECTIONS_DATASOURCES_TABLE}.dataSourceId`, dataSourceIds);
+        });
+
+    const count = await model.clone().countDistinct(`${USER_COLLECTIONS_TABLE}.id`);
+    const total = +count[0]['count'];
+
+    const data = await model.clone()
+        .select(...COLLECTION_JOINED_FIELDS)
+        .distinctOn(`${USER_COLLECTIONS_TABLE}.id`)
+        .orderBy(`${USER_COLLECTIONS_TABLE}.id`, 'asc')
+        .groupBy(
+            `${USER_COLLECTIONS_TABLE}.id`,
+            `${COLLECTIONS_TYPES_TABLE}.label`,
+            `${COLLECTIONS_TYPES_TABLE}.slug`,
+            `${COLLECTIONS_TYPES_TABLE}.flavor`,
+            `${USERS_TABLE}.firstName`,
+            `${USERS_TABLE}.lastName`,
+        )
+        .limit(limit || total)
+        .offset(offset || 0);
+
+    // .select([
+    //     ...COLLECTION_JOINED_FIELDS,
+    //     db.raw(`ARRAY_AGG(DISTINCT ${USER_COLLECTIONS_DATASOURCES_TABLE}."dataSourceId") as "dataSources"`),
+    //     db.raw(`COALESCE(ARRAY_AGG(DISTINCT ${USER_SHARED_COLLECTIONS_TABLE}."userId")
+    //         FILTER (WHERE ${USER_SHARED_COLLECTIONS_TABLE}."userId" IS NOT NULL)) as "users"`),
+    // ])
+
+    const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
+
+    return { data, total, types };
 }
 
 async function delsertCollectionDataSources(collectionId, dataSourceIds) {
     if (dataSourceIds.length) {
-        const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
+        const deleted = await db(USER_COLLECTIONS_DATASOURCES_TABLE)
             .where('collectionId', collectionId)
             .whereNotIn('dataSourceId', dataSourceIds)
             .del();
 
         const inserts = dataSourceIds.map((dataSourceId) => ({ dataSourceId, collectionId }));
 
-        return db(USER_COLLECTONS_DATASOURCES_TABLE)
+        return db(USER_COLLECTIONS_DATASOURCES_TABLE)
             .insert(inserts, ['dataSourceId'])
             .onConflict(['collectionId', 'dataSourceId'])
             .ignore();
     } else {
-        const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
+        const deleted = await db(USER_COLLECTIONS_DATASOURCES_TABLE)
             .where('collectionId', collectionId)
             .del();
         return [];
@@ -384,19 +422,19 @@ async function delsertCollectionDataSources(collectionId, dataSourceIds) {
 
 async function delsertDataSourceCollections(dataSourceId, collectionIds) {
     if (collectionIds.length) {
-        const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
+        const deleted = await db(USER_COLLECTIONS_DATASOURCES_TABLE)
             .where('dataSourceId', dataSourceId)
             .whereNotIn('collectionId', collectionIds)
             .del();
 
         const inserts = collectionIds.map((collectionId) => ({ dataSourceId, collectionId }));
 
-        return db(USER_COLLECTONS_DATASOURCES_TABLE)
+        return db(USER_COLLECTIONS_DATASOURCES_TABLE)
             .insert(inserts, ['collectionId'])
             .onConflict(['collectionId', 'dataSourceId'])
             .ignore();
     } else {
-        const deleted = await db(USER_COLLECTONS_DATASOURCES_TABLE)
+        const deleted = await db(USER_COLLECTIONS_DATASOURCES_TABLE)
             .where('dataSourceId', dataSourceId)
             .del();
         return [];
@@ -405,19 +443,19 @@ async function delsertDataSourceCollections(dataSourceId, collectionIds) {
 
 async function delsertSharedCollectionUsers(collectionId, userIds) {
     if (userIds.length) {
-        const deleted = await db(USER_SHARED_COLLECTONS_TABLE)
+        const deleted = await db(USER_SHARED_COLLECTIONS_TABLE)
             .where('collectionId', collectionId)
             .whereNotIn('userId', userIds)
             .del();
 
         const inserts = userIds.map((userId) => ({ userId, collectionId }));
 
-        return db(USER_SHARED_COLLECTONS_TABLE)
+        return db(USER_SHARED_COLLECTIONS_TABLE)
             .insert(inserts, ['userId'])
             .onConflict(['userId', 'collectionId'])
             .ignore();
     } else {
-        const deleted = await db(USER_SHARED_COLLECTONS_TABLE)
+        const deleted = await db(USER_SHARED_COLLECTIONS_TABLE)
             .where('collectionId', collectionId)
             .del();
         return [];
@@ -484,7 +522,7 @@ async function upsertUser({ email, provider, providerId, profile, ...user }) {
 }
 
 function selectCollectionTypes() {
-    return db.select().from(COLLECTONS_TYPES_TABLE);
+    return db.select().from(COLLECTIONS_TYPES_TABLE);
 }
 
 function searchUsers(str, limit = 10) {
@@ -510,4 +548,18 @@ function addTablePrefix(TABLE, query = {}) {
         where[`${TABLE}.${field}`] = value;
         return where;
     }, {});
+}
+
+function prepareQuery(query) {
+    if (query) {
+        const { collectionIds, dataSourceIds, page, limit, type, visibility } = query;
+        return {
+            collectionIds: collectionIds ? collectionIds.includes(',')
+                ? collectionIds.split(',')
+                : [collectionIds] : [],
+            dataSourceIds: dataSourceIds || [],
+            offset: +page ? (page - 1) * limit : 0,
+            limit, type, visibility
+        };
+    } else return {};
 }

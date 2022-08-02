@@ -2,7 +2,7 @@ const { StatusCodes } = require('http-status-codes');
 
 const { checkAuth } = require('../../../middlewares/auth');
 const { getUserCollections } = require('../../../middlewares/db');
-const { saveCollection } = require('./_helpers');
+const { getAndPrepareCollections, saveCollection } = require('./_helpers');
 
 module.exports = {
     get: [checkAuth, getUserCollections, get],
@@ -22,17 +22,17 @@ async function put(req, res, next) {
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
-        const collection = await saveCollection(req.user.id, req.body);
+        const collection = await saveCollection(req.user, req.body);
 
-        const i = req.session.collections.findIndex(({ id }) => id === collection.id);
+        const i = req.session.collections.data.findIndex(({ id }) => id === collection.id);
 
         if (i < 0) {
-            req.session.collections.push(collection);
+            req.session.collections.data.push(collection);
         } else {
-            req.session.collections[i] = collection;
+            req.session.collections.data[i] = collection;
         }
 
-        res.sse.sendTo({ reqId, data: req.session.collections }, 'collections');
+        res.sse.sendTo({ reqId, ...req.session.collections }, 'collections');
     } catch (error) {
         return next({ error });
     }
@@ -44,7 +44,9 @@ async function get(req, res, next) {
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
-        res.sse.sendTo({ reqId, data: req.session.collections }, 'collections');
+        const data = await getAndPrepareCollections(req.session.collections);
+
+        res.sse.sendTo({ reqId, ...data }, 'collections');
     } catch (error) {
         return next({ error });
     }

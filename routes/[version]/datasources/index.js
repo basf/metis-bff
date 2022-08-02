@@ -26,13 +26,12 @@ async function post(req, res, next) {
 
         for (const content of contents) {
             const datasource = await createAndSaveDataSource(req.user.id, content);
-            req.session.datasources.push(datasource);
+            req.session.datasources.data.push(datasource);
         }
 
         const data = await getAndPrepareDataSources(req.session.datasources);
 
-        res.sse.sendTo({ reqId, data }, 'datasources');
-
+        res.sse.sendTo({ reqId, ...data }, 'datasources');
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -46,8 +45,7 @@ async function get(req, res, next) {
     try {
         const data = await getAndPrepareDataSources(req.session.datasources);
 
-        res.sse.sendTo({ reqId, data }, 'datasources');
-
+        res.sse.sendTo({ reqId, ...data }, 'datasources');
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }

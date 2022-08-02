@@ -48,11 +48,11 @@ async function post(req, res, next) {
             updateHook
         );
 
-        req.session.calculations.push(calculation);
+        req.session.calculations.data.push(calculation);
 
         const data = await getAndPrepareCalculations(req.session.calculations);
 
-        res.sse.sendTo({ reqId, data }, 'calculations');
+        res.sse.sendTo({ reqId, ...data }, 'calculations');
 
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
@@ -67,7 +67,7 @@ async function get(req, res, next) {
     try {
         const data = await getAndPrepareCalculations(req.session.calculations);
 
-        res.sse.sendTo({ reqId, data }, 'calculations');
+        res.sse.sendTo({ reqId, ...data }, 'calculations');
 
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
