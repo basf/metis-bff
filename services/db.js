@@ -248,7 +248,7 @@ async function selectUserCalculations(user, query) {
     const data = await model.clone()
         .select(...DEFAULT_FIELDS)
         .distinctOn(`${USER_CALCULATIONS_TABLE}.id`)
-        .orderBy(`${USER_CALCULATIONS_TABLE}.id`)
+        .orderBy(`${USER_CALCULATIONS_TABLE}.id`, 'desc')
         .groupBy(`${USER_CALCULATIONS_TABLE}.id`)
         .limit(limit || total)
         .offset(offset || 0);
@@ -314,7 +314,7 @@ async function selectUserDataSources(user, query) {
     const data = await model.clone()
         .select(...DATASOURCE_FIELDS)
         .distinctOn(`${USER_DATASOURCES_TABLE}.id`)
-        .orderBy(`${USER_DATASOURCES_TABLE}.id`)
+        .orderBy(`${USER_DATASOURCES_TABLE}.id`, 'desc')
         .groupBy(
             `${USER_DATASOURCES_TABLE}.id`,
             `${USERS_TABLE}.firstName`,
@@ -375,7 +375,7 @@ async function selectUserCollections(user, query) {
     const data = await model.clone()
         .select(...COLLECTION_JOINED_FIELDS)
         .distinctOn(`${USER_COLLECTIONS_TABLE}.id`)
-        .orderBy(`${USER_COLLECTIONS_TABLE}.id`, 'asc')
+        .orderBy(`${USER_COLLECTIONS_TABLE}.id`, 'desc')
         .groupBy(
             `${USER_COLLECTIONS_TABLE}.id`,
             `${COLLECTIONS_TYPES_TABLE}.label`,
