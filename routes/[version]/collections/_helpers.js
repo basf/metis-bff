@@ -18,13 +18,13 @@ module.exports = {
 async function getAndPrepareCollections(collections = { data: [], total: 0 }) {
 
     const collectionIds = collections.data.map(({ id }) => id);
-    const collectionTypeIds = collections.data.map(({ typeId }) => typeId);
+    // const collectionTypeIds = collections.data.map(({ typeId }) => typeId);
     const sharedCollectionIds = collections.data.reduce((ids, { visibility, id }) => {
         if (visibility === SHARED_COLLECTION_VISIBILITY) ids.push(id);
         return ids;
     }, []);
 
-    collections.types = await db.select().from(COLLECTIONS_TYPES_TABLE).whereIn('id', collectionTypeIds);
+    // collections.types = await db.select().from(COLLECTIONS_TYPES_TABLE).whereIn('id', collectionTypeIds);
 
     let dataSources = collectionIds.length
         ? await db(USER_COLLECTIONS_DATASOURCES_TABLE).whereIn('collectionId', collectionIds)
