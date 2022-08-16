@@ -42,6 +42,14 @@ module.exports = {
             callbackURL: process.env.MPDS_CALLBACK_URL || oauth.mpds.callback || 'unset',
             userProfileURL: process.env.MPDS_USER_PROFILE_URL || oauth.mpds.user_profile_url || 'unset',
         },
+        basf: {
+            authorizationURL: process.env.BASF_AUTH_URL || oauth.basf.authorize_url || 'unset',
+            tokenURL: process.env.BASF_ACCESS_TOKEN_URL || oauth.basf.access_token_url || 'unset',
+            clientID: process.env.BASF_CLIENT_ID || oauth.basf.client || 'unset',
+            clientSecret: process.env.BASF_CLIENT_SECRET || oauth.basf.secret || 'unset',
+            callbackURL: process.env.BASF_CALLBACK_URL || oauth.basf.callback || 'unset',
+            userProfileURL: process.env.BASF_USER_PROFILE_URL || oauth.basf.user_profile_url || 'unset',
+        },
         dummy: {
             authorizationURL: process.env.DUMMY_AUTH_URL || oauth.dummy.authorize_url || 'unset',
             tokenURL: process.env.DUMMY_ACCESS_TOKEN_URL || oauth.dummy.access_token_url || 'unset',
