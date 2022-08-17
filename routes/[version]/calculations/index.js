@@ -25,7 +25,8 @@ async function post(req, res, next) {
         input = req.body.input || {},
         workflow = req.body.workflow;
 
-    console.log('Got workflow param: ' + workflow);
+    console.log('Got *engine* param:   ' + engine);
+    console.log('Got *workflow* param: ' + workflow);
 
     if (req.session.calculations.data.length > 15) {
         return next({

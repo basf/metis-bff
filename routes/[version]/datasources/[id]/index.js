@@ -46,7 +46,7 @@ async function get(req, res, next) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
-    const target = req.session.datasources.filter(
+    const target = req.session.datasources.data.filter(
         (datasource) => datasource.id == req.params.id
     );
 
