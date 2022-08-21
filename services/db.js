@@ -561,5 +561,5 @@ function prepareQuery(query) {
             offset: +page ? (page - 1) * limit : 0,
             limit, type, visibility
         };
-    } else return {};
+    } else return { collectionIds: [], dataSourceIds: [], offset: 0, limit: 0, visibility: '', type: '' };
 }
