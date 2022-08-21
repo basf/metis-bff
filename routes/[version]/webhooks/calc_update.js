@@ -15,14 +15,13 @@ const { getAndPrepareDataSources } = require('../datasources/_helpers');
 
 module.exports = { post };
 
-let query = null;
+let mapQueryFromDSforLimits = new Map();
 
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
 
     if (req.query.limit) {
-        query = req.query;
-        // query.page = 1;
+        mapQueryFromDSforLimits.set(req.session.passport.user, req.query);
         return next({ status: StatusCodes.ACCEPTED });
     }
 
@@ -58,6 +57,7 @@ async function post(req, res, next) {
 
     if (output.data.some(({ progress }) => progress === 100)) {
         const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: userId });
+        const query = mapQueryFromDSforLimits.get(userId);
         const datasources = await selectUserDataSources(user, query);
         const preparedDataSouces = await getAndPrepareDataSources(datasources);
 
