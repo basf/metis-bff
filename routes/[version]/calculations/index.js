@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
 const { checkAuth } = require('../../../middlewares/auth');
-const { getQuery, getUserCalculations } = require('../../../middlewares/db');
+const { getUserCalculations } = require('../../../middlewares/db');
 
 const { runAndSaveCalculation, getAndPrepareCalculations } = require('./_helpers');
 
