@@ -5,6 +5,7 @@ const { db,
     USERS_TABLE,
     selectUserCalculations,
     selectUserDataSources,
+    selectUserCollections,
     selectFirstUser
 } = require('../../../services/db');
 
@@ -12,6 +13,7 @@ const { is_valid_uuid } = require('./_helpers');
 const { getAndPrepareCalcResults, deleteAndClearCalculation } = require('../calculations/_helpers');
 
 const { getAndPrepareDataSources } = require('../datasources/_helpers');
+const { getAndPrepareCollections } = require('../collections/_helpers');
 
 module.exports = { post };
 
@@ -58,6 +60,18 @@ async function post(req, res, next) {
     if (output.data.some(({ progress }) => progress === 100)) {
         const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: userId });
         const query = mapQueryFromDSforLimits.get(userId);
+
+        const filters = await selectUserCollections(user);
+        const preparedFilters = await getAndPrepareCollections(filters);
+
+        res.sse.send(
+            ({ session }) => {
+                return userId && session.passport && userId === session.passport.user;
+            },
+            { reqId: req.id, ...preparedFilters },
+            'filters'
+        );
+
         const datasources = await selectUserDataSources(user, query);
         const preparedDataSouces = await getAndPrepareDataSources(datasources);
 
