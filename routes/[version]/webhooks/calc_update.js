@@ -22,8 +22,8 @@ let mapQueryFromDSforLimits = new Map();
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
 
-    if (req.query.limit) {
-        mapQueryFromDSforLimits.set(req.session.passport.user, req.query);
+    if (req.user && req.session.passport.user && req.query.limit) {
+        mapQueryFromDSforLimits.set(req.user.id, req.query);
         return next({ status: StatusCodes.ACCEPTED });
     }
 
