@@ -72,11 +72,10 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
                 return { error: 'Invalid result given' };
 
             // result database processing
-            const parentDataSource = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
-            if (!parentDataSource)
-                return { error: 'Absent parent datasource' };
+            const { id } = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
+            if (!id) return { error: 'Absent parent datasource' };
 
-            const parentCollections = await selectUserCollections({ id: userId }, { dataSourceIds: [parentDataSource.id] });
+            const parentCollections = await selectUserCollections({ id: userId }, { dataSourceIds: [id] });
             const collectionIds = parentCollections.data.map(({ id }) => id);
             const dataSource = await insertUserDataSource(userId, { uuid });
 
