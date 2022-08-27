@@ -17,7 +17,7 @@ const { getAndPrepareCollections } = require('../collections/_helpers');
 
 module.exports = { post };
 
-let mapQueryFromDSforLimits = new Map();
+let mapQueryFromDSforLimits = new Map(); // This is the hack TODO FIXME
 
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
