@@ -49,6 +49,7 @@ module.exports = {
             clientSecret: process.env.BASF_CLIENT_SECRET || oauth.basf.secret || 'unset',
             callbackURL: process.env.BASF_CALLBACK_URL || oauth.basf.callback || 'unset',
             userProfileURL: process.env.BASF_USER_PROFILE_URL || oauth.basf.user_profile_url || 'unset',
+            scope: process.env.BASF_SCOPE || oauth.basf.scope,
         },
         dummy: {
             authorizationURL: process.env.DUMMY_AUTH_URL || oauth.dummy.authorize_url || 'unset',

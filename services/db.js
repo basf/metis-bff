@@ -81,6 +81,7 @@ const OAUTH_PROVIDERS_ENUM = [
     'linkedin',
     'orcid',
     'mpds',
+    'basf',
 ];
 const FLAVORS_ENUM = [
     'red',
