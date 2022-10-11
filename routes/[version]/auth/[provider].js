@@ -3,7 +3,9 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
+
 const MPDSStrategy = require('./mpds');
+const BASFStrategy = require('./basf');
 
 //const OAuth2Strategy = require('passport-oauth2').Strategy;
 //const DummyStrategy = require('../../../tests/oauth/strategy');
@@ -44,6 +46,7 @@ passport.use(new GitHubStrategy(oauth.github, handleCallback('github')));
 passport.use(new LinkedInStrategy(oauth.linkedin, handleCallback('linkedin')));
 passport.use(new OrcidStrategy(oauth.orcid, handleCallback('orcid')));
 passport.use(new MPDSStrategy(oauth.mpds, handleCallback('mpds')));
+passport.use(new BASFStrategy(oauth.basf, handleCallback('basf')));
 
 //passport.use(new DummyStrategy(oauth.dummy, handleCallback('dummy')));
 
@@ -69,23 +72,44 @@ function handleCallback(provider) {
             profile = params;
         }
 
-        const providerId = provider === 'orcid' ? profile.orcid : profile.id;
+        if (!profile) return done(new Error('OAuth profile is incorrect'), null);
 
-        if (!profile || !providerId) return done(new Error('OAuth profile is incorrect'), null);
+        let providerId,
+            firstName,
+            lastName,
+            email = profile.email || (profile.emails.length && profile.emails[0].value) || '';
 
-        const email = profile.email || (profile.emails.length && profile.emails[0].value) || '';
-        let [firstName = '', lastName = ''] = (profile.displayName || profile.name || '').split(
-            ' '
-        );
+        // TODO email should not be allowed empty!
 
-        if (!firstName && !lastName) {
+        if (provider === 'orcid') {
+            providerId = profile.orcid;
 
-            firstName = profile.username || profile.login;
+        } else if (provider === 'basf') {
+            providerId = profile.sub;
 
-            if (provider === 'mpds') {
-                firstName = profile.first_name;
-                lastName = profile.last_name;
-            }
+        } else {
+            providerId = profile.id;
+        }
+
+        if (!providerId) return done(new Error('OAuth profile is empty'), null);
+
+        if (provider === 'mpds') {
+            firstName = profile.first_name;
+            lastName = profile.last_name;
+
+        } else if (provider === 'basf') {
+            firstName = profile.given_name;
+            lastName = profile.family_name;
+
+        } else {
+            [firstName = '', lastName = ''] = (profile.displayName || profile.name || '').split(' ');
+        }
+
+        if (!firstName) {
+            firstName = profile.username || profile.login || 'Member';
+        }
+        if (!lastName) {
+            lastName = 'from ' + provider;
         }
 
         try {
