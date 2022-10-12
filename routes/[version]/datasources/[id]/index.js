@@ -46,7 +46,8 @@ async function get(req, res, next) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
 
-    const { uuid } = req.session.datasources.data.find(({ id }) => id == req.params.id);
+    const result = req.session.datasources.data.find(({ id }) => id == req.params.id),
+        uuid = result?.uuid;
 
     if (!uuid)
         return res.status(StatusCodes.FORBIDDEN).json({ error: 'Sorry you cannot access this item' });
@@ -54,7 +55,7 @@ async function get(req, res, next) {
     try {
         const { data = {} } = await getDataSourceResult(uuid);
 
-        res.header("Content-Type", "text/plain");
+        res.header("Content-Type", "application/json");
         return res.send(JSON.stringify(data, null, 4));
 
     } catch (error) {
