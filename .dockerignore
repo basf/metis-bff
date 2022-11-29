@@ -1,0 +1,12 @@
+.editorconfig
+.gitignore
+.husky
+/.git
+/.github
+/integrations
+/node_modules
+/scripts
+/tests
+LICENSE
+README.md
+npm-debug.log
