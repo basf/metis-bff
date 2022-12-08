@@ -6,17 +6,17 @@ const bff = require('express-bff');
 const passport = require('passport');
 const { getReasonPhrase } = require('http-status-codes');
 
-const { dev, backend, PORT } = require('./config');
+const { dev, http: httpConf, backend, PORT } = require('./config');
 
 const sseMiddleware = require('./middlewares/sse');
 
 const { USERS_TABLE, selectFirstUser } = require('./services/db');
 
-const secure = !dev;
-
 const app = express();
 
-secure && app.set('trust proxy', 1); // if nginx used
+if (httpConf.trust_proxy) {
+    app.set('trust proxy', 1); // if behind proxy
+}
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
@@ -35,7 +35,7 @@ bff(app, {
             origin: true,
         },
         csrf: false,
-        secure,
+        secure: httpConf.force_https,
     },
     session: {
         persist: false,
