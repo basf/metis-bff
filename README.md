@@ -1,4 +1,6 @@
-# XRPD data management GUI: Backend for Frontend
+# Metis data management GUI: Backend for Frontend
+
+**This is the second part of the whole Metis infra: [GUI](https://github.com/basf/metis-gui) <-> [BFF](https://github.com/basf/metis-bff) <-> [backend](https://github.com/basf/metis-backend).**
 
 ### Requirements
 
