@@ -13,6 +13,7 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN npm ci
 
 COPY env.ini.sample ./env.ini
+COPY .docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY . .
 
 USER node
