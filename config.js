@@ -1,7 +1,7 @@
 const fs = require('fs');
 const ini = require('ini');
 
-const { oauth, db, api, webhooks, mail } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
+const { oauth, db, api, webhooks, mail, http = {} } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
 
 const dev = process.env.NODE_ENV === 'development';
 const _api = dev ? api.dev : api.prod;
@@ -84,6 +84,10 @@ module.exports = {
         user: process.env.MAIL_USER || mail.user,
         pass: process.env.MAIL_PASSWORD || mail.pass,
         from: process.env.MAIL_FROM || mail.from,
+    },
+    http: {
+        trust_proxy: process.env.TRUST_PROXY || http.trust_proxy || false,
+        force_https: process.env.FORCE_HTTP || http.force_https || false,
     },
     dev,
 };
