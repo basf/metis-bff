@@ -28,7 +28,7 @@ const NAME_LENGTH = 20;
 const EMAIL_LENGTH = 320;
 const PASSWORD_LENGTH = 60;
 
-Promise.all([
+const initDb = () => Promise.all([
     db.schema.dropTableIfExists(USER_COLLECTIONS_DATASOURCES_TABLE),
     db.schema.dropTableIfExists(USER_SHARED_COLLECTIONS_TABLE),
 ])
@@ -387,3 +387,36 @@ Promise.all([
             },
         ]);
     });
+
+
+const isExists = () => Promise.all([
+    COLLECTIONS_TYPES_TABLE,
+    USERS_EMAILS_TABLE,
+    USERS_OAUTHS_TABLE,
+    USERS_TABLE,
+    USER_CALCULATIONS_TABLE,
+    USER_COLLECTIONS_DATASOURCES_TABLE,
+    USER_COLLECTIONS_TABLE,
+    USER_DATASOURCES_TABLE,
+    USER_ROLES_TABLE,
+    USER_SHARED_COLLECTIONS_TABLE,
+].map((name) => db.schema.hasTable(name))).then((res) => res.some(Boolean));
+
+
+isExists().then((exists) => {
+    if (exists) {
+        console.error("Database is not empty!");
+        forced = Boolean(process.env.FORCE_DB_INIT);
+        if (!forced) {
+            console.error(
+                "Aborting. Set FORCE_DB_INIT if you really want to destroy data!"
+            );
+            return process.exit(2);
+        };
+    }
+    console.error("Populating database...");
+    return initDb();
+}).catch((err) => {
+    console.error(err.message);
+    process.exit(1);
+}).then(() => process.exit(0));
