@@ -80,6 +80,6 @@ async function post(req, res, next) {
 }
 
 async function del(req, res) {
-    req.logout();
+    req.logout(function (err) { if (err) { return next(err); } });
     return res.status(StatusCodes.NO_CONTENT).end();
 }
