@@ -87,7 +87,7 @@ module.exports = {
     },
     http: {
         trust_proxy: process.env.TRUST_PROXY || http.trust_proxy || false,
-        force_https: process.env.FORCE_HTTP || http.force_https || false,
+        force_https: process.env.FORCE_HTTPS || http.force_https || false,
     },
     dev,
 };
