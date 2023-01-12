@@ -31,7 +31,7 @@ passport.use(
                 if (user && match) {
                     done(null, user);
                 } else {
-                    done({ status: StatusCodes.BAD_REQUEST, error: 'Bad credentials' }, null);
+                    done({ status: StatusCodes.UNAUTHORIZED, error: 'Authentication failed' }, null);
                 }
             } catch (err) {
                 done(err, null);
