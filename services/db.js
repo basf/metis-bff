@@ -14,6 +14,7 @@ const USER_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections';
 const USER_SHARED_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections_shared';
 const USER_COLLECTIONS_DATASOURCES_TABLE = dbConfig.tprefix + 'user_collections_datasources';
 const COLLECTIONS_TYPES_TABLE = dbConfig.tprefix + 'collection_types';
+const USER_API_TOKENS_TABLE = dbConfig.tprefix + 'user_api_tokens';
 
 const DEFAULT_FIELDS = ['id', 'userId', 'uuid', 'createdAt', 'updatedAt'];
 
@@ -166,6 +167,7 @@ module.exports = {
     PUBLIC_COLLECTION_VISIBILITY,
     SHARED_COLLECTION_VISIBILITY,
     PRIVATE_COLLECTION_VISIBILITY,
+    USER_API_TOKENS_TABLE,
 };
 
 async function hashString(str, salt = 10) {

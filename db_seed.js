@@ -21,6 +21,7 @@ const {
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
     FLAVORS_ENUM,
+    USER_API_TOKENS_TABLE,
 } = require('./services/db');
 
 const FOREIGN_KEY_LENGTH = 11;
@@ -46,6 +47,7 @@ const initDb = () => Promise.all([
         Promise.all([
             db.schema.dropTableIfExists(USERS_TABLE),
             db.schema.dropTableIfExists(COLLECTIONS_TYPES_TABLE),
+            db.schema.dropTableIfExists(USER_API_TOKENS_TABLE),
         ])
     )
     .then(() =>
@@ -113,7 +115,27 @@ const initDb = () => Promise.all([
             }),
         ])
     )
+        .then(() =>
+            db.schema.hasTable(USER_API_TOKENS_TABLE).then((exists) => {
+                if (!exists) {
+                    return db.schema.createTable(USER_API_TOKENS_TABLE, (table) => {
+                        table.increments('id');
+                        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+                        table.string('token').unique();
+                        table.timestamps(false, true, true);
 
+                        table.primary('id', { constraintName: 'pk_user_api_token' });
+                        table
+                            .foreign('userId', 'fk_userId')
+                            .references('id')
+                            .inTable(USERS_TABLE)
+                            .onDelete('CASCADE');
+                    });
+                } else {
+                    console.log('USER_API_TOKENS_TABLE AFTER TABLE');
+                }
+            })
+        )
     .then(() =>
         Promise.all([
             db.schema.hasTable(USERS_EMAILS_TABLE).then((exists) => {
