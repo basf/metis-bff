@@ -31,6 +31,7 @@ passport.use(
                 if (user && match) {
                     done(null, user);
                 } else {
+                    // NB also status 400 can be used instead
                     done(
                         { status: StatusCodes.UNAUTHORIZED, error: 'Authentication failed' },
                         null
