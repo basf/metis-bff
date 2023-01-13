@@ -11,7 +11,7 @@
         "oauth": "cd tests/oauth && node server",
         "test:oauth": "env OAUTH_TEST=true npm start",
         "format": "prettier --ignore-path .gitignore --write '**/*.js'",
-        "husky:init": "npx husky install"
+        "prepare": "husky install"
     },
     "repository": {
         "type": "git",
@@ -23,7 +23,6 @@
         "express": "^4.17.3",
         "express-bff": "^1.0.0",
         "http-status-codes": "^2.2.0",
-        "husky": "^7.0.4",
         "ini": "^2.0.0",
         "knex": "^1.0.4",
         "mjml": "^4.12.0",
@@ -38,6 +37,7 @@
         "prettier": "^2.3.1"
     },
     "devDependencies": {
-        "eventsource": "^2.0.2"
+        "eventsource": "^2.0.2",
+        "husky": "^8.0.0"
     }
 }
