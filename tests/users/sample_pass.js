@@ -6,7 +6,7 @@ const args = process.argv.slice(2),
     user_id = parseInt(args[0]),
     password = args[1];
 
-if (!user_id || !password){
+if (!user_id || !password) {
     console.error('Usage: script <user id> <new pass>');
     process.exit(1);
 }

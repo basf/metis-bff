@@ -1,4 +1,3 @@
-
 const util = require('util');
 const OAuth2Strategy = require('passport-oauth2').Strategy;
 
@@ -17,7 +16,7 @@ Strategy.prototype.userProfile = async function (accessToken, done) {
             if (err.data) {
                 try {
                     json = JSON.parse(err.data);
-                } catch (_) { }
+                } catch (_) {}
             }
             if (json && json.message) {
                 return done(new APIError(json.message));

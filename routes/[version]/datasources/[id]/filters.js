@@ -5,12 +5,7 @@ const { delsertDataSourceCollections } = require('../../../../services/db');
 const { getAndPrepareCollections } = require('../../collections/_helpers');
 
 module.exports = {
-    patch: [
-        checkAuth,
-        patch,
-        getUserCollections,
-        sendToSse
-    ],
+    patch: [checkAuth, patch, getUserCollections, sendToSse],
 };
 
 async function patch(req, res, next) {

@@ -3,7 +3,7 @@ const { StatusCodes } = require('http-status-codes');
 const {
     selectUserDataSources,
     selectUserCollections,
-    selectUserCalculations
+    selectUserCalculations,
 } = require('../services/db');
 
 module.exports = {

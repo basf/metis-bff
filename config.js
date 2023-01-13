@@ -1,7 +1,14 @@
 const fs = require('fs');
 const ini = require('ini');
 
-const { oauth, db, api, webhooks, mail, http = {} } = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
+const {
+    oauth,
+    db,
+    api,
+    webhooks,
+    mail,
+    http = {},
+} = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
 
 const dev = process.env.NODE_ENV === 'development';
 const _api = dev ? api.dev : api.prod;
@@ -40,7 +47,8 @@ module.exports = {
             clientID: process.env.MPDS_CLIENT_ID || oauth.mpds.client || 'unset',
             clientSecret: process.env.MPDS_CLIENT_SECRET || oauth.mpds.secret || 'unset',
             callbackURL: process.env.MPDS_CALLBACK_URL || oauth.mpds.callback || 'unset',
-            userProfileURL: process.env.MPDS_USER_PROFILE_URL || oauth.mpds.user_profile_url || 'unset',
+            userProfileURL:
+                process.env.MPDS_USER_PROFILE_URL || oauth.mpds.user_profile_url || 'unset',
         },
         basf: {
             authorizationURL: process.env.BASF_AUTH_URL || oauth.basf.authorize_url || 'unset',
@@ -48,7 +56,8 @@ module.exports = {
             clientID: process.env.BASF_CLIENT_ID || oauth.basf.client || 'unset',
             clientSecret: process.env.BASF_CLIENT_SECRET || oauth.basf.secret || 'unset',
             callbackURL: process.env.BASF_CALLBACK_URL || oauth.basf.callback || 'unset',
-            userProfileURL: process.env.BASF_USER_PROFILE_URL || oauth.basf.user_profile_url || 'unset',
+            userProfileURL:
+                process.env.BASF_USER_PROFILE_URL || oauth.basf.user_profile_url || 'unset',
             scope: process.env.BASF_SCOPE || oauth.basf.scope,
         },
         dummy: {

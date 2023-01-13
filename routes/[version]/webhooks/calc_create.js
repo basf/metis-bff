@@ -1,6 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { db,
+const {
+    db,
     USER_CALCULATIONS_TABLE,
     USER_DATASOURCES_TABLE,
     selectCalculationsByUserId,
@@ -31,7 +32,11 @@ async function post(req, res, next) {
         });
     }
 
-    const user = await db.select('userId').from(USER_DATASOURCES_TABLE).where('uuid', parent).first();
+    const user = await db
+        .select('userId')
+        .from(USER_DATASOURCES_TABLE)
+        .where('uuid', parent)
+        .first();
     if (!user) {
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,
