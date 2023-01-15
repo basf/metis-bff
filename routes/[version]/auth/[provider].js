@@ -83,10 +83,8 @@ function handleCallback(provider) {
 
         if (provider === 'orcid') {
             providerId = profile.orcid;
-
         } else if (provider === 'basf') {
             providerId = profile.sub;
-
         } else {
             providerId = profile.id;
         }
@@ -96,13 +94,13 @@ function handleCallback(provider) {
         if (provider === 'mpds') {
             firstName = profile.first_name;
             lastName = profile.last_name;
-
         } else if (provider === 'basf') {
             firstName = profile.given_name;
             lastName = profile.family_name;
-
         } else {
-            [firstName = '', lastName = ''] = (profile.displayName || profile.name || '').split(' ');
+            [firstName = '', lastName = ''] = (profile.displayName || profile.name || '').split(
+                ' '
+            );
         }
 
         if (!firstName) {
@@ -120,7 +118,6 @@ function handleCallback(provider) {
 
             if (user) {
                 done(null, user);
-
             } else {
                 const inserted = await upsertUser({
                     firstName,
@@ -136,7 +133,6 @@ function handleCallback(provider) {
 
                 ///if (provider === 'mpds') sendCustomWebHook(user.id, user.email); // TODO custom MPDS webhook
             }
-
         } catch (err) {
             done(err, null);
         }

@@ -37,7 +37,6 @@ async function calc() {
 
                 console.log('🚀 Calculation start');
                 console.time(TIMER);
-
             } else {
                 const optimade = await axios.get(PROVIDER);
                 const content = JSON.stringify(optimade.data.data[0]);
@@ -53,7 +52,7 @@ async function calc() {
                 const { id, progress } = answer.data[0];
 
                 console.log('CalcID:', id, 'progress:', progress);
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise((resolve) => setTimeout(resolve, 1000));
 
                 const { uuid } = await db(USER_CALCULATIONS_TABLE).where({ id }).first();
                 if (uuid) {
@@ -63,7 +62,6 @@ async function calc() {
                         // NB issue an artificial hook to receive update with no calculation
                         axios.post(`${BFF_HOST}/v0/webhooks/calc_update`, { uuid, progress: 110 });
                     }
-
                 } else {
                     cleanup(es);
                     process.exit(1);

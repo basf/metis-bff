@@ -32,7 +32,10 @@ passport.use(
                     done(null, user);
                 } else {
                     // NB also status 400 can be used instead
-                    done({ status: StatusCodes.UNAUTHORIZED, error: 'Authentication failed' }, null);
+                    done(
+                        { status: StatusCodes.UNAUTHORIZED, error: 'Authentication failed' },
+                        null
+                    );
                 }
             } catch (err) {
                 done(err, null);
@@ -81,6 +84,10 @@ async function post(req, res, next) {
 }
 
 async function del(req, res) {
-    req.logout(function (err) { if (err) { return next(err); } });
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+    });
     return res.status(StatusCodes.NO_CONTENT).end();
 }

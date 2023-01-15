@@ -29,13 +29,15 @@ async function del(req, res, next) {
 
         if (req.session.calculations.data.length <= 1) {
             const page = +req.query.page <= 1 ? 1 : +req.query.page - 1;
-            req.session.calculations = await selectUserCalculations(req.user, { ...req.query, page });
+            req.session.calculations = await selectUserCalculations(req.user, {
+                ...req.query,
+                page,
+            });
         }
 
         const data = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.sendTo({ reqId, ...data }, 'calculations');
-
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }

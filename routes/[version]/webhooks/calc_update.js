@@ -1,12 +1,13 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { db,
+const {
+    db,
     USER_CALCULATIONS_TABLE,
     USERS_TABLE,
     selectUserCalculations,
     selectUserDataSources,
     selectUserCollections,
-    selectFirstUser
+    selectFirstUser,
 } = require('../../../services/db');
 
 const { is_valid_uuid } = require('./_helpers');
@@ -22,7 +23,12 @@ let mapQueryFromDSforLimits = new Map(); // This is the hack TODO FIXME
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
 
-    if (req.user && req.session.passport.user && req.user.id === req.session.passport.user && req.query.limit) {
+    if (
+        req.user &&
+        req.session.passport.user &&
+        req.user.id === req.session.passport.user &&
+        req.query.limit
+    ) {
         mapQueryFromDSforLimits.set(req.user.id, req.query);
         return next({ status: StatusCodes.ACCEPTED });
     }

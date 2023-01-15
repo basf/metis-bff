@@ -26,8 +26,11 @@ module.exports = {
 };
 
 function checkMailOptions(mailOptions) {
-    return mailOptions && Object.keys(mailOptions)
-        && Object.keys(mailOptions).every(key => mailOptions[key]);
+    return (
+        mailOptions &&
+        Object.keys(mailOptions) &&
+        Object.keys(mailOptions).every((key) => mailOptions[key])
+    );
 }
 
 async function sendMail(options) {

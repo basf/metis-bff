@@ -40,31 +40,28 @@ const source = [
     },
 ];
 
-Promise.all(source.map(async (user) => ({
-    id: user.id,
-    roleId: user.roleId,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    password: await hashString(user.email),
-})))
-    .then(users => {
-        return db(USERS_TABLE)
-            .insert(users, ['*'])
-            .onConflict('id')
-            .merge();
+Promise.all(
+    source.map(async (user) => ({
+        id: user.id,
+        roleId: user.roleId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        password: await hashString(user.email),
+    }))
+)
+    .then((users) => {
+        return db(USERS_TABLE).insert(users, ['*']).onConflict('id').merge();
     })
     .then(async ([...users]) => {
-        return Promise.all(source.map(async (user, i) => ({
-            userId: users[i].id,
-            email: user.email,
-            code: await hashString(user.email),
-        })))
-            .then(emails => {
-                return db(USERS_EMAILS_TABLE)
-                    .insert(emails, ['*'])
-                    .onConflict('email')
-                    .merge();
-            });
+        return Promise.all(
+            source.map(async (user, i) => ({
+                userId: users[i].id,
+                email: user.email,
+                code: await hashString(user.email),
+            }))
+        ).then((emails) => {
+            return db(USERS_EMAILS_TABLE).insert(emails, ['*']).onConflict('email').merge();
+        });
     })
     .then(console.log)
     .catch(console.error);

@@ -68,7 +68,12 @@ app.use((err, req, res, next) => {
 
     console.error(error);
 
-    if (!req.user) req.logout(function (err) { if (err) { return next(err); } });
+    if (!req.user)
+        req.logout(function (err) {
+            if (err) {
+                return next(err);
+            }
+        });
 
     if (res.headersSent) {
         res.sse.sendTo({ reqId: req.id, data: [error] }, 'errors');
