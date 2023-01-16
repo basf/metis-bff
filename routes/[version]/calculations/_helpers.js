@@ -1,11 +1,12 @@
-const { db,
+const {
+    db,
     USER_DATASOURCES_TABLE,
     insertUserDataSource,
     insertUserCalculation,
     deleteUserCalculation,
     selectDataSourceByUserId,
     selectUserCollections,
-    delsertDataSourceCollections
+    delsertDataSourceCollections,
 } = require('../../../services/db');
 
 const { runCalculation, getCalculations, cancelCalculation } = require('../../../services/backend');
@@ -25,7 +26,13 @@ async function runAndSaveCalculation(userId, dataId, engine, input, workflow, up
         throw 'Data source UUID is not available';
     }
 
-    const { data = {} } = await runCalculation(datasource.uuid, engine, input, workflow, updateHook);
+    const { data = {} } = await runCalculation(
+        datasource.uuid,
+        engine,
+        input,
+        workflow,
+        updateHook
+    );
 
     if (!data.uuid) {
         throw 'Calculation UUID is not available';
@@ -68,14 +75,16 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
     if (result) {
         for (const data of result) {
             const { parent, uuid } = data;
-            if (!parent || !uuid)
-                return { error: 'Invalid result given' };
+            if (!parent || !uuid) return { error: 'Invalid result given' };
 
             // result database processing
             const { id } = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
             if (!id) return { error: 'Absent parent datasource' };
 
-            const parentCollections = await selectUserCollections({ id: userId }, { dataSourceIds: [id] });
+            const parentCollections = await selectUserCollections(
+                { id: userId },
+                { dataSourceIds: [id] }
+            );
             const collectionIds = parentCollections.data.map(({ id }) => id);
             const dataSource = await insertUserDataSource(userId, { uuid });
 
@@ -86,12 +95,11 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
 
         // get & prepare result datasources from sci. backend
         const preparedData = await getAndPrepareDataSources(dataSources);
-        results = preparedData.data.map(dataSource => ({ ...dataSource, progress }));
+        results = preparedData.data.map((dataSource) => ({ ...dataSource, progress }));
     }
 
     // mix results to calculations output
-    if (results.length)
-        output.data.push(...results);
+    if (results.length) output.data.push(...results);
 
     return output;
 }

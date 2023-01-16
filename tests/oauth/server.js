@@ -3,7 +3,7 @@
 const cors = require('cors');
 const express = require('express');
 
-run().catch(err => console.log(err));
+run().catch((err) => console.log(err));
 
 async function run() {
     const app = express();
@@ -16,7 +16,10 @@ async function run() {
     app.post('/code', (req, res) => {
         const referer = new URL(req.headers.referer);
         const redirectUri = referer.searchParams.get('redirect_uri');
-        const authCode = new Array(10).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
+        const authCode = new Array(10)
+            .fill(null)
+            .map(() => Math.floor(Math.random() * 10))
+            .join('');
 
         authCodes.add(authCode);
 
@@ -29,12 +32,15 @@ async function run() {
 
     app.post('/token', cors(), (req, res) => {
         if (authCodes.has(req.body.code)) {
-            const token = new Array(50).fill(null).map(() => Math.floor(Math.random() * 10)).join('');
+            const token = new Array(50)
+                .fill(null)
+                .map(() => Math.floor(Math.random() * 10))
+                .join('');
 
             authCodes.delete(req.body.code);
             accessTokens.add(`Bearer ${token}`);
 
-            res.json({ 'access_token': token, 'expires_in': 60 * 60 * 24 });
+            res.json({ access_token: token, expires_in: 60 * 60 * 24 });
         } else {
             res.status(400).json({ message: 'Invalid auth token' });
         }

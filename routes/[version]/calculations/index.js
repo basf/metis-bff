@@ -31,7 +31,7 @@ async function post(req, res, next) {
     if (req.session.calculations.data.length > 15) {
         return next({
             status: StatusCodes.PAYMENT_REQUIRED,
-            error: 'Sorry, your computing resources quota is exceeded.'
+            error: 'Sorry, your computing resources quota is exceeded.',
         });
     }
 
@@ -54,7 +54,6 @@ async function post(req, res, next) {
         const data = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.sendTo({ reqId, ...data }, 'calculations');
-
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -69,7 +68,6 @@ async function get(req, res, next) {
         const data = await getAndPrepareCalculations(req.session.calculations);
 
         res.sse.sendTo({ reqId, ...data }, 'calculations');
-
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }

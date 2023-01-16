@@ -16,7 +16,6 @@ module.exports = {
 };
 
 async function getAndPrepareCollections(collections = { data: [], total: 0 }) {
-
     const collectionIds = collections.data.map(({ id }) => id);
     // const collectionTypeIds = collections.data.map(({ typeId }) => typeId);
     const sharedCollectionIds = collections.data.reduce((ids, { visibility, id }) => {

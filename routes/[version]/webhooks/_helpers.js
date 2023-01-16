@@ -1,4 +1,3 @@
-
 function is_valid_uuid(uuid) {
     uuid = '' + uuid;
     uuid = uuid.match(

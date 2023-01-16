@@ -50,15 +50,19 @@ async function get(req, res, next) {
         uuid = result?.uuid;
 
     if (!uuid)
-        return res.status(StatusCodes.FORBIDDEN).json({ error: 'Sorry you cannot access this item' });
+        return res
+            .status(StatusCodes.FORBIDDEN)
+            .json({ error: 'Sorry you cannot access this item' });
 
     try {
         const { data = {} } = await getDataSourceResult(uuid);
 
-        res.header("Content-Type", "application/json");
+        res.header('Content-Type', 'application/json');
         return res.send(JSON.stringify(data, null, 4));
-
     } catch (error) {
-        return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error: 'Sorry invalid data occured' });
+        return next({
+            status: StatusCodes.UNPROCESSABLE_ENTITY,
+            error: 'Sorry invalid data occured',
+        });
     }
 }
