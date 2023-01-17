@@ -14,6 +14,8 @@ module.exports = {
  * @apiGroup Collections
  * @apiParam {Integer} id Collection id
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function del(req, res, next) {
     const reqId = req.id;

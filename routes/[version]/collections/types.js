@@ -9,11 +9,13 @@ module.exports = {
  * @apiName ListCollectionTypes
  * @apiGroup Collections
  * @apiDeprecated currently not used
+ * @apiSuccess (200) [Object[]] collection types.
  */
 async function get(req, res, next) {
     try {
         const output = await selectCollectionTypes();
         res.json(output);
+
     } catch (error) {
         return next({ error });
     }

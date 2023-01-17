@@ -14,6 +14,8 @@ module.exports = {
  * @apiGroup Data
  * @apiParam {Integer} id Datasource id
  * @apiDeprecated currently not used
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function patch(req, res, next) {
     const reqId = req.id;

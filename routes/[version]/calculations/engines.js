@@ -9,6 +9,7 @@ module.exports = {
  * @apiName GetYaEngines
  * @apiGroup Calculations
  * @apiPermission unprotected
+ * @apiSuccess (200) [Object[]] engines info.
  */
 async function get(req, res, next) {
     try {

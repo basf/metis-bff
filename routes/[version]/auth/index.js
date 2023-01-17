@@ -56,6 +56,7 @@ module.exports = {
  * @apiName GetUserInfo
  * @apiGroup Users
  * @apiPermission GUI_ONLY
+ * @apiSuccess (200) Object User info.
  */
 async function get(req, res, next) {
     const userDTO = Object.entries(req.user).reduce((dto, [key, val]) => {
@@ -71,6 +72,7 @@ async function get(req, res, next) {
  * @apiName SaveUser
  * @apiGroup Users
  * @apiDeprecated currently not used
+ * @apiSuccess (200) Object user info.
  */
 async function put(req, res, next) {
     try {
@@ -93,6 +95,7 @@ async function put(req, res, next) {
  * @apiName LoginUser
  * @apiGroup Users
  * @apiPermission GUI_ONLY
+ * @apiSuccess (204) null empty.
  */
 async function post(req, res, next) {
     if (!req.user) {
@@ -106,6 +109,7 @@ async function post(req, res, next) {
  * @apiName LogoutUser
  * @apiGroup Users
  * @apiPermission GUI_ONLY
+ * @apiSuccess (204) null empty.
  */
 async function del(req, res) {
     req.logout(function (err) {

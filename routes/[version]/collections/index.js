@@ -14,6 +14,8 @@ module.exports = {
  * @apiName CreateCollection
  * @apiGroup Collections
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function put(req, res, next) {
     if (!req.body.typeId || !req.body.title) {
@@ -49,6 +51,8 @@ async function put(req, res, next) {
  * @apiName ListCollections
  * @apiGroup Collections
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function get(req, res, next) {
     const reqId = req.id;

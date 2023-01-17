@@ -17,6 +17,8 @@ module.exports = {
  * @apiGroup Calculations
  * @apiParam {Integer} id Calculation id
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function del(req, res, next) {
     if (!req.params.id) {

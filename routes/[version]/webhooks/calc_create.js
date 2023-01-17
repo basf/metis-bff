@@ -20,6 +20,8 @@ module.exports = {
  * @apiName CreateCalculation
  * @apiGroup Calculations
  * @apiPermission unprotected
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function post(req, res, next) {
     const { uuid, parent } = req.body;

@@ -18,6 +18,8 @@ module.exports = {
  * @apiGroup Data
  * @apiParam {Integer} id Datasource id
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function del(req, res, next) {
     if (!req.params.id) {
@@ -43,6 +45,7 @@ async function del(req, res, next) {
         const data = await getAndPrepareDataSources(req.session.datasources);
 
         res.sse.sendTo({ reqId, ...data }, 'datasources');
+
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -54,6 +57,7 @@ async function del(req, res, next) {
  * @apiGroup Data
  * @apiParam {Integer} id Datasource id
  * @apiPermission API
+ * @apiSuccess (200) Object data entity.
  */
 async function get(req, res, next) {
     if (!req.params.id) {
@@ -73,6 +77,7 @@ async function get(req, res, next) {
 
         res.header('Content-Type', 'application/json');
         return res.send(JSON.stringify(data, null, 4));
+
     } catch (error) {
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,

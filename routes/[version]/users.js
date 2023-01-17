@@ -11,6 +11,7 @@ module.exports = {
  * @apiGroup Users
  * @apiDescription This endpoint is used solely for the data sharing suggestions in GUI
  * @apiPermission GUI_ONLY
+ * @apiSuccess (200) [Object[]] Users.
  */
 async function get(req, res, next) {
     if (!req.query.search && !req.query.ids) {

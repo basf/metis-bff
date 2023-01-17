@@ -14,6 +14,8 @@ module.exports = {
  * @apiName CreateData
  * @apiGroup Data
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function post(req, res, next) {
     if (!req.body.content) {
@@ -48,6 +50,8 @@ async function post(req, res, next) {
  * @apiName ListData
  * @apiGroup Data
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function get(req, res, next) {
     const reqId = req.id;

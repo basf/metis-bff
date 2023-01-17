@@ -13,6 +13,8 @@ module.exports = {
  * @apiName ListCollectionData
  * @apiGroup Collections
  * @apiPermission GUI_ONLY
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function get(req, res, next) {
     const reqId = req.id;

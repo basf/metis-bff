@@ -28,6 +28,7 @@ const { sendVerifyEmail } = require('./_middlewares');
  * @apiParam {String} provider IdP supported
  * @apiDescription This endpoint starts the OAuth dance
  * @apiPermission GUI_ONLY
+ * @apiSuccess (302) null empty.
  */
 module.exports = {
     get: [

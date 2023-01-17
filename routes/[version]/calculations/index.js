@@ -17,6 +17,8 @@ module.exports = {
  * @apiName SubmitCalculation
  * @apiGroup Calculations
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function post(req, res, next) {
     if (!req.body.dataId) {
@@ -70,6 +72,8 @@ async function post(req, res, next) {
  * @apiName ListCalculations
  * @apiGroup Calculations
  * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function get(req, res, next) {
     const reqId = req.id;

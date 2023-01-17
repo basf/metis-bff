@@ -25,6 +25,8 @@ let mapQueryFromDSforLimits = new Map(); // This is the hack TODO FIXME
  * @apiName UpdateCalculation
  * @apiGroup Calculations
  * @apiPermission unprotected
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
  */
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
