@@ -12,6 +12,13 @@ module.exports = {
     get: [checkAuth, getUserDataSources, get],
 };
 
+/**
+ * @api {del} /datasources/:id Delete a data entity
+ * @apiName DeleteData
+ * @apiGroup Data
+ * @apiParam {Integer} id Datasource id
+ * @apiPermission API
+ */
 async function del(req, res, next) {
     if (!req.params.id) {
         return next({ status: StatusCodes.BAD_REQUEST });
@@ -41,6 +48,13 @@ async function del(req, res, next) {
     }
 }
 
+/**
+ * @api {get} /datasources/:id Show a data entity
+ * @apiName ShowData
+ * @apiGroup Data
+ * @apiParam {Integer} id Datasource id
+ * @apiPermission API
+ */
 async function get(req, res, next) {
     if (!req.params.id) {
         return next({ status: StatusCodes.BAD_REQUEST });

@@ -9,6 +9,12 @@ module.exports = {
     post: [checkAuth, getUserDataSources, post],
 };
 
+/**
+ * @api {post} /datasources Create a new data entity
+ * @apiName CreateData
+ * @apiGroup Data
+ * @apiPermission API
+ */
 async function post(req, res, next) {
     if (!req.body.content) {
         return next({
@@ -37,6 +43,12 @@ async function post(req, res, next) {
     }
 }
 
+/**
+ * @api {get} /datasources List all user's data entities
+ * @apiName ListData
+ * @apiGroup Data
+ * @apiPermission API
+ */
 async function get(req, res, next) {
     const reqId = req.id;
 

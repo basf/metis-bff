@@ -15,6 +15,12 @@ module.exports = {
     post,
 };
 
+/**
+ * @api {post} /webhooks/calc_create Create a new calculation in a workflow
+ * @apiName CreateCalculation
+ * @apiGroup Calculations
+ * @apiPermission unprotected
+ */
 async function post(req, res, next) {
     const { uuid, parent } = req.body;
 

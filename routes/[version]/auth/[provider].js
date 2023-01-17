@@ -21,6 +21,14 @@ const { oauth } = require('../../../config');
 const { sendVerifyEmail } = require('./_middlewares');
 ///const { sendCustomWebHook } = require('./custom_webhook'); // TODO custom MPDS webhook
 
+/**
+ * @api {get} /auth/:provider Log user in via IdP
+ * @apiName LoginUserByIdP
+ * @apiGroup Users
+ * @apiParam {String} provider IdP supported
+ * @apiDescription This endpoint starts the OAuth dance
+ * @apiPermission GUI_ONLY
+ */
 module.exports = {
     get: [
         (req, res, next) => {

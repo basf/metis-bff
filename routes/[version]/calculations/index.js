@@ -12,6 +12,12 @@ module.exports = {
     post: [checkAuth, getUserCalculations, post],
 };
 
+/**
+ * @api {post} /calculations Submit a new calculation
+ * @apiName SubmitCalculation
+ * @apiGroup Calculations
+ * @apiPermission API
+ */
 async function post(req, res, next) {
     if (!req.body.dataId) {
         return next({
@@ -59,6 +65,12 @@ async function post(req, res, next) {
     }
 }
 
+/**
+ * @api {get} /calculations List all user's calculations
+ * @apiName ListCalculations
+ * @apiGroup Calculations
+ * @apiPermission API
+ */
 async function get(req, res, next) {
     const reqId = req.id;
 

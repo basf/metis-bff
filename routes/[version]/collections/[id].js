@@ -8,6 +8,13 @@ module.exports = {
     delete: [checkAuth, getUserCollections, del],
 };
 
+/**
+ * @api {del} /collections/:id Remove a collection
+ * @apiName RemoveCollection
+ * @apiGroup Collections
+ * @apiParam {Integer} id Collection id
+ * @apiPermission API
+ */
 async function del(req, res, next) {
     const reqId = req.id;
 

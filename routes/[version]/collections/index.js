@@ -9,6 +9,12 @@ module.exports = {
     put: [checkAuth, getUserCollections, put],
 };
 
+/**
+ * @api {put} /collections Create a collection
+ * @apiName CreateCollection
+ * @apiGroup Collections
+ * @apiPermission API
+ */
 async function put(req, res, next) {
     if (!req.body.typeId || !req.body.title) {
         return next({
@@ -38,6 +44,12 @@ async function put(req, res, next) {
     }
 }
 
+/**
+ * @api {get} /collections List user's collections by criteria
+ * @apiName ListCollections
+ * @apiGroup Collections
+ * @apiPermission API
+ */
 async function get(req, res, next) {
     const reqId = req.id;
 

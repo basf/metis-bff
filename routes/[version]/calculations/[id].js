@@ -11,6 +11,13 @@ module.exports = {
     delete: [checkAuth, getUserCalculations, del],
 };
 
+/**
+ * @api {del} /calculations/:id Cancel a calculation
+ * @apiName CancelCalculation
+ * @apiGroup Calculations
+ * @apiParam {Integer} id Calculation id
+ * @apiPermission API
+ */
 async function del(req, res, next) {
     if (!req.params.id) {
         return next({ status: StatusCodes.BAD_REQUEST });

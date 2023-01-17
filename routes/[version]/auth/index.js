@@ -51,6 +51,12 @@ module.exports = {
     delete: del,
 };
 
+/**
+ * @api {get} /auth Get user DTO
+ * @apiName GetUserInfo
+ * @apiGroup Users
+ * @apiPermission GUI_ONLY
+ */
 async function get(req, res, next) {
     const userDTO = Object.entries(req.user).reduce((dto, [key, val]) => {
         if (!privateFields.includes(key)) dto[key] = val;
@@ -60,6 +66,12 @@ async function get(req, res, next) {
     return res.json(userDTO);
 }
 
+/**
+ * @api {put} /auth Save a new user directly
+ * @apiName SaveUser
+ * @apiGroup Users
+ * @apiDeprecated currently not used
+ */
 async function put(req, res, next) {
     try {
         const upserted = await upsertUser({ ...req.body, id: req.user.id });
@@ -76,6 +88,12 @@ async function put(req, res, next) {
     return next();
 }
 
+/**
+ * @api {post} /auth Log user in
+ * @apiName LoginUser
+ * @apiGroup Users
+ * @apiPermission GUI_ONLY
+ */
 async function post(req, res, next) {
     if (!req.user) {
         return next({ status: StatusCodes.BAD_REQUEST, error: 'Bad credentials' });
@@ -83,6 +101,12 @@ async function post(req, res, next) {
     return res.status(StatusCodes.NO_CONTENT).end();
 }
 
+/**
+ * @api {del} /auth Log user out
+ * @apiName LogoutUser
+ * @apiGroup Users
+ * @apiPermission GUI_ONLY
+ */
 async function del(req, res) {
     req.logout(function (err) {
         if (err) {

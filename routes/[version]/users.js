@@ -5,6 +5,13 @@ module.exports = {
     get,
 };
 
+/**
+ * @api {get} /users Get users by criteria
+ * @apiName SearchUsers
+ * @apiGroup Users
+ * @apiDescription This endpoint is used solely for the data sharing suggestions in GUI
+ * @apiPermission GUI_ONLY
+ */
 async function get(req, res, next) {
     if (!req.query.search && !req.query.ids) {
         return next({

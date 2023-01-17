@@ -8,6 +8,13 @@ module.exports = {
     patch: [checkAuth, patch, getUserCollections, sendToSse],
 };
 
+/**
+ * @api {patch} /datasources/:id Edit a data entity
+ * @apiName EditData
+ * @apiGroup Data
+ * @apiParam {Integer} id Datasource id
+ * @apiDeprecated currently not used
+ */
 async function patch(req, res, next) {
     const reqId = req.id;
     res.status(StatusCodes.ACCEPTED).json({ reqId });

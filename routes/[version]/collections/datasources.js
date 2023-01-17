@@ -8,6 +8,12 @@ module.exports = {
     get: [checkAuth, getUserDataSources, get],
 };
 
+/**
+ * @api {get} /collections/datasources List all user's collections via datasource
+ * @apiName ListCollectionData
+ * @apiGroup Collections
+ * @apiPermission GUI_ONLY
+ */
 async function get(req, res, next) {
     const reqId = req.id;
 
