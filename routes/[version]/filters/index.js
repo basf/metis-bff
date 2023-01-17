@@ -8,7 +8,7 @@ module.exports = {
 };
 
 /**
- * @api {get} /filters List all user's collections
+ * @api {get} /v0/filters List all user's collections
  * @apiName ListAllCollections
  * @apiGroup Collections
  * @apiDescription This endpoint is used for unconditional extracting of all the collections

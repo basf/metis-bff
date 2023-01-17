@@ -3,6 +3,7 @@ env.ini
 # Artifact files
 node_modules/
 dist/
+doc/
 cypress/screenshots/
 !src/node_modules/
 src/node_modules/**/node_modules/

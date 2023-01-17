@@ -13,7 +13,7 @@ module.exports = {
 };
 
 /**
- * @api {del} /datasources/:id Delete a data entity
+ * @api {del} /v0/datasources/:id Delete a data entity
  * @apiName DeleteData
  * @apiGroup Data
  * @apiParam {Integer} id Datasource id
@@ -49,7 +49,7 @@ async function del(req, res, next) {
 }
 
 /**
- * @api {get} /datasources/:id Show a data entity
+ * @api {get} /v0/datasources/:id Show a data entity
  * @apiName ShowData
  * @apiGroup Data
  * @apiParam {Integer} id Datasource id

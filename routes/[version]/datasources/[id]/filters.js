@@ -9,7 +9,7 @@ module.exports = {
 };
 
 /**
- * @api {patch} /datasources/:id Edit a data entity
+ * @api {patch} /v0/datasources/:id Edit a data entity
  * @apiName EditData
  * @apiGroup Data
  * @apiParam {Integer} id Datasource id

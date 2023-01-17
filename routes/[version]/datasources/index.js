@@ -10,7 +10,7 @@ module.exports = {
 };
 
 /**
- * @api {post} /datasources Create a new data entity
+ * @api {post} /v0/datasources Create a data entity
  * @apiName CreateData
  * @apiGroup Data
  * @apiPermission API
@@ -44,7 +44,7 @@ async function post(req, res, next) {
 }
 
 /**
- * @api {get} /datasources List all user's data entities
+ * @api {get} /v0/datasources List all user's data entities
  * @apiName ListData
  * @apiGroup Data
  * @apiPermission API

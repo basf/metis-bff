@@ -6,7 +6,7 @@ module.exports = {
 };
 
 /**
- * @api {get} /users Get users by criteria
+ * @api {get} /v0/users Get users by criteria
  * @apiName SearchUsers
  * @apiGroup Users
  * @apiDescription This endpoint is used solely for the data sharing suggestions in GUI

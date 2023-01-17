@@ -10,7 +10,7 @@ module.exports = {
 };
 
 /**
- * @api {put} /collections Create a collection
+ * @api {put} /v0/collections Create a collection
  * @apiName CreateCollection
  * @apiGroup Collections
  * @apiPermission API
@@ -45,7 +45,7 @@ async function put(req, res, next) {
 }
 
 /**
- * @api {get} /collections List user's collections by criteria
+ * @api {get} /v0/collections List user's collections by criteria
  * @apiName ListCollections
  * @apiGroup Collections
  * @apiPermission API

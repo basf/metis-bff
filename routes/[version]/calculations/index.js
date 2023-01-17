@@ -13,7 +13,7 @@ module.exports = {
 };
 
 /**
- * @api {post} /calculations Submit a new calculation
+ * @api {post} /v0/calculations Submit a new calculation
  * @apiName SubmitCalculation
  * @apiGroup Calculations
  * @apiPermission API
@@ -66,7 +66,7 @@ async function post(req, res, next) {
 }
 
 /**
- * @api {get} /calculations List all user's calculations
+ * @api {get} /v0/calculations List all user's calculations
  * @apiName ListCalculations
  * @apiGroup Calculations
  * @apiPermission API

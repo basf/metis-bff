@@ -5,7 +5,7 @@ module.exports = {
 };
 
 /**
- * @api {get} /collections/types List all user's collection types
+ * @api {get} /v0/collections/types List all user's collection types
  * @apiName ListCollectionTypes
  * @apiGroup Collections
  * @apiDeprecated currently not used

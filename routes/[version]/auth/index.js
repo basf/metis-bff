@@ -52,7 +52,7 @@ module.exports = {
 };
 
 /**
- * @api {get} /auth Get user DTO
+ * @api {get} /v0/auth Get user DTO
  * @apiName GetUserInfo
  * @apiGroup Users
  * @apiPermission GUI_ONLY
@@ -67,7 +67,7 @@ async function get(req, res, next) {
 }
 
 /**
- * @api {put} /auth Save a new user directly
+ * @api {put} /v0/auth Save a new user directly
  * @apiName SaveUser
  * @apiGroup Users
  * @apiDeprecated currently not used
@@ -89,7 +89,7 @@ async function put(req, res, next) {
 }
 
 /**
- * @api {post} /auth Log user in
+ * @api {post} /v0/auth Log user in
  * @apiName LoginUser
  * @apiGroup Users
  * @apiPermission GUI_ONLY
@@ -102,7 +102,7 @@ async function post(req, res, next) {
 }
 
 /**
- * @api {del} /auth Log user out
+ * @api {del} /v0/auth Log user out
  * @apiName LogoutUser
  * @apiGroup Users
  * @apiPermission GUI_ONLY

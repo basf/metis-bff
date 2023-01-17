@@ -21,7 +21,7 @@ module.exports = { post };
 let mapQueryFromDSforLimits = new Map(); // This is the hack TODO FIXME
 
 /**
- * @api {post} /webhooks/calc_update Update a status of a calculation
+ * @api {post} /v0/webhooks/calc_update Update a status of a calculation
  * @apiName UpdateCalculation
  * @apiGroup Calculations
  * @apiPermission unprotected

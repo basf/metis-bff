@@ -12,7 +12,7 @@ module.exports = {
 };
 
 /**
- * @api {del} /calculations/:id Cancel a calculation
+ * @api {del} /v0/calculations/:id Cancel a calculation
  * @apiName CancelCalculation
  * @apiGroup Calculations
  * @apiParam {Integer} id Calculation id

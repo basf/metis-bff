@@ -22,7 +22,7 @@ const { sendVerifyEmail } = require('./_middlewares');
 ///const { sendCustomWebHook } = require('./custom_webhook'); // TODO custom MPDS webhook
 
 /**
- * @api {get} /auth/:provider Log user in via IdP
+ * @api {get} /v0/auth/:provider Log user in via IdP
  * @apiName LoginUserByIdP
  * @apiGroup Users
  * @apiParam {String} provider IdP supported

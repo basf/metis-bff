@@ -5,7 +5,7 @@ module.exports = {
 };
 
 /**
- * @api {get} /auth/verify Verify user's email
+ * @api {get} /v0/auth/verify Verify user's email
  * @apiName VerifyEmail
  * @apiGroup Users
  * @apiPermission GUI_ONLY

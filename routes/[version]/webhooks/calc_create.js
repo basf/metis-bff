@@ -16,7 +16,7 @@ module.exports = {
 };
 
 /**
- * @api {post} /webhooks/calc_create Create a new calculation in a workflow
+ * @api {post} /v0/webhooks/calc_create Create a new calculation in a workflow
  * @apiName CreateCalculation
  * @apiGroup Calculations
  * @apiPermission unprotected

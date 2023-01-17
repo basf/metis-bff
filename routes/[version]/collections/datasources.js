@@ -9,7 +9,7 @@ module.exports = {
 };
 
 /**
- * @api {get} /collections/datasources List all user's collections via datasource
+ * @api {get} /v0/collections/datasources List all user's collections via datasource
  * @apiName ListCollectionData
  * @apiGroup Collections
  * @apiPermission GUI_ONLY

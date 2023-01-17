@@ -9,7 +9,7 @@ module.exports = {
 };
 
 /**
- * @api {del} /collections/:id Remove a collection
+ * @api {del} /v0/collections/:id Remove a collection
  * @apiName RemoveCollection
  * @apiGroup Collections
  * @apiParam {Integer} id Collection id
