@@ -21,7 +21,7 @@
         "apidoc": "^0.53.1",
         "apidoc-swagger": "^0.3.2",
         "axios": "^0.26.1",
-        "bcrypt": "^5.0.1",
+        "bcrypt": "^5.1.0",
         "express": "^4.17.3",
         "express-bff": "^1.0.0",
         "http-status-codes": "^2.2.0",
