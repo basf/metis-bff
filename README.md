@@ -60,13 +60,13 @@ Note, that the non-versioned routes without `/v0` will be redirected _as is_ to 
 The docs are generated with the `apidoc`:
 
 ```
-apidoc -i routes
+npm run apidoc
 ```
 
 and, optionally, `swagger`:
 
 ```
-apidoc-swagger -i routes
+npm run apidoc-swagger
 ```
 
 
