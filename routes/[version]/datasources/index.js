@@ -9,6 +9,14 @@ module.exports = {
     post: [checkAuth, getUserDataSources, post],
 };
 
+/**
+ * @api {post} /v0/datasources Create a data entity
+ * @apiName CreateData
+ * @apiGroup Data
+ * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
 async function post(req, res, next) {
     if (!req.body.content) {
         return next({
@@ -37,6 +45,14 @@ async function post(req, res, next) {
     }
 }
 
+/**
+ * @api {get} /v0/datasources List all user's data entities
+ * @apiName ListData
+ * @apiGroup Data
+ * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
 async function get(req, res, next) {
     const reqId = req.id;
 

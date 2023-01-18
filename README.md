@@ -22,14 +22,14 @@ node db_seed.js
 
 ## Running
 
-# For development mode run following command:
+### For development mode run the following command:
 
 ```bash
 npm run dev
 ```
 
 
-# For production mode run following command:
+### For production mode run the following command:
 
 ```bash
 npm run start
@@ -55,8 +55,23 @@ On top of the `users`, the main concepts mapped onto the database are:
 Note, that the non-versioned routes without `/v0` will be redirected _as is_ to the backend.
 
 
+## API
+
+The docs are generated with the `apidoc`:
+
+```
+apidoc -i routes
+```
+
+and, optionally, `swagger`:
+
+```
+apidoc-swagger -i routes
+```
+
+
 ## License
 
-Copyright 2021-2022 BASF SE
+Copyright 2021-2023 BASF SE
 
 BSD 3-Clause

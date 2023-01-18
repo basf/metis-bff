@@ -4,6 +4,13 @@ module.exports = {
     get,
 };
 
+/**
+ * @api {get} /v0/calculations/engines Get yascheduler engines supported
+ * @apiName GetYaEngines
+ * @apiGroup Calculations
+ * @apiPermission unprotected
+ * @apiSuccess (200) [Object[]] engines info.
+ */
 async function get(req, res, next) {
     try {
         const output = await getEngines();

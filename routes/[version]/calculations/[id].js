@@ -11,6 +11,15 @@ module.exports = {
     delete: [checkAuth, getUserCalculations, del],
 };
 
+/**
+ * @api {del} /v0/calculations/:id Cancel a calculation
+ * @apiName CancelCalculation
+ * @apiGroup Calculations
+ * @apiParam {Integer} id Calculation id
+ * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
 async function del(req, res, next) {
     if (!req.params.id) {
         return next({ status: StatusCodes.BAD_REQUEST });

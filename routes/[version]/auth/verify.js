@@ -4,6 +4,13 @@ module.exports = {
     get,
 };
 
+/**
+ * @api {get} /v0/auth/verify Verify user's email
+ * @apiName VerifyEmail
+ * @apiGroup Users
+ * @apiPermission GUI_ONLY
+ * @apiSuccess (200) String message.
+ */
 async function get(req, res, next) {
     const { redirectURL, code } = req.query;
 

@@ -9,6 +9,14 @@ module.exports = {
     put: [checkAuth, getUserCollections, put],
 };
 
+/**
+ * @api {put} /v0/collections Create a collection
+ * @apiName CreateCollection
+ * @apiGroup Collections
+ * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
 async function put(req, res, next) {
     if (!req.body.typeId || !req.body.title) {
         return next({
@@ -38,6 +46,14 @@ async function put(req, res, next) {
     }
 }
 
+/**
+ * @api {get} /v0/collections List user's collections by criteria
+ * @apiName ListCollections
+ * @apiGroup Collections
+ * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
 async function get(req, res, next) {
     const reqId = req.id;
 

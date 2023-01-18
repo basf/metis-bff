@@ -20,6 +20,14 @@ module.exports = { post };
 
 let mapQueryFromDSforLimits = new Map(); // This is the hack TODO FIXME
 
+/**
+ * @api {post} /v0/webhooks/calc_update Update a status of a calculation
+ * @apiName UpdateCalculation
+ * @apiGroup Calculations
+ * @apiPermission unprotected
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
 async function post(req, res, next) {
     const { uuid, progress, result } = req.body;
 

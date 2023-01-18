@@ -8,6 +8,15 @@ module.exports = {
     delete: [checkAuth, getUserCollections, del],
 };
 
+/**
+ * @api {del} /v0/collections/:id Remove a collection
+ * @apiName RemoveCollection
+ * @apiGroup Collections
+ * @apiParam {Integer} id Collection id
+ * @apiPermission API
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
 async function del(req, res, next) {
     const reqId = req.id;
 
