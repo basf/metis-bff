@@ -395,23 +395,34 @@ const initDb = () =>
             const code2 = await hashString(adminEmail);
             const code3 = await hashString(testEmail);
 
-            return db(USERS_EMAILS_TABLE).insert([
-                {
-                    userId: member.id,
-                    email: memberEmail,
-                    code: code1,
-                },
-                {
-                    userId: admin.id,
-                    email: adminEmail,
-                    code: code2,
-                },
-                {
-                    userId: test.id,
-                    email: testEmail,
-                    code: code3,
-                },
-            ]);
+            return db(USERS_EMAILS_TABLE).insert(
+                [
+                    {
+                        userId: member.id,
+                        email: memberEmail,
+                        code: code1,
+                    },
+                    {
+                        userId: admin.id,
+                        email: adminEmail,
+                        code: code2,
+                    },
+                    {
+                        userId: test.id,
+                        email: testEmail,
+                        code: code3,
+                    },
+                ],
+                ['userId', 'email']
+            );
+        })
+        .then((emails) => {
+            return db(USER_API_TOKENS_TABLE).insert(
+                emails.map(({ userId, email }) => ({
+                    userId,
+                    token: email, // inserting email as token just for test
+                }))
+            );
         });
 
 const isExists = () =>
