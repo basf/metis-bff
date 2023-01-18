@@ -15,7 +15,6 @@ async function get(req, res, next) {
     try {
         const output = await selectCollectionTypes();
         res.json(output);
-
     } catch (error) {
         return next({ error });
     }
