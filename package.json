@@ -11,7 +11,9 @@
         "oauth": "cd tests/oauth && node server",
         "test:oauth": "env OAUTH_TEST=true npm start",
         "format": "prettier --ignore-path .gitignore --write '**/*.js'",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "apidoc": "apidoc -i routes",
+        "apidoc-swagger": "apidoc-swagger -i routes"
     },
     "repository": {
         "type": "git",
