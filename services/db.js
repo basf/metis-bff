@@ -141,6 +141,7 @@ module.exports = {
     searchUsers,
     upsertUser,
     selectUsersByIds,
+    selectUserByApiToken,
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
@@ -567,4 +568,12 @@ function prepareQuery(query) {
             visibility: '',
             type: '',
         };
+}
+
+function selectUserByApiToken(token) {
+    return db(USERS_TABLE)
+        .innerJoin(USER_API_TOKENS_TABLE, `${USERS_TABLE}.id`, `${USER_API_TOKENS_TABLE}.userId`)
+        .select(`${USERS_TABLE}.*`)
+        .where(`${USER_API_TOKENS_TABLE}.token`, token)
+        .first();
 }
