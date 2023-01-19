@@ -1,4 +1,4 @@
-FROM docker.io/library/node:18-alpine
+FROM docker.io/library/node:19-alpine
 
 RUN apk add --no-cache tini
 ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
