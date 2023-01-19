@@ -11,6 +11,7 @@ const { dev, http: httpConf, backend, PORT } = require('./config');
 const sseMiddleware = require('./middlewares/sse');
 
 const { USERS_TABLE, selectFirstUser } = require('./services/db');
+const { middleware: apiTokenMiddleware } = require('./middlewares/apiToken');
 
 const app = express();
 
@@ -58,7 +59,7 @@ bff(app, {
     },
     static: false,
     ssr: false,
-    middlewares: [passport.initialize(), passport.session(), sseMiddleware],
+    middlewares: [passport.initialize(), passport.session(), apiTokenMiddleware, sseMiddleware],
 });
 
 app.use((err, req, res, next) => {
