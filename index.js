@@ -29,7 +29,10 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
+// apiTokenMiddleware must be registered before bff.sse
+// see https://github.com/PaulMaly/express-bff/blob/d217d0ad1e11d977fe87db28fe59511b3ef26611/index.js#L15-L16
 app.use(apiTokenMiddleware);
+
 bff(app, {
     security: {
         cors: {
