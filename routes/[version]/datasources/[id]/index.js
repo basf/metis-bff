@@ -45,7 +45,6 @@ async function del(req, res, next) {
         const data = await getAndPrepareDataSources(req.session.datasources);
 
         res.sse.sendTo({ reqId, ...data }, 'datasources');
-
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
@@ -77,7 +76,6 @@ async function get(req, res, next) {
 
         res.header('Content-Type', 'application/json');
         return res.send(JSON.stringify(data, null, 4));
-
     } catch (error) {
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,

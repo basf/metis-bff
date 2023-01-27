@@ -14,6 +14,7 @@ const USER_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections';
 const USER_SHARED_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections_shared';
 const USER_COLLECTIONS_DATASOURCES_TABLE = dbConfig.tprefix + 'user_collections_datasources';
 const COLLECTIONS_TYPES_TABLE = dbConfig.tprefix + 'collection_types';
+const USER_API_TOKENS_TABLE = dbConfig.tprefix + 'user_api_tokens';
 
 const DEFAULT_FIELDS = ['id', 'userId', 'uuid', 'createdAt', 'updatedAt'];
 
@@ -140,6 +141,7 @@ module.exports = {
     searchUsers,
     upsertUser,
     selectUsersByIds,
+    selectUserByApiToken,
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
@@ -159,6 +161,7 @@ module.exports = {
     PUBLIC_COLLECTION_VISIBILITY,
     SHARED_COLLECTION_VISIBILITY,
     PRIVATE_COLLECTION_VISIBILITY,
+    USER_API_TOKENS_TABLE,
 };
 
 async function hashString(str, salt = 10) {
@@ -565,4 +568,12 @@ function prepareQuery(query) {
             visibility: '',
             type: '',
         };
+}
+
+function selectUserByApiToken(token) {
+    return db(USERS_TABLE)
+        .innerJoin(USER_API_TOKENS_TABLE, `${USERS_TABLE}.id`, `${USER_API_TOKENS_TABLE}.userId`)
+        .select(`${USERS_TABLE}.*`)
+        .where(`${USER_API_TOKENS_TABLE}.token`, token)
+        .first();
 }

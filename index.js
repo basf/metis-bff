@@ -11,6 +11,7 @@ const { dev, http: httpConf, backend, PORT } = require('./config');
 const sseMiddleware = require('./middlewares/sse');
 
 const { USERS_TABLE, selectFirstUser } = require('./services/db');
+const { middleware: apiTokenMiddleware } = require('./middlewares/apiToken');
 
 const app = express();
 
@@ -27,6 +28,10 @@ passport.deserializeUser(async (id, done) => {
         done(err, null);
     }
 });
+
+// apiTokenMiddleware must be registered before bff.sse
+// see https://github.com/PaulMaly/express-bff/blob/d217d0ad1e11d977fe87db28fe59511b3ef26611/index.js#L15-L16
+app.use(apiTokenMiddleware);
 
 bff(app, {
     security: {

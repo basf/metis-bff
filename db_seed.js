@@ -21,6 +21,7 @@ const {
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
     FLAVORS_ENUM,
+    USER_API_TOKENS_TABLE,
 } = require('./services/db');
 
 const FOREIGN_KEY_LENGTH = 11;
@@ -47,6 +48,7 @@ const initDb = () =>
             Promise.all([
                 db.schema.dropTableIfExists(USERS_TABLE),
                 db.schema.dropTableIfExists(COLLECTIONS_TYPES_TABLE),
+                db.schema.dropTableIfExists(USER_API_TOKENS_TABLE),
             ])
         )
         .then(() =>
@@ -114,7 +116,27 @@ const initDb = () =>
                 }),
             ])
         )
+        .then(() =>
+            db.schema.hasTable(USER_API_TOKENS_TABLE).then((exists) => {
+                if (!exists) {
+                    return db.schema.createTable(USER_API_TOKENS_TABLE, (table) => {
+                        table.increments('id');
+                        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+                        table.string('token').unique();
+                        table.timestamps(false, true, true);
 
+                        table.primary('id', { constraintName: 'pk_user_api_token' });
+                        table
+                            .foreign('userId', 'fk_userId')
+                            .references('id')
+                            .inTable(USERS_TABLE)
+                            .onDelete('CASCADE');
+                    });
+                } else {
+                    console.log('USER_API_TOKENS_TABLE AFTER TABLE');
+                }
+            })
+        )
         .then(() =>
             Promise.all([
                 db.schema.hasTable(USERS_EMAILS_TABLE).then((exists) => {
@@ -373,23 +395,34 @@ const initDb = () =>
             const code2 = await hashString(adminEmail);
             const code3 = await hashString(testEmail);
 
-            return db(USERS_EMAILS_TABLE).insert([
-                {
-                    userId: member.id,
-                    email: memberEmail,
-                    code: code1,
-                },
-                {
-                    userId: admin.id,
-                    email: adminEmail,
-                    code: code2,
-                },
-                {
-                    userId: test.id,
-                    email: testEmail,
-                    code: code3,
-                },
-            ]);
+            return db(USERS_EMAILS_TABLE).insert(
+                [
+                    {
+                        userId: member.id,
+                        email: memberEmail,
+                        code: code1,
+                    },
+                    {
+                        userId: admin.id,
+                        email: adminEmail,
+                        code: code2,
+                    },
+                    {
+                        userId: test.id,
+                        email: testEmail,
+                        code: code3,
+                    },
+                ],
+                ['userId', 'email']
+            );
+        })
+        .then((emails) => {
+            return db(USER_API_TOKENS_TABLE).insert(
+                emails.map(({ userId, email }) => ({
+                    userId,
+                    token: email, // inserting email as token just for test
+                }))
+            );
         });
 
 const isExists = () =>
