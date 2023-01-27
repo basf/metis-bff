@@ -20,7 +20,7 @@ passport.use(
 );
 
 function middleware(req, res, next) {
-    if (req.headers?.authorization?.toLowerCase().startsWith('bearer')) {
+    if (hasAuthBearerHeader(req)) {
         return passport.authenticate('bearer', { session: false }, (error, user) => {
             if (error) {
                 return next(error);
@@ -32,6 +32,11 @@ function middleware(req, res, next) {
     return next();
 }
 
+function hasAuthBearerHeader(req) {
+    return Boolean(req.headers?.authorization?.toLowerCase().startsWith('bearer'));
+}
+
 module.exports = {
     middleware,
+    hasAuthBearerHeader,
 };

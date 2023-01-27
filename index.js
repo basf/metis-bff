@@ -29,6 +29,7 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
+app.use(apiTokenMiddleware);
 bff(app, {
     security: {
         cors: {
@@ -59,7 +60,7 @@ bff(app, {
     },
     static: false,
     ssr: false,
-    middlewares: [passport.initialize(), passport.session(), apiTokenMiddleware, sseMiddleware],
+    middlewares: [passport.initialize(), passport.session(), sseMiddleware],
 });
 
 app.use((err, req, res, next) => {
