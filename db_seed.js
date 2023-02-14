@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const { default: knex } = require('knex');
 const {
     db,
     hashString,
@@ -22,6 +23,7 @@ const {
     VISIBILITY_ENUM,
     FLAVORS_ENUM,
     USER_API_TOKENS_TABLE,
+    LOGS_TABLE,
 } = require('./services/db');
 
 const FOREIGN_KEY_LENGTH = 11;
@@ -49,6 +51,7 @@ const initDb = () =>
                 db.schema.dropTableIfExists(USERS_TABLE),
                 db.schema.dropTableIfExists(COLLECTIONS_TYPES_TABLE),
                 db.schema.dropTableIfExists(USER_API_TOKENS_TABLE),
+                db.schema.dropTableIfExists(LOGS_TABLE),
             ])
         )
         .then(() =>
@@ -134,6 +137,28 @@ const initDb = () =>
                     });
                 } else {
                     console.log('USER_API_TOKENS_TABLE AFTER TABLE');
+                }
+            })
+        )
+        .then(() =>
+            db.schema.hasTable(LOGS_TABLE).then((exists) => {
+                if (!exists) {
+                    return db.schema.createTable(LOGS_TABLE, (table) => {
+                        table.increments('id');
+                        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+                        table.string('type');
+                        table.jsonb('value');
+                        table.timestamp('createdAt').defaultTo(knex.fn.now());
+
+                        table.primary('id', { constraintName: 'pk_logs' });
+                        table
+                            .foreign('userId', 'fk_userId')
+                            .references('id')
+                            .inTable(USERS_TABLE)
+                            .onDelete('CASCADE');
+                    });
+                } else {
+                    console.log('LOGS_TABLE AFTER TABLE');
                 }
             })
         )
@@ -438,6 +463,8 @@ const isExists = () =>
             USER_DATASOURCES_TABLE,
             USER_ROLES_TABLE,
             USER_SHARED_COLLECTIONS_TABLE,
+            USER_API_TOKENS_TABLE,
+            LOGS_TABLE,
         ].map((name) => db.schema.hasTable(name))
     ).then((res) => res.some(Boolean));
 
