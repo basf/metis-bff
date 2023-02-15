@@ -18,11 +18,13 @@ async function get(req, res, next) {
         const updated = await db(USERS_EMAILS_TABLE)
             .where({ code })
             .update({ verified: true }, ['userId']);
-        const verified = updated && !!updated[0].userId;
-        if (redirectURL) {
-            res.redirect(redirectURL);
+
+        const verified = updated && updated[0] && !!updated[0].userId;
+
+        if (verified) {
+            redirectURL ? res.redirect(redirectURL) : res.send('Your email was successfully verified');
         } else {
-            res.send(verified ? 'Your email was successfully verified' : 'Verification failed');
+            res.send('Verification failed');
         }
     }
 }

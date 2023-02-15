@@ -5,8 +5,8 @@ module.exports = {
 };
 
 /**
- * @api {get} /v0/calculations/engines Get yascheduler engines supported
- * @apiName GetYaEngines
+ * @api {get} /v0/calculations/engines Get calculation engines supported
+ * @apiName GetCalcEngines
  * @apiGroup Calculations
  * @apiPermission unprotected
  * @apiSuccess (200) [Object[]] engines info.

@@ -1,8 +1,9 @@
 const { StatusCodes } = require('http-status-codes');
+const { checkAuth } = require('../../middlewares/auth');
 const { searchUsers, selectUsersByIds } = require('../../services/db');
 
 module.exports = {
-    get,
+    get: [checkAuth, get],
 };
 
 /**

@@ -87,9 +87,10 @@ app.use((err, req, res, next) => {
     }
 });
 
-console.log(`***Running ${process.execPath} as of ${process.version}***`);
+console.log(`***Running ${process.execPath} as of ${process.version}`);
 
 app.listen(PORT, () => {
-    // NB app.listen(PORT, "0.0.0.0"
-    console.log(`App in dev-mode=${dev} listens to port ${PORT}`);
+    // NB app.listen(PORT, "0.0.0.0") to exhibit to the outside
+    console.log(`***BFF in ${dev ? 'development' : 'production'} mode listens to port ${PORT}`);
+    console.log(`***Backend is expected to run at ${backend.baseURL}`);
 });
