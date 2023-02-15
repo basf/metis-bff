@@ -341,9 +341,9 @@ const initDb = () =>
             begin
                 case tg_table_name
                     when '${USERS_TABLE}' then
-                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value') values (new.id, tg_table_name, to_jsonb(new))
+                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value', 'created_at') values (new.id, tg_table_name, to_jsonb(new), current_timestamp)
                     else
-                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value') values (new.userId, tg_table_name, to_jsonb(new))
+                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value', 'created_at') values (new.userId, tg_table_name, to_jsonb(new), current_timestamp)
                 end case;
                 return new;
             end;
