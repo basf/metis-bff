@@ -141,28 +141,6 @@ const initDb = () =>
             })
         )
         .then(() =>
-            db.schema.hasTable(LOGS_TABLE).then((exists) => {
-                if (!exists) {
-                    return db.schema.createTable(LOGS_TABLE, (table) => {
-                        table.increments('id');
-                        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
-                        table.string('type');
-                        table.jsonb('value');
-                        table.timestamp('createdAt').defaultTo(knex.fn.now());
-
-                        table.primary('id', { constraintName: 'pk_logs' });
-                        table
-                            .foreign('userId', 'fk_userId')
-                            .references('id')
-                            .inTable(USERS_TABLE)
-                            .onDelete('CASCADE');
-                    });
-                } else {
-                    console.log('LOGS_TABLE AFTER TABLE');
-                }
-            })
-        )
-        .then(() =>
             Promise.all([
                 db.schema.hasTable(USERS_EMAILS_TABLE).then((exists) => {
                     if (!exists) {
@@ -336,6 +314,48 @@ const initDb = () =>
                 }),
             ])
         )
+        .then(() =>
+            db.schema.hasTable(LOGS_TABLE).then((exists) => {
+                if (!exists) {
+                    return db.schema.createTable(LOGS_TABLE, (table) => {
+                        table.increments('id');
+                        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+                        table.string('type');
+                        table.jsonb('value');
+                        table.timestamp('createdAt').defaultTo(knex.fn.now());
+
+                        table.primary('id', { constraintName: 'pk_logs' });
+                        table
+                            .foreign('userId', 'fk_userId')
+                            .references('id')
+                            .inTable(USERS_TABLE)
+                            .onDelete('CASCADE');
+                    });
+                } else {
+                    console.log('LOGS_TABLE AFTER TABLE');
+                }
+            })
+        )
+        .then(() => {
+            const query = `create or replace function log () returns triggers as $$
+            begin
+                case tg_table_name
+                    when '${USERS_TABLE}' then
+                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value') values (new.id, tg_table_name, to_jsonb(new))
+                    else
+                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value') values (new.userId, tg_table_name, to_jsonb(new))
+                end case;
+                return new;
+            end;
+            $$ language plpgsql;
+
+            -- create triggers
+            create or replace trigger 'trigger_log_${USERS_TABLE}' after insert on '${USERS_TABLE}' for each row execute function log();
+            create or replace trigger 'trigger_log_${USER_CALCULATIONS_TABLE}' after insert on '${USER_CALCULATIONS_TABLE}' for each row execute function log();
+            create or replace trigger 'trigger_log_${USER_DATASOURCES_TABLE}' after insert on '${USER_DATASOURCES_TABLE}' for each row execute function log();
+            `;
+            return db.schema.raw(query);
+        })
         .then(() => {
             return db(COLLECTIONS_TYPES_TABLE).insert(
                 [
