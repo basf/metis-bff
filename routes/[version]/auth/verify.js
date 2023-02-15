@@ -22,7 +22,9 @@ async function get(req, res, next) {
         const verified = updated && updated[0] && !!updated[0].userId;
 
         if (verified) {
-            redirectURL ? res.redirect(redirectURL) : res.send('Your email was successfully verified');
+            redirectURL
+                ? res.redirect(redirectURL)
+                : res.send('Your email was successfully verified');
         } else {
             res.send('Verification failed');
         }
