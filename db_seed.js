@@ -321,7 +321,7 @@ const initDb = () =>
                         table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
                         table.string('type');
                         table.jsonb('value');
-                        table.timestamp('createdAt').defaultTo(db.fn.now());
+                        table.timestamp('createdAt').defaultTo(db.fn.now()).index();
 
                         table.primary('id', { constraintName: 'pk_logs' });
                     });
