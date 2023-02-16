@@ -143,6 +143,7 @@ module.exports = {
     upsertUser,
     selectUsersByIds,
     selectUserByApiToken,
+    selectLogs,
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
@@ -578,4 +579,23 @@ function selectUserByApiToken(token) {
         .select(`${USERS_TABLE}.*`)
         .where(`${USER_API_TOKENS_TABLE}.token`, token)
         .first();
+}
+
+function selectLogs(opts = {}) {
+    const { limit, offset, type, userIds, after } = opts;
+    let query = db(LOGS_TABLE).select(`${LOGS_TABLE}.*`);
+
+    if (type) {
+        query = query.where('type', type);
+    }
+
+    if (userIds) {
+        query = query.whereIn('userId', userIds);
+    }
+
+    return query
+        .limit(limit || 1000)
+        .offset(offset || 0)
+        .orderBy('created_at', 'desc')
+        .reverse();
 }
