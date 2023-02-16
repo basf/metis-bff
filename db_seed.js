@@ -331,23 +331,37 @@ const initDb = () =>
             })
         )
         .then(() => {
-            const query = `create or replace function log () returns triggers as $$
+            const query = `
+            create or replace function log () returns trigger as $$
+            declare
+                userId integer;
             begin
-                case tg_table_name
-                    when '${USERS_TABLE}' then
-                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value', 'created_at') values (new.id, tg_table_name, to_jsonb(new), current_timestamp)
+                userId := case tg_table_name
+                    when "${USERS_TABLE}" then
+                        new.id
                     else
-                        insert into '${LOGS_TABLE}' ('userId', 'type', 'value', 'created_at') values (new.userId, tg_table_name, to_jsonb(new), current_timestamp)
-                end case;
+                        new.userId
+                end;
+                insert into "${LOGS_TABLE}" (userId, type, value) values (userId, tg_table_name, to_jsonb(new));
                 return new;
             end;
             $$ language plpgsql;
-
-            -- create triggers
-            create or replace trigger 'trigger_log_${USERS_TABLE}' after insert on '${USERS_TABLE}' for each row execute function log();
-            create or replace trigger 'trigger_log_${USER_CALCULATIONS_TABLE}' after insert on '${USER_CALCULATIONS_TABLE}' for each row execute function log();
-            create or replace trigger 'trigger_log_${USER_DATASOURCES_TABLE}' after insert on '${USER_DATASOURCES_TABLE}' for each row execute function log();
             `;
+
+            return db.schema.raw(query);
+        })
+        .then(() => {
+            const tables = [USERS_TABLE, USER_CALCULATIONS_TABLE, USER_DATASOURCES_TABLE];
+            const query = tables.reduce((sql, table) => {
+                return `${sql}
+                create or replace trigger "tg_log_${table}"
+                    after insert
+                    on "${table}"
+                    for each row
+                    execute function log();
+                `;
+            }, '');
+
             return db.schema.raw(query);
         })
         .then(() => {
