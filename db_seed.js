@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const { default: knex } = require('knex');
 const {
     db,
     hashString,
@@ -322,14 +321,9 @@ const initDb = () =>
                         table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
                         table.string('type');
                         table.jsonb('value');
-                        table.timestamp('createdAt').defaultTo(knex.fn.now());
+                        table.timestamp('createdAt').defaultTo(db.fn.now());
 
                         table.primary('id', { constraintName: 'pk_logs' });
-                        table
-                            .foreign('userId', 'fk_userId')
-                            .references('id')
-                            .inTable(USERS_TABLE)
-                            .onDelete('CASCADE');
                     });
                 } else {
                     console.log('LOGS_TABLE AFTER TABLE');
