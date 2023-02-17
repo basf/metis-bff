@@ -335,14 +335,14 @@ const initDb = () =>
             create or replace function log () returns trigger as $$
             declare
                 userId integer;
+                type varchar := lower(tg_table_name);
             begin
-                userId := case tg_table_name
-                    when "${USERS_TABLE}" then
-                        new.id
-                    else
-                        new.userId
-                end;
-                insert into "${LOGS_TABLE}" (userId, type, value) values (userId, tg_table_name, to_jsonb(new));
+                if type = lower('${USERS_TABLE}') then
+                    userId := new.id;
+                else
+                    userId := new.userId;
+                end if;
+                insert into "${LOGS_TABLE}" ("userId", "type", "value") values (userId, type, to_jsonb(new));
                 return new;
             end;
             $$ language plpgsql;
