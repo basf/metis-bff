@@ -47,12 +47,12 @@ const initDb = () =>
 
         .then(() =>
             Promise.all([
-                db.schema.dropTableIfExists(USERS_TABLE),
                 db.schema.dropTableIfExists(COLLECTIONS_TYPES_TABLE),
                 db.schema.dropTableIfExists(USER_API_TOKENS_TABLE),
                 db.schema.dropTableIfExists(LOGS_TABLE),
             ])
         )
+        .then(() => db.schema.dropTableIfExists(USERS_TABLE))
         .then(() =>
             Promise.all([
                 db.schema.dropTableIfExists(USER_ROLES_TABLE),
