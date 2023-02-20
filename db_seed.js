@@ -318,7 +318,7 @@ const initDb = () =>
                 if (!exists) {
                     return db.schema.createTable(LOGS_TABLE, (table) => {
                         table.increments('id');
-                        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+                        table.integer('userId').unsigned().index();
                         table.string('type');
                         table.jsonb('value');
                         table.timestamp('createdAt').defaultTo(db.fn.now()).index();
@@ -351,7 +351,12 @@ const initDb = () =>
             return db.schema.raw(query);
         })
         .then(() => {
-            const tables = [USERS_TABLE, USER_CALCULATIONS_TABLE, USER_DATASOURCES_TABLE];
+            const tables = [
+                USERS_TABLE,
+                USER_CALCULATIONS_TABLE,
+                USER_DATASOURCES_TABLE,
+                USER_COLLECTIONS_TABLE,
+            ];
             const query = tables.reduce((sql, table) => {
                 return `${sql}
                 create or replace trigger "tg_log_${table}"
