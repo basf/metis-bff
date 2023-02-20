@@ -581,7 +581,7 @@ function selectUserByApiToken(token) {
         .first();
 }
 
-function selectLogs(opts = {}) {
+async function selectLogs(opts = {}) {
     const { limit, offset, type, userIds, after } = opts;
     let query = db(LOGS_TABLE).select(`${LOGS_TABLE}.*`);
 
@@ -593,9 +593,10 @@ function selectLogs(opts = {}) {
         query = query.whereIn('userId', userIds);
     }
 
-    return query
-        .limit(limit || 1000)
-        .offset(offset || 0)
-        .orderBy('created_at', 'desc')
-        .reverse();
+    return (
+        await query
+            .limit(limit || 1000)
+            .offset(offset || 0)
+            .orderBy('createdAt', 'desc')
+    ).reverse();
 }
