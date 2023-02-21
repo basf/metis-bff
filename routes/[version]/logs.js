@@ -20,7 +20,7 @@ async function get(req, res, next) {
         limit: q.limit && parseInt(q.limit),
         offset: q.offset && parseInt(q.offset),
         type: q.type,
-        userIds: q.user_ids?.split(',').map(parseInt),
+        userIds: q.user_ids?.split(',').map((id) => parseInt(id)),
     };
     const logs = await selectLogs(opts);
     return res.json(logs);
