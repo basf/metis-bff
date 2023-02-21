@@ -144,6 +144,7 @@ module.exports = {
     selectUsersByIds,
     selectUserByApiToken,
     selectLogs,
+    selectUserRole,
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
@@ -583,7 +584,7 @@ function selectUserByApiToken(token) {
 
 async function selectLogs(opts = {}) {
     const { limit, offset, type, userIds, after } = opts;
-    let query = db(LOGS_TABLE).select(`${LOGS_TABLE}.*`);
+    let query = db(LOGS_TABLE).select();
 
     if (type) {
         query = query.where('type', type);
@@ -599,4 +600,12 @@ async function selectLogs(opts = {}) {
             .offset(offset || 0)
             .orderBy('createdAt', 'desc')
     ).reverse();
+}
+
+function selectUserRole(userId) {
+    return db(USER_ROLES_TABLE)
+        .select(`${USER_ROLES_TABLE}.*`)
+        .join(USERS_TABLE, `${USERS_TABLE}.roleId`, `${USER_ROLES_TABLE}.id`)
+        .where(`${USERS_TABLE}.id`, userId)
+        .first();
 }
