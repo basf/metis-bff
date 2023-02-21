@@ -594,6 +594,10 @@ async function selectLogs(opts = {}) {
         query = query.whereIn('userId', userIds);
     }
 
+    if (after) {
+        query = query.where('createdAt', '>', after);
+    }
+
     return (
         await query
             .limit(limit || 1000)

@@ -21,6 +21,7 @@ async function get(req, res, next) {
         offset: q.offset && parseInt(q.offset),
         type: q.type,
         userIds: q.user_ids?.split(',').map((id) => parseInt(id)),
+        after: q.after && new Date(parseInt(q.after) * 1000),
     };
     const logs = await selectLogs(opts);
     return res.json(logs);
