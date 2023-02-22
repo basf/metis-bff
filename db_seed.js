@@ -332,7 +332,7 @@ const initDb = () =>
         )
         .then(() => {
             const query = `
-            create or replace function log () returns trigger as $$
+            create or replace function custom_log () returns trigger as $$
             declare
                 userId integer;
                 type varchar := lower(tg_table_name);
@@ -363,7 +363,7 @@ const initDb = () =>
                     after insert
                     on "${table}"
                     for each row
-                    execute function log();
+                    execute function custom_log();
                 `;
             }, '');
 
