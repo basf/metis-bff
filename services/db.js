@@ -15,6 +15,7 @@ const USER_SHARED_COLLECTIONS_TABLE = dbConfig.tprefix + 'user_collections_share
 const USER_COLLECTIONS_DATASOURCES_TABLE = dbConfig.tprefix + 'user_collections_datasources';
 const COLLECTIONS_TYPES_TABLE = dbConfig.tprefix + 'collection_types';
 const USER_API_TOKENS_TABLE = dbConfig.tprefix + 'user_api_tokens';
+const LOGS_TABLE = dbConfig.tprefix + 'logs';
 
 const DEFAULT_FIELDS = ['id', 'userId', 'uuid', 'createdAt', 'updatedAt'];
 
@@ -142,6 +143,8 @@ module.exports = {
     upsertUser,
     selectUsersByIds,
     selectUserByApiToken,
+    selectLogs,
+    selectUserRole,
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
@@ -162,6 +165,7 @@ module.exports = {
     SHARED_COLLECTION_VISIBILITY,
     PRIVATE_COLLECTION_VISIBILITY,
     USER_API_TOKENS_TABLE,
+    LOGS_TABLE,
 };
 
 async function hashString(str, salt = 10) {
@@ -575,5 +579,37 @@ function selectUserByApiToken(token) {
         .innerJoin(USER_API_TOKENS_TABLE, `${USERS_TABLE}.id`, `${USER_API_TOKENS_TABLE}.userId`)
         .select(`${USERS_TABLE}.*`)
         .where(`${USER_API_TOKENS_TABLE}.token`, token)
+        .first();
+}
+
+async function selectLogs(opts = {}) {
+    const { limit, offset, type, userIds, after } = opts;
+    let query = db(LOGS_TABLE).select();
+
+    if (type) {
+        query = query.where('type', type);
+    }
+
+    if (userIds) {
+        query = query.whereIn('userId', userIds);
+    }
+
+    if (after) {
+        query = query.where('createdAt', '>', after);
+    }
+
+    return (
+        await query
+            .limit(limit || 1000)
+            .offset(offset || 0)
+            .orderBy('createdAt', 'desc')
+    ).reverse();
+}
+
+function selectUserRole(userId) {
+    return db(USER_ROLES_TABLE)
+        .select(`${USER_ROLES_TABLE}.*`)
+        .join(USERS_TABLE, `${USERS_TABLE}.roleId`, `${USER_ROLES_TABLE}.id`)
+        .where(`${USERS_TABLE}.id`, userId)
         .first();
 }

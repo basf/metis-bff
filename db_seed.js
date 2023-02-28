@@ -22,6 +22,7 @@ const {
     VISIBILITY_ENUM,
     FLAVORS_ENUM,
     USER_API_TOKENS_TABLE,
+    LOGS_TABLE,
 } = require('./services/db');
 
 const FOREIGN_KEY_LENGTH = 11;
@@ -46,11 +47,12 @@ const initDb = () =>
 
         .then(() =>
             Promise.all([
-                db.schema.dropTableIfExists(USERS_TABLE),
                 db.schema.dropTableIfExists(COLLECTIONS_TYPES_TABLE),
                 db.schema.dropTableIfExists(USER_API_TOKENS_TABLE),
+                db.schema.dropTableIfExists(LOGS_TABLE),
             ])
         )
+        .then(() => db.schema.dropTableIfExists(USERS_TABLE))
         .then(() =>
             Promise.all([
                 db.schema.dropTableIfExists(USER_ROLES_TABLE),
@@ -311,6 +313,62 @@ const initDb = () =>
                 }),
             ])
         )
+        .then(() =>
+            db.schema.hasTable(LOGS_TABLE).then((exists) => {
+                if (!exists) {
+                    return db.schema.createTable(LOGS_TABLE, (table) => {
+                        table.increments('id');
+                        table.integer('userId').unsigned().index();
+                        table.string('type');
+                        table.jsonb('value');
+                        table.timestamp('createdAt').defaultTo(db.fn.now()).index();
+
+                        table.primary('id', { constraintName: 'pk_logs' });
+                    });
+                } else {
+                    console.log('LOGS_TABLE AFTER TABLE');
+                }
+            })
+        )
+        .then(() => {
+            const query = `
+            create or replace function custom_log () returns trigger as $$
+            declare
+                userId integer;
+                type varchar := lower(tg_table_name);
+            begin
+                if type = lower('${USERS_TABLE}') then
+                    userId := new.id;
+                else
+                    userId := new.userId;
+                end if;
+                insert into "${LOGS_TABLE}" ("userId", "type", "value") values (userId, type, to_jsonb(new));
+                return new;
+            end;
+            $$ language plpgsql;
+            `;
+
+            return db.schema.raw(query);
+        })
+        .then(() => {
+            const tables = [
+                USERS_TABLE,
+                USER_CALCULATIONS_TABLE,
+                USER_DATASOURCES_TABLE,
+                USER_COLLECTIONS_TABLE,
+            ];
+            const query = tables.reduce((sql, table) => {
+                return `${sql}
+                create or replace trigger "tg_log_${table}"
+                    after insert
+                    on "${table}"
+                    for each row
+                    execute function custom_log();
+                `;
+            }, '');
+
+            return db.schema.raw(query);
+        })
         .then(() => {
             return db(COLLECTIONS_TYPES_TABLE).insert(
                 [
@@ -438,6 +496,8 @@ const isExists = () =>
             USER_DATASOURCES_TABLE,
             USER_ROLES_TABLE,
             USER_SHARED_COLLECTIONS_TABLE,
+            USER_API_TOKENS_TABLE,
+            LOGS_TABLE,
         ].map((name) => db.schema.hasTable(name))
     ).then((res) => res.some(Boolean));
 
