@@ -47,7 +47,8 @@ async function post(req, res, next) {
 
     res.status(StatusCodes.ACCEPTED).json({ reqId: req.id });
 
-    const { userId, id } = await db(USER_CALCULATIONS_TABLE).where({ uuid }).first('id', 'userId');
+    const record = await db(USER_CALCULATIONS_TABLE).where({ uuid }).first('id', 'userId');
+    const { userId, id } = record || {};
 
     if (!userId) {
         return next({

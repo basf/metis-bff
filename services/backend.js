@@ -17,6 +17,7 @@ const api = axios.create({
         },
     ],
     responseType: 'json',
+    httpAgent: new require('http').Agent({ family: 4 }), // refuse of ipv6 with backend
 });
 
 module.exports = {
