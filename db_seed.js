@@ -340,7 +340,7 @@ const initDb = () =>
                 if type = lower('${USERS_TABLE}') then
                     userId := new.id;
                 else
-                    userId := new.userId;
+                    userId := new."userId";
                 end if;
                 insert into "${LOGS_TABLE}" ("userId", "type", "value") values (userId, type, to_jsonb(new));
                 return new;
