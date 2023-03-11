@@ -7,8 +7,8 @@ module.exports = {
     createAndSaveDataSource,
 };
 
-async function createAndSaveDataSource(userId, content) {
-    const { data = {} } = await createDataSource(content);
+async function createAndSaveDataSource(userId, content, fmt, name) {
+    const { data = {} } = await createDataSource(content, fmt, name);
 
     if (!data.uuid) {
         throw 'Data source UUID is not available';

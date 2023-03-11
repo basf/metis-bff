@@ -21,11 +21,13 @@ async function post(req, res, next) {
     if (!req.body.content) {
         return next({
             status: StatusCodes.BAD_REQUEST,
-            error: 'Required field `content` is not provided.',
+            error: 'Required field *content* is not provided.',
         });
     }
 
-    const reqId = req.id;
+    const reqId = req.id,
+        fmt = req.body.fmt || null,
+        name = req.body.name || null;
 
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
@@ -33,7 +35,7 @@ async function post(req, res, next) {
         const contents = Array.isArray(req.body.content) ? req.body.content : [req.body.content];
 
         for (const content of contents) {
-            const datasource = await createAndSaveDataSource(req.user.id, content);
+            const datasource = await createAndSaveDataSource(req.user.id, content, fmt, name);
             req.session.datasources.data.push(datasource);
         }
 

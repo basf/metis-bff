@@ -32,8 +32,8 @@ module.exports = {
     api,
 };
 
-async function createDataSource(content) {
-    return api.post('/data/create', { content });
+async function createDataSource(content, fmt, name) {
+    return api.post('/data/create', { content, fmt, name });
 }
 
 async function deleteDataSource(uuid) {
