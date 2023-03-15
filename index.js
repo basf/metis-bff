@@ -12,7 +12,7 @@ const sseMiddleware = require('./middlewares/sse');
 
 const { USERS_TABLE, selectFirstUser } = require('./services/db');
 const { middleware: apiTokenMiddleware } = require('./middlewares/apiToken');
-const stringify = require('json-stringify-safe');
+const { serializer, stringify } = require('./utils');
 
 const app = express();
 
@@ -56,16 +56,7 @@ bff(app, {
     },
     sse: {
         path: '/stream',
-        serializer: (() => {
-            const seen = new WeakSet();
-            return (_key, value) => {
-                if (typeof value === 'object' && value !== null) {
-                    if (seen.has(value)) return;
-                    seen.add(value);
-                }
-                return value;
-            };
-        })(),
+        serializer,
     },
     api: {
         dir: path.join(__dirname, 'routes'),
