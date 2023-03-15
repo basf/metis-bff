@@ -12,7 +12,7 @@ const sseMiddleware = require('./middlewares/sse');
 
 const { USERS_TABLE, selectFirstUser } = require('./services/db');
 const { middleware: apiTokenMiddleware } = require('./middlewares/apiToken');
-const { serializer, stringify } = require('./utils');
+const { serializer, stringify } = require('./_helpers');
 
 const app = express();
 
