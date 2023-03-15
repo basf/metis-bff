@@ -56,7 +56,7 @@ bff(app, {
     },
     sse: {
         path: '/stream',
-        serializer,
+        serializer: serializer(),
     },
     api: {
         dir: path.join(__dirname, 'routes'),
