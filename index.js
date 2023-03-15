@@ -12,6 +12,7 @@ const sseMiddleware = require('./middlewares/sse');
 
 const { USERS_TABLE, selectFirstUser } = require('./services/db');
 const { middleware: apiTokenMiddleware } = require('./middlewares/apiToken');
+const { serializer, stringify } = require('./_helpers');
 
 const app = express();
 
@@ -32,7 +33,7 @@ passport.deserializeUser(async (id, done) => {
 // apiTokenMiddleware must be registered before bff.sse
 // see https://github.com/PaulMaly/express-bff/blob/d217d0ad1e11d977fe87db28fe59511b3ef26611/index.js#L15-L16
 app.use(apiTokenMiddleware);
-app.use(express.json({limit: '5mb'}));
+app.use(express.json({ limit: '5mb' }));
 
 bff(app, {
     security: {
@@ -55,6 +56,7 @@ bff(app, {
     },
     sse: {
         path: '/stream',
+        serializer: serializer(),
     },
     api: {
         dir: path.join(__dirname, 'routes'),
@@ -84,7 +86,7 @@ app.use((err, req, res, next) => {
     if (res.headersSent) {
         res.sse.sendTo({ reqId: req.id, data: [error] }, 'errors');
     } else {
-        res.status(status).json(error);
+        res.status(status).set('Content-Type', 'application/json').send(stringify(error));
     }
 });
 
