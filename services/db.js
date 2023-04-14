@@ -118,6 +118,7 @@ module.exports = {
     compareStringHash,
 
     selectUserDataSources,
+    selectDataSourcesIdMap,
     insertUserDataSource,
     deleteUserDataSource,
     delsertDataSourceCollections,
@@ -325,6 +326,28 @@ async function selectUserDataSources(user, query) {
     const types = await db.select().from(COLLECTIONS_TYPES_TABLE);
 
     return { data, total, types };
+}
+
+/**
+ * Returns a map of datasource IDs and their corresponding UUIDs.
+ *
+ * @async
+ * @function selectDataSourcesIdMap
+ * @param {number[]} ids - An array of datasource IDs to query. Optional.
+ * @param {string[]} uuids - An array of datasource UUIDs to query. Optional.
+ * @returns {Promise<Map.<number, string>>} A map of datasource IDs and their corresponding UUIDs.
+ */
+async function selectDataSourcesIdMap(ids = [], uuids = []) {
+    if (!ids.length && !uuids.length) return {};
+    const idField = `${USER_DATASOURCES_TABLE}.id`;
+    const uuidField = `${USER_DATASOURCES_TABLE}.uuid`;
+    const data = await db(USER_DATASOURCES_TABLE)
+        .select(idField, uuidField)
+        .where((builder) => {
+            if (ids.length) builder.orWhereIn(idField, ids);
+            if (uuids.length) builder.orWhereIn(uuidField, uuids);
+        });
+    return new Map(data.map(({ id, uuid }) => [id, uuid]));
 }
 
 async function selectUserCollections(user, query) {
