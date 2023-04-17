@@ -64,13 +64,9 @@ async function post(req, res, next) {
         return next({ status: StatusCodes.UNPROCESSABLE_ENTITY, error: output.error });
     }
 
-    res.sse.send(
-        ({ session }) => {
-            return userId && session.passport && userId === session.passport.user;
-        },
-        { reqId: req.id, ...output },
-        'calculations'
-    );
+    const sseFilter = ({ session, user }) =>
+        session?.passport?.user === userId || user?.id === userId;
+    res.sse.send(sseFilter, { reqId: req.id, ...output }, 'calculations');
 
     if (output.data.some(({ progress }) => progress === 100)) {
         const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: userId });
@@ -79,24 +75,12 @@ async function post(req, res, next) {
         const filters = await selectUserCollections(user);
         const preparedFilters = await getAndPrepareCollections(filters);
 
-        res.sse.send(
-            ({ session }) => {
-                return userId && session.passport && userId === session.passport.user;
-            },
-            { reqId: req.id, ...preparedFilters },
-            'filters'
-        );
+        res.sse.send(sseFilter, { reqId: req.id, ...preparedFilters }, 'filter');
 
         const datasources = await selectUserDataSources(user, query);
         const preparedDataSouces = await getAndPrepareDataSources(datasources);
 
-        res.sse.send(
-            ({ session }) => {
-                return userId && session.passport && userId === session.passport.user;
-            },
-            { reqId: req.id, ...preparedDataSouces },
-            'datasources'
-        );
+        res.sse.send(sseFilter, { reqId: req.id, ...preparedDataSouces }, 'datasources');
     }
 
     if (progress === 100) setTimeout(async () => await deleteAndClearCalculation(userId, id), 3000);

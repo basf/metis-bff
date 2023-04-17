@@ -56,11 +56,7 @@ async function post(req, res, next) {
     const calculations = await selectCalculationsByUserId(user.userId);
     const output = await getAndPrepareCalculations(calculations);
 
-    res.sse.send(
-        ({ session }) => {
-            return user.userId && session.passport && user.userId === session.passport.user;
-        },
-        { reqId: req.id, data: output },
-        'calculations'
-    );
+    const sseFilter = ({ session, user }) =>
+          session?.passport?.user === user.userId || user?.id === user.userId;
+    res.sse.send(sseFilter, { reqId: req.id, data: output }, 'calculations');
 }
