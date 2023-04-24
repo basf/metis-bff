@@ -5,6 +5,7 @@ const {
     insertUserCalculation,
     deleteUserCalculation,
     selectDataSourceByUserId,
+    selectDataSourcesIdMap,
     selectUserCollections,
     delsertDataSourceCollections,
 } = require('../../../services/db');
@@ -41,29 +42,47 @@ async function runAndSaveCalculation(userId, dataId, engine, input, workflow, up
     return insertUserCalculation(userId, { uuid: data.uuid });
 }
 
-async function getAndPrepareCalculations(calculations = { data: [], total: 0 }) {
-    const { uuids, calc } = calculations.data.reduce(
-        (acc, { uuid, ...other }) => {
-            acc.uuids.push(uuid);
-            acc.calc.push(other);
-            return acc;
-        },
-        { uuids: [], calc: [] }
-    );
-
-    if (!uuids.length) return { data: [], total: 0 };
-
-    const { data = [] } = await getCalculations(uuids);
-
+/**
+ * Retrieves calculations from both local and remote sources and prepares
+ * them for display.
+ * @async
+ * @function getAndPrepareCalculations
+ * @typedef {Object} calculations - The calculations object.
+ * @property {Array} calculations.data=[] - The local calculations.
+ * @property {Number} calculations.total=0 - Total number of calculations.
+ * @param {calculations} - The calculations objects.
+ * @typedef {Object} result - Resulting object.
+ * @property {Array} result.data - Array of calculations
+ * @property {Number} result.total - Total number of calculations
+ * @return {Promise<result>} - The merged and prepared calculations.
+ * @throws {Error} - If there is an error retrieving the remote calculations.
+ * @example
+ * const { data, total } = await getAndPrepareCalculations({ data: localCalculations });
+ */
+async function getAndPrepareCalculations({ data = [], total = 0 }) {
     if (!data.length) return { data: [], total: 0 };
 
-    calculations.data = data.reduce((acc, { uuid, ...data }) => {
-        const i = uuids.indexOf(uuid);
-        acc.push(Object.assign(data, calc[i]));
-        return acc;
-    }, []);
+    // Map UUIDs to local calculations
+    const localCalculationsMap = new Map(data.map(({ uuid, ...otherProps }) => [uuid, otherProps]));
 
-    return calculations;
+    // Retrieve remote calculations from backend
+    const { data: remoteCalculations = [] } = await getCalculations(
+        Array.from(localCalculationsMap.keys())
+    );
+    if (!remoteCalculations.length) return [];
+
+    // Retrieve mapping of UUIDs to local IDs for parents (data sources)
+    const relativeUUIDs = remoteCalculations.map(({ parent }) => parent).filter(Boolean);
+    const idToUUIDMap = await selectDataSourcesIdMap([], relativeUUIDs);
+    const uuidToIDMap = new Map(Array.from(idToUUIDMap).map((x) => x.reverse()));
+
+    // Merge remote and local data sources
+    const merged = remoteCalculations.map(({ uuid, parent, ...calculation }) => ({
+        ...calculation,
+        parent: uuidToIDMap.get(parent),
+        ...(localCalculationsMap.get(uuid) || {}),
+    }));
+    return { data: merged, total };
 }
 
 async function getAndPrepareCalcResults(userId, calculations, progress, result) {
