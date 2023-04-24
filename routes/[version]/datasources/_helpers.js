@@ -25,15 +25,20 @@ async function createAndSaveDataSource(userId, content, fmt, name) {
  * Retrieves data sources from both local and remote sources and prepares
  * them for display.
  * @async
- * @function
- * @param {Object} datasources - The datasources object.
- * @param {Array<Object>} [datasources.data=[]] - The local data sources.
- * @returns {Promise<Object>} - The merged and prepared data sources.
+ * @function getAndPrepareDataSources
+ * @typedef {Object} datasources - The datasources object.
+ * @property {Array} datasources.data=[] - The local data sources.
+ * @property {Number} datasources.total=0 - Total number of datasources.
+ * @param {datasources} - The datasources object.
+ * @typedef {Object} result - Resulting object.
+ * @property {Array} result.data - Array of data sources.
+ * @property {Number} result.total - Total number of data sources.
+ * @returns {Promise<result>} - The merged and prepared data sources.
  * @throws {Error} - If there is an error retrieving the remote data sources.
  * @example
  * const { data, total } = await getAndPrepareDataSources({ data: localDataSources });
  */
-async function getAndPrepareDataSources({ data = [] }) {
+async function getAndPrepareDataSources({ data = [], total = 0 }) {
     if (!data.length) return { data: [], total: 0 };
 
     // Map UUIDs to local data sources
@@ -60,7 +65,7 @@ async function getAndPrepareDataSources({ data = [] }) {
         children: (dataSource.children || []).map((x) => uuidToIDMap.get(x)),
         ...(localDataSourcesMap.get(uuid) || {}),
     }));
-    return { data: merged, total: merged.length };
+    return { data: merged, total };
 }
 
 async function deleteAndClearDataSource(userId, id) {
