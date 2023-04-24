@@ -38,7 +38,7 @@ async function createAndSaveDataSource(userId, content, fmt, name) {
  * @example
  * const { data, total } = await getAndPrepareDataSources({ data: localDataSources });
  */
-async function getAndPrepareDataSources({ data = [] }) {
+async function getAndPrepareDataSources({ data = [], total = 0 }) {
     if (!data.length) return { data: [], total: 0 };
 
     // Map UUIDs to local data sources
@@ -65,7 +65,7 @@ async function getAndPrepareDataSources({ data = [] }) {
         children: (dataSource.children || []).map((x) => uuidToIDMap.get(x)),
         ...(localDataSourcesMap.get(uuid) || {}),
     }));
-    return { data: merged, total: Object.keys(merged).length };
+    return { data: merged, total };
 }
 
 async function deleteAndClearDataSource(userId, id) {
