@@ -69,7 +69,7 @@ async function getAndPrepareCalculations({ data = [], total = 0 }) {
     const { data: remoteCalculations = [] } = await getCalculations(
         Array.from(localCalculationsMap.keys())
     );
-    if (!remoteCalculations.length) return [];
+    if (!remoteCalculations.length) return { data: [], total: 0 };
 
     // Retrieve mapping of UUIDs to local IDs for parents (data sources)
     const relativeUUIDs = remoteCalculations.map(({ parent }) => parent).filter(Boolean);
