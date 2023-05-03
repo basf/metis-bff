@@ -13,7 +13,7 @@ class MultiOrderedDict(OrderedDict):
             super().__setitem__(key, value)
 
 
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../env.ini")
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../conf/env.ini")
 assert os.path.exists(CONFIG_PATH), "%s not found" % CONFIG_PATH
 
 config = RawConfigParser(dict_type=MultiOrderedDict, strict=False)

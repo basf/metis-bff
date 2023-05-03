@@ -8,13 +8,13 @@
 - `npm -v >= 7`
 - Postgres (any relatively new)
 
-To upgrade `node` run `npm install -g n && n lts` and re-start the shell.
+NB to upgrade `node` you may run `npm install -g n && n lts` and re-start the shell.
 
 
 ## Installation
 
 ```bash
-cp env.ini.sample env.ini
+cp conf/env.ini.sample conf/env.ini
 npm install
 node db_seed.js
 ```
@@ -35,7 +35,7 @@ npm run dev
 npm run start
 ```
 
-Configurate development and production settings in env.ini file.
+Configure the development and production settings in `conf/env.ini` file.
 
 
 ## Technical details
@@ -51,6 +51,8 @@ On top of the `users`, the main concepts mapped onto the database are:
 - `datasources` (static data sent to the backend)
 - `calculations` (transitions of data into the other data)
 - `collections` (groups of the data)
+
+### Proxying
 
 Note, that the non-versioned routes without `/v0` will be redirected _as is_ to the backend.
 
@@ -68,6 +70,8 @@ and, optionally, `swagger`:
 ```
 npm run apidoc-swagger
 ```
+
+Also, there is the [Python API client](https://github.com/tilde-lab/metis-client) `metis-client` (on PyPI) consuming all the public Metis API methods.
 
 
 ## License

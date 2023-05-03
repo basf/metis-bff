@@ -8,7 +8,7 @@ const {
     webhooks,
     mail,
     http = {},
-} = ini.parse(fs.readFileSync('./env.ini', 'utf-8'));
+} = ini.parse(fs.readFileSync('./conf/env.ini', 'utf-8'));
 
 const dev = process.env.NODE_ENV === 'development';
 const _api = dev ? api.dev : api.prod;

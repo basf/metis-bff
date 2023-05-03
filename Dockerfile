@@ -12,7 +12,7 @@ ENV NODE_ENV=${NODE_ENV}
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm ci
 
-COPY env.ini.sample ./env.ini
+COPY conf/env.ini.sample ./conf/env.ini
 COPY .docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY . .
 

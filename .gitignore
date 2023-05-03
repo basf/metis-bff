@@ -1,4 +1,4 @@
-env.ini
+conf/env.ini
 
 # Artifact files
 node_modules/
