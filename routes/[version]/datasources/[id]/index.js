@@ -76,6 +76,7 @@ async function get(req, res, next) {
 
         res.header('Content-Type', 'application/json');
         return res.send(JSON.stringify(data, null, 4));
+
     } catch (error) {
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,

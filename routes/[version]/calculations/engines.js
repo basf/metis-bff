@@ -5,7 +5,7 @@ module.exports = {
 };
 
 /**
- * @api {get} /v0/calculations/engines Get calculation engines supported
+ * @api {get} /v0/calculations/engines Get calculation engines supported (only used by metis-client)
  * @apiName GetCalcEngines
  * @apiGroup Calculations
  * @apiPermission unprotected
