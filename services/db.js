@@ -651,7 +651,7 @@ async function selectAPIToken(userId) {
 }
 
 async function setAPIToken(userId, token) {
-    const row = await insertApiToken(userId, {token});
+    const row = await insertApiToken(userId, { token });
     return row && row['token'];
 }
 

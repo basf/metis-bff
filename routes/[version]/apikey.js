@@ -8,7 +8,6 @@ module.exports = {
 };
 
 function generateAPIToken() {
-
     let result = '',
         counter = 0;
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
@@ -29,7 +28,7 @@ function generateAPIToken() {
  * @apiPermission GUI_ONLY
  */
 async function put(req, res, next) {
-    return res.json({'apikey': await setAPIToken(req.user.id, generateAPIToken())});
+    return res.json({ apikey: await setAPIToken(req.user.id, generateAPIToken()) });
 }
 
 /**
@@ -52,5 +51,5 @@ async function del(req, res, next) {
  * @apiPermission GUI_ONLY
  */
 async function get(req, res, next) {
-    return res.json({'apikey': await selectAPIToken(req.user.id)});
+    return res.json({ apikey: await selectAPIToken(req.user.id) });
 }
