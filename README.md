@@ -16,7 +16,8 @@ NB to upgrade `node` you may run `npm install -g n && n lts` and re-start the sh
 ```bash
 cp conf/env.ini.sample conf/env.ini
 npm install
-node db_seed.js
+npm run db-migrate
+npm run db-seed
 ```
 
 
@@ -42,7 +43,7 @@ Configure the development and production settings in `conf/env.ini` file.
 
 ![BFF database schema](https://raw.githubusercontent.com/basf/metis-bff/master/bff_schema.png "BFF Postgres schema")
 
-The BFF database schema is presented above (see `db_seed.js` script).
+The BFF database schema is presented above (see `db/migrations` script).
 
 By design, BFF knows nothing about the scientific data and is only responsible for the users and access management.
 
