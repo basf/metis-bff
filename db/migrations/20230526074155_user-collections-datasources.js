@@ -1,4 +1,8 @@
-const { USER_COLLECTIONS_DATASOURCES_TABLE, USER_COLLECTIONS_TABLE } = require('../../services/db');
+const {
+    USER_COLLECTIONS_DATASOURCES_TABLE,
+    USER_COLLECTIONS_TABLE,
+    USER_DATASOURCES_TABLE,
+} = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex
