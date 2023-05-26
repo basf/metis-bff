@@ -12,7 +12,7 @@ const {
  * @returns { Promise<void> }
  */
 exports.seed = async function (knex) {
-    const password = hashString('123123');
+    const password = await hashString('123123');
 
     const memberRole = await knex(USER_ROLES_TABLE).where('slug', DEFAULT_USER_ROLE).first();
     const adminRole = await knex(USER_ROLES_TABLE).where('slug', ADMIN_USER_ROLE).first();
