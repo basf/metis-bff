@@ -20,7 +20,7 @@ exports.seed = async function (knex) {
     // Deletes ALL existing entries
     await knex(USERS_TABLE).del();
 
-    await knex(USERS_TABLE).insert(
+    const [member, admin, test] = await knex(USERS_TABLE).insert(
         [
             {
                 firstName: 'Test',
@@ -43,4 +43,36 @@ exports.seed = async function (knex) {
         ],
         ['id']
     );
+
+    // user email
+    const emails_table = knex(USERS_EMAILS_TABLE);
+
+    // Deletes ALL existing entries
+    await emails_table.del();
+
+    const memberEmail = 'member@test.com';
+    const adminEmail = 'admin@test.com';
+    const testEmail = 'test@test.com';
+
+    const code1 = await hashString(memberEmail);
+    const code2 = await hashString(adminEmail);
+    const code3 = await hashString(testEmail);
+
+    await emails_table.insert([
+        {
+            userId: member.id,
+            email: memberEmail,
+            code: code1,
+        },
+        {
+            userId: admin.id,
+            email: adminEmail,
+            code: code2,
+        },
+        {
+            userId: test.id,
+            email: testEmail,
+            code: code3,
+        },
+    ]);
 };
