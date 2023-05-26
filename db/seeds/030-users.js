@@ -4,6 +4,7 @@ const {
     DEFAULT_USER_ROLE,
     ADMIN_USER_ROLE,
     hashString,
+    USERS_EMAILS_TABLE,
 } = require('../../services/db');
 
 /**
@@ -13,9 +14,8 @@ const {
 exports.seed = async function (knex) {
     const password = hashString('123123');
 
-    const roles = knex(USER_ROLES_TABLE);
-    const memberRole = await roles.where('slug', DEFAULT_USER_ROLE).first();
-    const adminRole = await roles.where('slug', ADMIN_USER_ROLE).first();
+    const memberRole = await knex(USER_ROLES_TABLE).where('slug', DEFAULT_USER_ROLE).first();
+    const adminRole = await knex(USER_ROLES_TABLE).where('slug', ADMIN_USER_ROLE).first();
 
     // Deletes ALL existing entries
     await knex(USERS_TABLE).del();
@@ -44,11 +44,8 @@ exports.seed = async function (knex) {
         ['id']
     );
 
-    // user email
-    const emails_table = knex(USERS_EMAILS_TABLE);
-
     // Deletes ALL existing entries
-    await emails_table.del();
+    await knex(USERS_EMAILS_TABLE).del();
 
     const memberEmail = 'member@test.com';
     const adminEmail = 'admin@test.com';
@@ -58,7 +55,7 @@ exports.seed = async function (knex) {
     const code2 = await hashString(adminEmail);
     const code3 = await hashString(testEmail);
 
-    await emails_table.insert([
+    await knex(USERS_EMAILS_TABLE).insert([
         {
             userId: member.id,
             email: memberEmail,
