@@ -6,6 +6,8 @@ const {
     COLLECTIONS_TYPES_TABLE,
 } = require('../../services/db');
 
+const VISIBILITY_ENUM_NAME = 'collection_visibility';
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -20,7 +22,7 @@ exports.up = function (knex) {
         table
             .enu('visibility', VISIBILITY_ENUM, {
                 useNative: true,
-                enumName: 'collection_visibility',
+                enumName: VISIBILITY_ENUM_NAME,
             })
             .defaultTo(VISIBILITY_ENUM[0]);
         table.timestamps(false, true, true);
@@ -43,5 +45,5 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-    return knex.schema.dropTable(USER_COLLECTIONS_TABLE);
+    return knex.schema.dropTable(USER_COLLECTIONS_TABLE).raw(`drop type ${VISIBILITY_ENUM_NAME}`);
 };

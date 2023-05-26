@@ -5,6 +5,8 @@ const {
     FOREIGN_KEY_LENGTH,
 } = require('../../services/db');
 
+const OAUTH_PROVIDERS_ENUM_NAME = 'oauth_providers';
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -14,7 +16,7 @@ exports.up = function (knex) {
         table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
         table.enu('provider', OAUTH_PROVIDERS_ENUM, {
             useNative: true,
-            enumName: 'oauth_providers',
+            enumName: OAUTH_PROVIDERS_ENUM_NAME,
         });
         table.string('providerId').unique();
         table.jsonb('profile').nullable();
@@ -36,5 +38,5 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-    return knex.schema.dropTable(USERS_OAUTHS_TABLE);
+    return knex.schema.dropTable(USERS_OAUTHS_TABLE).raw(`drop type ${OAUTH_PROVIDERS_ENUM_NAME}`);
 };
