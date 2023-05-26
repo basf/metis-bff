@@ -15,7 +15,8 @@
         "apidoc": "apidoc -i routes",
         "apidoc-swagger": "apidoc-swagger -i routes",
         "knex": "knex --",
-        "init-db": "NODE_ENV=development knex migrate:latest && NODE_ENV=development knex seed:run"
+        "db-migrate": "NODE_ENV=development knex migrate:latest",
+        "db-seed": "NODE_ENV=development knex seed:run"
     },
     "repository": {
         "type": "git",
