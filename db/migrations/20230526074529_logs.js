@@ -74,7 +74,7 @@ exports.up = function (knex) {
 exports.down = function (knex) {
     const queryDropTriggers = tables.reduce((sql, table) => {
         return `${sql}
-            drop trigger ${PREFIX_TRIGGER}${table} on ${table};
+            drop trigger "${PREFIX_TRIGGER}${table}" on "${table}";
         `;
     });
     return knex.schema
