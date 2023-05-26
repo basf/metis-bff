@@ -13,7 +13,8 @@
         "format": "prettier --ignore-path .gitignore --write '**/*.js'",
         "prepare": "husky install",
         "apidoc": "apidoc -i routes",
-        "apidoc-swagger": "apidoc-swagger -i routes"
+        "apidoc-swagger": "apidoc-swagger -i routes",
+        "knex": "knex --"
     },
     "repository": {
         "type": "git",

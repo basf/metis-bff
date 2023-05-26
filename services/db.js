@@ -4,6 +4,11 @@ const bcrypt = require('bcrypt');
 
 const db = require('knex')(dbConfig);
 
+const FOREIGN_KEY_LENGTH = 11;
+const NAME_LENGTH = 20;
+const EMAIL_LENGTH = 320;
+const PASSWORD_LENGTH = 60;
+
 const USERS_TABLE = dbConfig.tprefix + 'users';
 const USER_CALCULATIONS_TABLE = dbConfig.tprefix + 'user_calculations';
 const USER_DATASOURCES_TABLE = dbConfig.tprefix + 'user_datasources';
