@@ -1,6 +1,6 @@
 {
     "name": "metis-bff",
-    "version": "0.6.0",
+    "version": "0.6.2",
     "private": true,
     "description": "Project Metis: user and data management layer (backend-for-frontend)",
     "main": "index.js",
@@ -13,7 +13,10 @@
         "format": "prettier --ignore-path .gitignore --write '**/*.js'",
         "prepare": "husky install",
         "apidoc": "apidoc -i routes",
-        "apidoc-swagger": "apidoc-swagger -i routes"
+        "apidoc-swagger": "apidoc-swagger -i routes",
+        "knex": "knex --",
+        "db-migrate": "NODE_ENV=development knex migrate:latest",
+        "db-seed": "NODE_ENV=development knex seed:run"
     },
     "repository": {
         "type": "git",

@@ -4,6 +4,11 @@ const bcrypt = require('bcrypt');
 
 const db = require('knex')(dbConfig);
 
+const FOREIGN_KEY_LENGTH = 11;
+const NAME_LENGTH = 128;
+const EMAIL_LENGTH = NAME_LENGTH * 3;
+const PASSWORD_LENGTH = 60;
+
 const USERS_TABLE = dbConfig.tprefix + 'users';
 const USER_CALCULATIONS_TABLE = dbConfig.tprefix + 'user_calculations';
 const USER_DATASOURCES_TABLE = dbConfig.tprefix + 'user_datasources';
@@ -167,6 +172,10 @@ module.exports = {
     PRIVATE_COLLECTION_VISIBILITY,
     USER_API_TOKENS_TABLE,
     LOGS_TABLE,
+    FOREIGN_KEY_LENGTH,
+    NAME_LENGTH,
+    EMAIL_LENGTH,
+    PASSWORD_LENGTH,
 };
 
 async function hashString(str, salt = 10) {

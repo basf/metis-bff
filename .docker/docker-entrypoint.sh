@@ -2,7 +2,7 @@
 
 set -e
 
-node /app/db_seed.js 2>/dev/null || true
+npm run db-migrate
 
 echo "Starting metis-bff..."
 exec "$@"
