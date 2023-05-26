@@ -27,7 +27,7 @@ exports.up = function (knex) {
             table.integer('userId').unsigned().index();
             table.string('type');
             table.jsonb('value');
-            table.timestamp('createdAt').defaultTo(db.fn.now()).index();
+            table.timestamp('createdAt').defaultTo(knex.fn.now()).index();
 
             table.primary('id', { constraintName: 'pk_logs' });
         })
