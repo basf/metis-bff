@@ -1,4 +1,4 @@
-const { USER_ROLES_TABLE, NAME_LENGTH } = require('../services/db');
+const { USER_ROLES_TABLE, NAME_LENGTH } = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex

@@ -1,4 +1,4 @@
-const { USERS_TABLE, USER_API_TOKENS_TABLE, FOREIGN_KEY_LENGTH } = require('../services/db');
+const { USERS_TABLE, USER_API_TOKENS_TABLE, FOREIGN_KEY_LENGTH } = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex

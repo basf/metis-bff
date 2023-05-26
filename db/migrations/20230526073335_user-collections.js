@@ -4,7 +4,7 @@ const {
     FOREIGN_KEY_LENGTH,
     VISIBILITY_ENUM,
     COLLECTIONS_TYPES_TABLE,
-} = require('../services/db');
+} = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex

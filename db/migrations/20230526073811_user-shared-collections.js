@@ -3,7 +3,7 @@ const {
     USER_COLLECTIONS_TABLE,
     USER_SHARED_COLLECTIONS_TABLE,
     FOREIGN_KEY_LENGTH,
-} = require('../services/db');
+} = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex

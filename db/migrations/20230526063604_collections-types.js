@@ -1,4 +1,4 @@
-const { COLLECTIONS_TYPES_TABLE, NAME_LENGTH, FLAVORS_ENUM } = require('../services/db');
+const { COLLECTIONS_TYPES_TABLE, NAME_LENGTH, FLAVORS_ENUM } = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex

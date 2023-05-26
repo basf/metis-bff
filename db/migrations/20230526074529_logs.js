@@ -4,7 +4,7 @@ const {
     USER_CALCULATIONS_TABLE,
     USER_COLLECTIONS_TABLE,
     USER_DATASOURCES_TABLE,
-} = require('../services/db');
+} = require('../../services/db');
 
 const LOG_FUNCTION = 'custom_log';
 const PREFIX_TRIGGER = 'tg_log_';

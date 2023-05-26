@@ -3,7 +3,7 @@ const {
     USERS_OAUTHS_TABLE,
     OAUTH_PROVIDERS_ENUM,
     FOREIGN_KEY_LENGTH,
-} = require('../services/db');
+} = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex

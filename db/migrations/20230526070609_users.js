@@ -4,7 +4,7 @@ const {
     NAME_LENGTH,
     PASSWORD_LENGTH,
     FOREIGN_KEY_LENGTH,
-} = require('../services/db');
+} = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex
