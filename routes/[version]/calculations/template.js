@@ -18,7 +18,6 @@ module.exports = {
  * @apiSuccess (200) [Object[]] template + its schema.
  */
 async function get(req, res, next) {
-
     if (!req.query.id || !req.query.engine) {
         return next({ status: StatusCodes.BAD_REQUEST });
     }
@@ -36,7 +35,6 @@ async function get(req, res, next) {
 
         res.header('Content-Type', 'application/json');
         return res.send(JSON.stringify(data, null, 4));
-
     } catch (error) {
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,
