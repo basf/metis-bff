@@ -76,7 +76,8 @@ exports.down = function (knex) {
         return `${sql}
             drop trigger if exists "${PREFIX_TRIGGER}${table}" on "${table}";
         `;
-    });
+    }, '');
+
     return knex.schema
         .raw(queryDropTriggers)
         .then(() => {
