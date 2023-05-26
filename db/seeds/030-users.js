@@ -4,7 +4,7 @@ const {
     DEFAULT_USER_ROLE,
     ADMIN_USER_ROLE,
     hashString,
-} = require('../services/db');
+} = require('../../services/db');
 
 /**
  * @param { import("knex").Knex } knex

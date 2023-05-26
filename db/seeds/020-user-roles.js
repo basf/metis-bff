@@ -1,4 +1,4 @@
-const { USER_ROLES_TABLE, DEFAULT_USER_ROLE, ADMIN_USER_ROLE } = require('../services/db');
+const { USER_ROLES_TABLE, DEFAULT_USER_ROLE, ADMIN_USER_ROLE } = require('../../services/db');
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
