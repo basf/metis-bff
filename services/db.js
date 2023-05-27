@@ -647,7 +647,7 @@ async function selectAPIToken(userId) {
         .select(`${USER_API_TOKENS_TABLE}.token`)
         .where('userId', userId)
         .first();
-    return row && row['token'];
+    return row && row['token']; // NB FIXME? createdAt via knex timestamps
 }
 
 async function setAPIToken(userId, token) {

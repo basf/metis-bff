@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { checkAuth } = require('../../middlewares/auth');
 const { selectAPIToken, setAPIToken, removeAPIToken } = require('../../services/db');
 
@@ -7,18 +8,7 @@ module.exports = {
     delete: [checkAuth, del],
 };
 
-function generateAPIToken() {
-    let result = '',
-        counter = 0;
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_';
-    const charlen = chars.length;
-
-    while (counter < 11) {
-        result += chars.charAt(Math.floor(Math.random() * charlen));
-        counter += 1;
-    }
-    return 'METIS' + result;
-}
+const generateAPIToken = (length = 11) => 'METIS_' + crypto.randomBytes(length).toString("hex"); // 28 chars
 
 /**
  * @api {put} /v0/apikey Create new API key
@@ -40,7 +30,7 @@ async function put(req, res, next) {
  */
 async function del(req, res, next) {
     removeAPIToken(req.user.id);
-    return res.json({});
+    return res.json({ apikey: null });
 }
 
 /**
