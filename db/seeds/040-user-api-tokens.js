@@ -10,8 +10,8 @@ exports.seed = async function (knex) {
     // Deletes ALL existing entries
     await knex(USER_API_TOKENS_TABLE).del();
     await knex(USER_API_TOKENS_TABLE).insert(
-        emails.map(({ userId, email }) => ({
-            userId,
+        emails.map(({ user_id, email }) => ({
+            user_id,
             token: email, // inserting email as token just for test
         }))
     );
