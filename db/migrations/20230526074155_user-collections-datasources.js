@@ -10,20 +10,20 @@ const {
  */
 exports.up = function (knex) {
     return knex.schema.createTable(USER_COLLECTIONS_DATASOURCES_TABLE, (table) => {
-        table.integer('collectionId').unsigned().index();
-        table.integer('dataSourceId').unsigned().index();
+        table.integer('collection_id').unsigned().index();
+        table.integer('data_source_id').unsigned().index();
         table.timestamps(false, true, true);
 
-        table.primary(['collectionId', 'dataSourceId'], {
-            constraintName: 'pk_collection_dataSource',
+        table.primary(['collection_id', 'data_source_id'], {
+            constraintName: 'pk_collection_data_source',
         });
         table
-            .foreign('collectionId', 'fk_collectionId')
+            .foreign('collection_id', 'fk_collection_id')
             .references('id')
             .inTable(USER_COLLECTIONS_TABLE)
             .onDelete('CASCADE');
         table
-            .foreign('dataSourceId', 'fk_dataSourceId')
+            .foreign('data_source_id', 'fk_data_source_id')
             .references('id')
             .inTable(USER_DATASOURCES_TABLE)
             .onDelete('CASCADE');
