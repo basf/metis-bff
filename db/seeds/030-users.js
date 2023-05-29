@@ -23,21 +23,21 @@ exports.seed = async function (knex) {
     const [member, admin, test] = await knex(USERS_TABLE).insert(
         [
             {
-                firstName: 'Test',
-                lastName: 'Member',
-                roleId: memberRole.id,
+                first_name: 'Test',
+                last_name: 'Member',
+                role_id: memberRole.id,
                 password,
             },
             {
-                firstName: 'Test',
-                lastName: 'Admin',
-                roleId: adminRole.id,
+                first_name: 'Test',
+                last_name: 'Admin',
+                role_id: adminRole.id,
                 password,
             },
             {
-                firstName: 'Test',
-                lastName: 'Test',
-                roleId: memberRole.id,
+                first_name: 'Test',
+                last_name: 'Test',
+                role_id: memberRole.id,
                 password,
             },
         ],
@@ -57,17 +57,17 @@ exports.seed = async function (knex) {
 
     await knex(USERS_EMAILS_TABLE).insert([
         {
-            userId: member.id,
+            user_id: member.id,
             email: memberEmail,
             code: code1,
         },
         {
-            userId: admin.id,
+            user_id: admin.id,
             email: adminEmail,
             code: code2,
         },
         {
-            userId: test.id,
+            user_id: test.id,
             email: testEmail,
             code: code3,
         },
