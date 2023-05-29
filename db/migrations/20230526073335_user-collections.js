@@ -15,8 +15,8 @@ const VISIBILITY_ENUM_NAME = 'collection_visibility';
 exports.up = function (knex) {
     return knex.schema.createTable(USER_COLLECTIONS_TABLE, (table) => {
         table.increments('id');
-        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
-        table.integer('typeId', FOREIGN_KEY_LENGTH).unsigned().index();
+        table.integer('user_id', FOREIGN_KEY_LENGTH).unsigned().index();
+        table.integer('type_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.string('title', 32);
         table.string('description', 64);
         table
@@ -28,12 +28,12 @@ exports.up = function (knex) {
         table.timestamps(false, true, true);
 
         table
-            .foreign('userId', 'fk_userId')
+            .foreign('user_id', 'fk_user_id')
             .references('id')
             .inTable(USERS_TABLE)
             .onDelete('CASCADE');
         table
-            .foreign('typeId', 'fk_typeId')
+            .foreign('type_id', 'fk_type_id')
             .references('id')
             .inTable(COLLECTIONS_TYPES_TABLE)
             .onDelete('CASCADE');
