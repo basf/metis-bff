@@ -112,6 +112,7 @@ const deleteUserCollection = deleteFirstByUserId(USER_COLLECTIONS_TABLE, ['id'])
 const insertUserDataSource = insertByUserId(USER_DATASOURCES_TABLE);
 const insertUserCalculation = insertByUserId(USER_CALCULATIONS_TABLE);
 const insertUserCollection = insertByUserId(USER_COLLECTIONS_TABLE, ['id']);
+const insertApiToken = insertByUserId(USER_API_TOKENS_TABLE, ['token']);
 const upsertUserCollection = upsertByUserId(USER_COLLECTIONS_TABLE, ['id']);
 const updateUserCollection = updateByUserId(USER_COLLECTIONS_TABLE, ['id']);
 const selectDataSourceByUserId = selectFirstByUserId(USER_DATASOURCES_TABLE);
@@ -151,6 +152,10 @@ module.exports = {
     selectUserByApiToken,
     selectLogs,
     selectUserRole,
+
+    selectAPIToken,
+    setAPIToken,
+    removeAPIToken,
 
     OAUTH_PROVIDERS_ENUM,
     VISIBILITY_ENUM,
@@ -644,4 +649,21 @@ function selectUserRole(userId) {
         .join(USERS_TABLE, `${USERS_TABLE}.roleId`, `${USER_ROLES_TABLE}.id`)
         .where(`${USERS_TABLE}.id`, userId)
         .first();
+}
+
+async function selectAPIToken(userId) {
+    const row = await db(USER_API_TOKENS_TABLE)
+        .select(`${USER_API_TOKENS_TABLE}.token`)
+        .where('userId', userId)
+        .first();
+    return row && row['token']; // NB FIXME? createdAt via knex timestamps
+}
+
+async function setAPIToken(userId, token) {
+    const row = await insertApiToken(userId, { token });
+    return row && row['token'];
+}
+
+async function removeAPIToken(userId) {
+    return db(USER_API_TOKENS_TABLE).where('userId', userId).del();
 }
