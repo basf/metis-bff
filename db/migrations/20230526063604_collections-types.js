@@ -15,7 +15,7 @@ exports.up = function (knex) {
             useNative: true,
             enumName: FLAVORS_ENUM_NAME,
         });
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
     });
 };
 
