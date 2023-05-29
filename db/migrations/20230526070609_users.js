@@ -17,7 +17,7 @@ exports.up = function (knex) {
         table.string('first_name', NAME_LENGTH);
         table.string('last_name', NAME_LENGTH);
         table.integer('role_id', FOREIGN_KEY_LENGTH).unsigned().index();
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
         table
             .foreign('role_id', 'fk_role_id')

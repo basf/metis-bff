@@ -20,7 +20,7 @@ exports.up = function (knex) {
         });
         table.string('provider_id').unique();
         table.jsonb('profile').nullable();
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
         table.primary(['user_id', 'provider'], {
             constraintName: 'pk_user_provider',

@@ -16,7 +16,7 @@ exports.up = function (knex) {
         table.string('email', EMAIL_LENGTH).unique().index();
         table.string('code', PASSWORD_LENGTH).unique().index();
         table.boolean('verified').defaultTo(false);
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
         table.primary(['user_id', 'email'], { constraintName: 'pk_user_email' });
         table

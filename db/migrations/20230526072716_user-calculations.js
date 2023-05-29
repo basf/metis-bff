@@ -9,7 +9,7 @@ exports.up = function (knex) {
         table.increments('id');
         table.integer('user_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.uuid('uuid').unique();
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
         table
             .foreign('user_id', 'fk_user_id')

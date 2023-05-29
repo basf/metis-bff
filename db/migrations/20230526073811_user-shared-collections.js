@@ -14,7 +14,7 @@ exports.up = function (knex) {
         table.integer('collection_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.integer('user_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.jsonb('permissions').nullable();
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
         table.primary(['user_id', 'collection_id'], {
             constraintName: 'pk_user_collection',

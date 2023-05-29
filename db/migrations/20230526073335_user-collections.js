@@ -25,7 +25,7 @@ exports.up = function (knex) {
                 enumName: VISIBILITY_ENUM_NAME,
             })
             .defaultTo(VISIBILITY_ENUM[0]);
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
         table
             .foreign('user_id', 'fk_user_id')

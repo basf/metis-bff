@@ -9,7 +9,7 @@ exports.up = function (knex) {
         table.increments('id');
         table.integer('user_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.string('token').unique();
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
         table.primary('id', { constraintName: 'pk_user_api_token' });
         table

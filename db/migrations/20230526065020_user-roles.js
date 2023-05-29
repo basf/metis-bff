@@ -10,7 +10,7 @@ exports.up = function (knex) {
         table.string('slug', NAME_LENGTH).unique();
         table.string('label', NAME_LENGTH);
         table.jsonb('permissions').nullable();
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
     });
 };
 
