@@ -24,10 +24,10 @@ exports.up = function (knex) {
     return knex.schema
         .createTable(LOGS_TABLE, (table) => {
             table.increments('id');
-            table.integer('userId').unsigned().index();
+            table.integer('user_id').unsigned().index();
             table.string('type');
             table.jsonb('value');
-            table.timestamp('createdAt').defaultTo(knex.fn.now()).index();
+            table.timestamp('created_at').defaultTo(knex.fn.now()).index();
 
             table.primary('id', { constraintName: 'pk_logs' });
         })
@@ -36,15 +36,15 @@ exports.up = function (knex) {
             const query = `
             create or replace function ${LOG_FUNCTION} () returns trigger as $$
             declare
-                userId integer;
+                user_id integer;
                 type varchar := lower(tg_table_name);
             begin
                 if type = lower('${USERS_TABLE}') then
-                    userId := new.id;
+                    user_id := new.id;
                 else
-                    userId := new."userId";
+                    user_id := new."user_id";
                 end if;
-                insert into "${LOGS_TABLE}" ("userId", "type", "value") values (userId, type, to_jsonb(new));
+                insert into "${LOGS_TABLE}" ("user_id", "type", "value") values (user_id, type, to_jsonb(new));
                 return new;
             end;
             $$ language plpgsql;
