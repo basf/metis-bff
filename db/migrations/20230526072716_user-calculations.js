@@ -7,12 +7,12 @@ const { USERS_TABLE, USER_CALCULATIONS_TABLE, FOREIGN_KEY_LENGTH } = require('..
 exports.up = function (knex) {
     return knex.schema.createTable(USER_CALCULATIONS_TABLE, (table) => {
         table.increments('id');
-        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+        table.integer('user_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.uuid('uuid').unique();
         table.timestamps(false, true, true);
 
         table
-            .foreign('userId', 'fk_userId')
+            .foreign('user_id', 'fk_user_id')
             .references('id')
             .inTable(USERS_TABLE)
             .onDelete('CASCADE');
