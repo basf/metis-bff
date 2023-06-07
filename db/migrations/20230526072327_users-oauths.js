@@ -13,20 +13,20 @@ const OAUTH_PROVIDERS_ENUM_NAME = 'oauth_providers';
  */
 exports.up = function (knex) {
     return knex.schema.createTable(USERS_OAUTHS_TABLE, (table) => {
-        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+        table.integer('user_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.enu('provider', OAUTH_PROVIDERS_ENUM, {
             useNative: true,
             enumName: OAUTH_PROVIDERS_ENUM_NAME,
         });
-        table.string('providerId').unique();
+        table.string('provider_id').unique();
         table.jsonb('profile').nullable();
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
-        table.primary(['userId', 'provider'], {
+        table.primary(['user_id', 'provider'], {
             constraintName: 'pk_user_provider',
         });
         table
-            .foreign('userId', 'fk_userId')
+            .foreign('user_id', 'fk_user_id')
             .references('id')
             .inTable(USERS_TABLE)
             .onDelete('CASCADE');

@@ -12,15 +12,15 @@ const {
  */
 exports.up = function (knex) {
     return knex.schema.createTable(USERS_EMAILS_TABLE, (table) => {
-        table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
+        table.integer('user_id', FOREIGN_KEY_LENGTH).unsigned().index();
         table.string('email', EMAIL_LENGTH).unique().index();
         table.string('code', PASSWORD_LENGTH).unique().index();
         table.boolean('verified').defaultTo(false);
-        table.timestamps(false, true, true);
+        table.timestamps(false, true, false);
 
-        table.primary(['userId', 'email'], { constraintName: 'pk_user_email' });
+        table.primary(['user_id', 'email'], { constraintName: 'pk_user_email' });
         table
-            .foreign('userId', 'fk_userId')
+            .foreign('user_id', 'fk_user_id')
             .references('id')
             .inTable(USERS_TABLE)
             .onDelete('CASCADE');

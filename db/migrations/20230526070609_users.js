@@ -14,13 +14,13 @@ exports.up = function (knex) {
     return knex.schema.createTable(USERS_TABLE, (table) => {
         table.increments('id');
         table.string('password', PASSWORD_LENGTH).nullable();
-        table.string('firstName', NAME_LENGTH);
-        table.string('lastName', NAME_LENGTH);
-        table.integer('roleId', FOREIGN_KEY_LENGTH).unsigned().index();
-        table.timestamps(false, true, true);
+        table.string('first_name', NAME_LENGTH);
+        table.string('last_name', NAME_LENGTH);
+        table.integer('role_id', FOREIGN_KEY_LENGTH).unsigned().index();
+        table.timestamps(false, true, false);
 
         table
-            .foreign('roleId', 'fk_roleId')
+            .foreign('role_id', 'fk_role_id')
             .references('id')
             .inTable(USER_ROLES_TABLE)
             .onDelete('CASCADE');
