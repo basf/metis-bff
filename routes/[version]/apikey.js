@@ -8,7 +8,7 @@ module.exports = {
     delete: [checkAuth, del],
 };
 
-const generateAPIToken = (length = 11) => 'METIS_' + crypto.randomBytes(length).toString("hex"); // 28 chars
+const generateAPIToken = (length = 11) => 'METIS_' + crypto.randomBytes(length).toString('hex'); // 28 chars
 
 /**
  * @api {put} /v0/apikey Create new API key
