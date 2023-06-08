@@ -28,7 +28,6 @@ module.exports = {
     runCalculation,
     getDataSources,
     getDataSourceResult,
-    getEngines, // only used by metis-client
     getTemplate,
     api,
 };
@@ -59,10 +58,6 @@ async function getCalculations(uuids) {
 
 async function getDataSourceResult(uuid) {
     return api.post('/data/examine', { uuid });
-}
-
-async function getEngines() {
-    return api.get('/calculations/supported');
 }
 
 async function getTemplate(uuid, engine) {
