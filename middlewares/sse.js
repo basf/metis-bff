@@ -1,3 +1,4 @@
+const { stringify } = require('../_helpers');
 const { hasAuthBearerHeader } = require('./apiToken');
 
 module.exports = function (req, res, next) {
@@ -26,16 +27,15 @@ module.exports = function (req, res, next) {
         }
 
         let userId;
+        const hackFn = () => {};
+        hackFn.toString = () => stringify(newData);
+
         return {
             user({ session, user }) {
                 userId = session?.passport?.user || user?.id;
                 return filterByUserId(userId) || filterSharedCollections(userId);
             },
-            data: {
-                toJSON() {
-                    return newData;
-                },
-            },
+            data: hackFn,
         };
     }
 
