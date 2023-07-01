@@ -23,7 +23,7 @@
         "url": "git+https://github.com/basf/bscience-bff.git"
     },
     "dependencies": {
-        "apidoc": "^1.0.2",
+        "apidoc": "^1.0.3",
         "apidoc-swagger": "^0.3.2",
         "axios": "^0.26.1",
         "bcrypt": "^5.0.1",
