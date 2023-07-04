@@ -48,7 +48,7 @@ async function getAndPrepareDataSources({ data = [], total = 0 }) {
     const { data: remoteDataSources = [] } = await getDataSources(
         Array.from(localDataSourcesMap.keys())
     );
-    if (!remoteDataSources.length) return [];
+    if (!remoteDataSources.length) return { data: [], total: 0 };
 
     // Retrieve mapping of UUIDs to local IDs for parents and children
     const relativeUUIDs = remoteDataSources.flatMap((x) => [
