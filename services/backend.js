@@ -21,15 +21,16 @@ const api = axios.create({
 });
 
 module.exports = {
-    cancelCalculation,
-    deleteDataSource,
-    createDataSource,
-    getCalculations,
-    runCalculation,
-    getDataSources,
-    getDataSourceResult,
-    getTemplate,
     api,
+    createDataSource,
+    deleteDataSource,
+    getDataSources,
+    runCalculation,
+    cancelCalculation,
+    getCalculations,
+    runPI,
+    getDataSourceResult,
+    getTemplate
 };
 
 async function createDataSource(content, fmt, name) {
@@ -54,6 +55,10 @@ async function cancelCalculation(uuid) {
 
 async function getCalculations(uuids) {
     return api.post('/calculations/status', { uuid: uuids.join(':') });
+}
+
+async function runPI(uuid, els, strict) {
+    return api.post('/calculations/phaseid', { uuid, els, strict });
 }
 
 async function getDataSourceResult(uuid) {
