@@ -25,7 +25,7 @@
     "dependencies": {
         "apidoc": "^1.0.2",
         "apidoc-swagger": "^0.3.2",
-        "axios": "^0.26.1",
+        "axios": "^1.5.0",
         "bcrypt": "^5.0.1",
         "express": "^4.17.3",
         "express-bff": "^1.1.0",
