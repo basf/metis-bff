@@ -2,11 +2,16 @@ const { StatusCodes } = require('http-status-codes');
 const { checkAuth } = require('../../../middlewares/auth');
 const { getUserDataSources } = require('../../../middlewares/db');
 
-const { createAndSaveDataSource, getAndPrepareDataSources } = require('./_helpers');
+const {
+    createAndSaveDataSource,
+    getAndPrepareDataSources,
+    importAndSaveDataSource,
+} = require('./_helpers');
 
 module.exports = {
     get: [checkAuth, getUserDataSources, get],
     post: [checkAuth, getUserDataSources, post],
+    put: [checkAuth, getUserDataSources, put],
 };
 
 /**
@@ -67,4 +72,36 @@ async function get(req, res, next) {
     } catch (error) {
         return next({ status: StatusCodes.MISDIRECTED_REQUEST, error });
     }
+}
+
+/**
+ * @api {put} /v0/datasources Import datasource from an external provider DB
+ * @apiName ImportData
+ * @apiGroup Data
+ * @apiPermission GUI_ONLY
+ * @apiSuccess (202) reqId response sent to a separate server-side event stream.
+ * @apiUse SSEStreamResponse
+ */
+async function put(req, res, next) {
+    if (!req.body.id) {
+        return next({
+            status: StatusCodes.BAD_REQUEST,
+            error: 'Required field *id* is not provided.',
+        });
+    }
+
+    const reqId = req.id;
+    res.status(StatusCodes.ACCEPTED).json({ reqId });
+
+    const datasource = await importAndSaveDataSource(req.user.id, req.body.id);
+    if (!datasource)
+        return next({
+            status: StatusCodes.UNPROCESSABLE_ENTITY,
+            error: 'Cannot import this entry',
+        });
+
+    req.session.datasources.data.push(datasource);
+    const data = await getAndPrepareDataSources(req.session.datasources);
+
+    res.sse.sendTo({ reqId, ...data }, 'datasources');
 }

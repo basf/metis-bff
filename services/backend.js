@@ -24,13 +24,14 @@ module.exports = {
     api,
     createDataSource,
     deleteDataSource,
+    importDataSource,
     getDataSources,
     runCalculation,
     cancelCalculation,
     getCalculations,
     runPI,
     getDataSourceResult,
-    getTemplate
+    getTemplate,
 };
 
 async function createDataSource(content, fmt, name) {
@@ -39,6 +40,10 @@ async function createDataSource(content, fmt, name) {
 
 async function deleteDataSource(uuid) {
     return api.post('/data/delete', { uuid });
+}
+
+async function importDataSource(ext_id) {
+    return api.post('/data/import', { ext_id });
 }
 
 async function getDataSources(uuids) {

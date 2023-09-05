@@ -3,12 +3,19 @@ const {
     deleteUserDataSource,
     selectDataSourcesIdMap,
 } = require('../../../services/db');
-const { createDataSource, getDataSources, deleteDataSource } = require('../../../services/backend');
+
+const {
+    createDataSource,
+    getDataSources,
+    deleteDataSource,
+    importDataSource,
+} = require('../../../services/backend');
 
 module.exports = {
-    deleteAndClearDataSource,
-    getAndPrepareDataSources,
     createAndSaveDataSource,
+    importAndSaveDataSource,
+    getAndPrepareDataSources,
+    deleteAndClearDataSource,
 };
 
 async function createAndSaveDataSource(userId, content, fmt, name) {
@@ -19,6 +26,23 @@ async function createAndSaveDataSource(userId, content, fmt, name) {
     }
 
     return insertUserDataSource(userId, { uuid: data.uuid });
+}
+
+async function importAndSaveDataSource(userId, externalId) {
+    let response;
+    try {
+        response = await importDataSource(externalId);
+    } catch (error) {
+        //console.error(error);
+    }
+
+    if (!response) return false;
+
+    if (!response.data.uuid) {
+        throw 'Data source UUID is not available';
+    }
+
+    return insertUserDataSource(userId, { uuid: response.data.uuid });
 }
 
 /**
