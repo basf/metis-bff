@@ -124,7 +124,10 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
 }
 
 async function deleteAndClearCalculation(userId, id) {
-    const { uuid } = await deleteUserCalculation(userId, id);
-    await cancelCalculation(uuid);
-    return uuid;
+    const result = await deleteUserCalculation(userId, id);
+    if (!result)
+        return false;
+
+    await cancelCalculation(result.uuid);
+    return result.uuid;
 }
