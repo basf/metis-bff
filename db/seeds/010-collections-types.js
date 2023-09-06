@@ -9,24 +9,34 @@ exports.seed = async function (knex) {
     await knex(COLLECTIONS_TYPES_TABLE).del();
     await knex(COLLECTIONS_TYPES_TABLE).insert([
         {
-            slug: 'red',
-            label: 'Red',
-            flavor: 'red',
+            // id = 1
+            slug: 'requests',
+            label: 'Requests',
+            flavor: '#900',
         },
         {
-            slug: 'blue',
-            label: 'Blue',
-            flavor: 'blue',
+            // id = 2
+            slug: 'samples',
+            label: 'Samples',
+            flavor: '#ccc',
         },
         {
-            slug: 'green',
-            label: 'Green',
-            flavor: 'green',
+            // id = 3
+            slug: 'statuses',
+            label: 'Statuses',
+            flavor: '#fff',
         },
         {
-            slug: 'orange',
-            label: 'Orange',
-            flavor: 'orange',
+            // id = 4
+            slug: 'phases',
+            label: 'Materials',
+            flavor: '#666',
+        },
+        {
+            // id = 5
+            slug: 'customers',
+            label: 'Customers',
+            flavor: '#5755D9',
         },
     ]);
 };

@@ -2,13 +2,14 @@ const crypto = require('crypto');
 const { checkAuth } = require('../../middlewares/auth');
 const { selectAPIToken, setAPIToken, removeAPIToken } = require('../../services/db');
 
+const generateAPIToken = (length = 11) => 'METIS_' + crypto.randomBytes(length).toString('hex'); // 28 chars
+
 module.exports = {
     get: [checkAuth, get],
     put: [checkAuth, put],
     delete: [checkAuth, del],
+    generateAPIToken,
 };
-
-const generateAPIToken = (length = 11) => 'METIS_' + crypto.randomBytes(length).toString('hex'); // 28 chars
 
 /**
  * @api {put} /v0/apikey Create new API key

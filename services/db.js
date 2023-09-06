@@ -81,28 +81,14 @@ const ADMIN_USER_ROLE = 'admin';
 const PUBLIC_COLLECTION_VISIBILITY = 'community';
 const SHARED_COLLECTION_VISIBILITY = 'shared';
 const PRIVATE_COLLECTION_VISIBILITY = 'private';
-
-const OAUTH_PROVIDERS_ENUM = ['dummy', 'github', 'linkedin', 'orcid', 'mpds', 'basf'];
-const FLAVORS_ENUM = [
-    'red',
-    'pink',
-    'purple',
-    'indigo',
-    'blue',
-    'cyan',
-    'teal',
-    'green',
-    'lime',
-    'yellow',
-    'orange',
-    'brown',
-    'grey',
-];
 const VISIBILITY_ENUM = [
     PRIVATE_COLLECTION_VISIBILITY,
     SHARED_COLLECTION_VISIBILITY,
     PUBLIC_COLLECTION_VISIBILITY,
 ];
+
+const OAUTH_PROVIDERS_ENUM = ['dummy', 'github', 'linkedin', 'orcid', 'mpds', 'basf'];
+const FLAVORS_ENUM = ['#900', '#ccc', '#fff', '#666', '#5755D9'];
 
 const selectDataSourcesByUserId = selectAllByUserId(USER_DATASOURCES_TABLE, DATASOURCE_FIELDS);
 const selectCalculationsByUserId = selectAllByUserId(USER_CALCULATIONS_TABLE);

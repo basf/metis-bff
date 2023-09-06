@@ -34,12 +34,6 @@ exports.seed = async function (knex) {
                 roleId: adminRole.id,
                 password,
             },
-            {
-                firstName: 'Test',
-                lastName: 'Test',
-                roleId: memberRole.id,
-                password,
-            },
         ],
         ['id']
     );
@@ -49,11 +43,9 @@ exports.seed = async function (knex) {
 
     const memberEmail = 'member@test.com';
     const adminEmail = 'admin@test.com';
-    const testEmail = 'test@test.com';
 
     const code1 = await hashString(memberEmail);
     const code2 = await hashString(adminEmail);
-    const code3 = await hashString(testEmail);
 
     await knex(USERS_EMAILS_TABLE).insert([
         {
@@ -65,11 +57,6 @@ exports.seed = async function (knex) {
             userId: admin.id,
             email: adminEmail,
             code: code2,
-        },
-        {
-            userId: test.id,
-            email: testEmail,
-            code: code3,
         },
     ]);
 };
