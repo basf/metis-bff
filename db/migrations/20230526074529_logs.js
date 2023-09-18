@@ -4,6 +4,7 @@ const {
     USER_CALCULATIONS_TABLE,
     USER_COLLECTIONS_TABLE,
     USER_DATASOURCES_TABLE,
+    FOREIGN_KEY_LENGTH,
 } = require('../../services/db');
 
 const LOG_FUNCTION = 'custom_log';
@@ -24,12 +25,17 @@ exports.up = function (knex) {
     return knex.schema
         .createTable(LOGS_TABLE, (table) => {
             table.increments('id');
-            table.integer('userId').unsigned().index();
+            table.integer('userId', FOREIGN_KEY_LENGTH).unsigned().index();
             table.string('type');
             table.jsonb('value');
             table.timestamp('createdAt').defaultTo(knex.fn.now()).index();
 
             table.primary('id', { constraintName: 'pk_logs' });
+            table
+                .foreign('userId', 'fk_userId')
+                .references('id')
+                .inTable(USERS_TABLE)
+                .onDelete('CASCADE');
         })
 
         .then(() => {
