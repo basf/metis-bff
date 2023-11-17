@@ -1,5 +1,7 @@
 # Metis data management GUI: Backend for Frontend
 
+<p align="center"><img src="https://github.com/basf/metis-backend/blob/master/logo.png" width="300" /></p>
+
 **This is the second part of the whole Metis infra: [GUI](https://github.com/basf/metis-gui) &rlarr; [BFF](https://github.com/basf/metis-bff) &rlarr; [backend](https://github.com/basf/metis-backend).**
 
 ### Requirements
