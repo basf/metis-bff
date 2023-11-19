@@ -20,7 +20,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/basf/bscience-bff.git"
+        "url": "git+https://github.com/basf/metis-bff.git"
     },
     "dependencies": {
         "apidoc": "^1.2.0",

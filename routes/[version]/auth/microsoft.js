@@ -5,7 +5,7 @@ const OAuth2Strategy = require('passport-oauth2').Strategy;
 
 function Strategy(options = {}, verify) {
     OAuth2Strategy.call(this, options, verify);
-    this.name = 'basf';
+    this.name = 'microsoft';
 }
 
 util.inherits(Strategy, OAuth2Strategy);
@@ -15,7 +15,7 @@ Strategy.prototype.userProfile = async function (accessToken, done) {
     const req = https
         .request(
             {
-                host: 'graph.microsoft.com', // FIXME move to settings
+                host: 'graph.microsoft.com',
                 port: 443,
                 path: '/oidc/userinfo',
                 method: 'POST',

@@ -4,8 +4,8 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 const OrcidStrategy = require('passport-orcid').Strategy;
 
+const MSFTStrategy = require('./microsoft');
 const MPDSStrategy = require('./mpds');
-const BASFStrategy = require('./basf');
 
 //const OAuth2Strategy = require('passport-oauth2').Strategy;
 //const DummyStrategy = require('../../../tests/oauth/strategy');
@@ -51,11 +51,18 @@ module.exports = {
     ],
 };
 
+passport.use(new MSFTStrategy(oauth.microsoft, handleCallback('microsoft')));
 passport.use(new GitHubStrategy(oauth.github, handleCallback('github')));
 passport.use(new LinkedInStrategy(oauth.linkedin, handleCallback('linkedin')));
 passport.use(new OrcidStrategy(oauth.orcid, handleCallback('orcid')));
+/* passport.use(
+    new OrcidStrategy(oauth.orcid, function (accessToken, refreshToken, params, profile, done) {
+        console.log('accessToken');
+        console.log(accessToken);
+        handleCallback('orcid')(params, profile, done); // FIXME no internal func is needed
+    })
+); */
 passport.use(new MPDSStrategy(oauth.mpds, handleCallback('mpds')));
-passport.use(new BASFStrategy(oauth.basf, handleCallback('basf')));
 
 //passport.use(new DummyStrategy(oauth.dummy, handleCallback('dummy')));
 
@@ -77,6 +84,14 @@ function handleCallback(provider) {
     return async (...args) => {
         let [done, profile, params] = args.reverse();
 
+        /* if (provider === 'orcid') {
+            profile = {
+                orcid: params.orcid,
+                name: params.name,
+                email: params?.emails?.email[0].email,
+            };
+        } */
+
         if (!profile || !Object.keys(profile).length) {
             profile = params;
         }
@@ -92,7 +107,7 @@ function handleCallback(provider) {
 
         if (provider === 'orcid') {
             providerId = profile.orcid;
-        } else if (provider === 'basf') {
+        } else if (provider === 'microsoft') {
             providerId = profile.sub;
         } else {
             providerId = profile.id;
@@ -103,7 +118,7 @@ function handleCallback(provider) {
         if (provider === 'mpds') {
             firstName = profile.first_name;
             lastName = profile.last_name;
-        } else if (provider === 'basf') {
+        } else if (provider === 'microsoft') {
             firstName = profile.given_name;
             lastName = profile.family_name;
         } else {

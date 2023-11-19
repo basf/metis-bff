@@ -50,15 +50,21 @@ module.exports = {
             userProfileURL:
                 process.env.MPDS_USER_PROFILE_URL || oauth.mpds.user_profile_url || 'unset',
         },
-        basf: {
-            authorizationURL: process.env.BASF_AUTH_URL || oauth.basf.authorize_url || 'unset',
-            tokenURL: process.env.BASF_ACCESS_TOKEN_URL || oauth.basf.access_token_url || 'unset',
-            clientID: process.env.BASF_CLIENT_ID || oauth.basf.client || 'unset',
-            clientSecret: process.env.BASF_CLIENT_SECRET || oauth.basf.secret || 'unset',
-            callbackURL: process.env.BASF_CALLBACK_URL || oauth.basf.callback || 'unset',
+        microsoft: {
+            authorizationURL:
+                process.env.MICROSOFT_AUTH_URL || oauth.microsoft.authorize_url || 'unset',
+            tokenURL:
+                process.env.MICROSOFT_ACCESS_TOKEN_URL ||
+                oauth.microsoft.access_token_url ||
+                'unset',
+            clientID: process.env.MICROSOFT_CLIENT_ID || oauth.microsoft.client || 'unset',
+            clientSecret: process.env.MICROSOFT_CLIENT_SECRET || oauth.microsoft.secret || 'unset',
+            callbackURL: process.env.MICROSOFT_CALLBACK_URL || oauth.microsoft.callback || 'unset',
             userProfileURL:
-                process.env.BASF_USER_PROFILE_URL || oauth.basf.user_profile_url || 'unset',
-            scope: process.env.BASF_SCOPE || oauth.basf.scope,
+                process.env.MICROSOFT_USER_PROFILE_URL ||
+                oauth.microsoft.user_profile_url ||
+                'unset',
+            scope: process.env.MICROSOFT_SCOPE || oauth.microsoft.scope,
         },
         dummy: {
             authorizationURL: process.env.DUMMY_AUTH_URL || oauth.dummy.authorize_url || 'unset',

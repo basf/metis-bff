@@ -87,7 +87,7 @@ const VISIBILITY_ENUM = [
     PUBLIC_COLLECTION_VISIBILITY,
 ];
 
-const OAUTH_PROVIDERS_ENUM = ['dummy', 'github', 'linkedin', 'orcid', 'mpds', 'basf'];
+const OAUTH_PROVIDERS_ENUM = ['dummy', 'github', 'linkedin', 'orcid', 'mpds', 'microsoft'];
 const FLAVORS_ENUM = ['#900', '#ccc', '#fff', '#666', '#5755D9'];
 
 const selectDataSourcesByUserId = selectAllByUserId(USER_DATASOURCES_TABLE, DATASOURCE_FIELDS);
