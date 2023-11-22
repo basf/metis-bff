@@ -46,7 +46,12 @@ async function post(req, res, next) {
 
     try {
         for (let i = 0; i < contents.length; i++) {
-            const datasource = await createAndSaveDataSource(req.user.id, contents[i], fmt, names[i]);
+            const datasource = await createAndSaveDataSource(
+                req.user.id,
+                contents[i],
+                fmt,
+                names[i]
+            );
             req.session.datasources.data.push(datasource);
         }
 

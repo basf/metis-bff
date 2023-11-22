@@ -95,8 +95,7 @@ async function getAndPrepareDataSources({ data = [], total = 0 }) {
 async function deleteAndClearDataSource(userId, id) {
     const result = await deleteUserDataSource(userId, id);
 
-    if (!result?.uuid)
-        return false;
+    if (!result?.uuid) return false;
 
     await deleteDataSource(result.uuid);
     return true;
