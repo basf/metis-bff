@@ -32,15 +32,21 @@ async function post(req, res, next) {
 
     const reqId = req.id,
         fmt = req.body.fmt || null,
-        name = req.body.name || null;
+        names = Array.isArray(req.body.name) ? req.body.name : [req.body.name],
+        contents = Array.isArray(req.body.content) ? req.body.content : [req.body.content];
+
+    if (contents.length !== names.length || (fmt && contents.length > 1)) {
+        return next({
+            status: StatusCodes.BAD_REQUEST,
+            error: 'Input parameters are inconsistent.',
+        });
+    }
 
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
     try {
-        const contents = Array.isArray(req.body.content) ? req.body.content : [req.body.content];
-
-        for (const content of contents) {
-            const datasource = await createAndSaveDataSource(req.user.id, content, fmt, name);
+        for (let i = 0; i < contents.length; i++) {
+            const datasource = await createAndSaveDataSource(req.user.id, contents[i], fmt, names[i]);
             req.session.datasources.data.push(datasource);
         }
 

@@ -29,7 +29,9 @@ let mapQueryFromDSforLimits = new Map(); // This is the hack TODO FIXME
  * @apiUse SSEStreamResponse
  */
 async function post(req, res, next) {
-    const { uuid, progress, result } = req.body;
+    const { uuid, progress, result, error } = req.body;
+
+    if (error) console.error(error); // TODO send errors in stream
 
     if (
         req.user &&
@@ -66,6 +68,7 @@ async function post(req, res, next) {
 
     const sseFilter = ({ session, user }) =>
         session?.passport?.user === userId || user?.id === userId;
+
     res.sse.send(sseFilter, { reqId: req.id, ...output }, 'calculations');
 
     if (output.data.some(({ progress }) => progress === 100)) {
@@ -75,7 +78,7 @@ async function post(req, res, next) {
         const filters = await selectUserCollections(user);
         const preparedFilters = await getAndPrepareCollections(filters);
 
-        res.sse.send(sseFilter, { reqId: req.id, ...preparedFilters }, 'filter');
+        res.sse.send(sseFilter, { reqId: req.id, ...preparedFilters }, 'filters');
 
         const datasources = await selectUserDataSources(user, query);
         const preparedDataSouces = await getAndPrepareDataSources(datasources);

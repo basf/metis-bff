@@ -24,7 +24,7 @@ async function runAndSaveCalculation(userId, dataId, engine, input, workflow, up
     const datasource = await selectDataSourceByUserId(userId, { id: dataId });
 
     if (!datasource || !datasource.uuid) {
-        throw 'Data source UUID is not available';
+        throw 'Datasource cannot be used';
     }
 
     const { data = {} } = await runCalculation(
@@ -36,7 +36,7 @@ async function runAndSaveCalculation(userId, dataId, engine, input, workflow, up
     );
 
     if (!data.uuid) {
-        throw 'Calculation UUID is not available';
+        throw 'Calculation is not available';
     }
 
     return insertUserCalculation(userId, { uuid: data.uuid });

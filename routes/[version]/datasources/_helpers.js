@@ -22,7 +22,7 @@ async function createAndSaveDataSource(userId, content, fmt, name) {
     const { data = {} } = await createDataSource(content, fmt, name);
 
     if (!data.uuid) {
-        throw 'Data source UUID is not available';
+        throw 'Datasource cannot be used';
     }
 
     return insertUserDataSource(userId, { uuid: data.uuid });
@@ -33,13 +33,13 @@ async function importAndSaveDataSource(userId, externalId) {
     try {
         response = await importDataSource(externalId);
     } catch (error) {
-        //console.error(error);
+        console.error(error);
     }
 
     if (!response) return false;
 
     if (!response.data.uuid) {
-        throw 'Data source UUID is not available';
+        throw 'Datasource cannot be used';
     }
 
     return insertUserDataSource(userId, { uuid: response.data.uuid });
@@ -93,7 +93,11 @@ async function getAndPrepareDataSources({ data = [], total = 0 }) {
 }
 
 async function deleteAndClearDataSource(userId, id) {
-    const { uuid } = await deleteUserDataSource(userId, id);
-    await deleteDataSource(uuid);
-    return uuid;
+    const result = await deleteUserDataSource(userId, id);
+
+    if (!result?.uuid)
+        return false;
+
+    await deleteDataSource(result.uuid);
+    return true;
 }
