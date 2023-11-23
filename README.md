@@ -1,8 +1,13 @@
 # Metis data management GUI: Backend for Frontend
 
+<p class="what_is_metis"><dfn>Metis</dfn> is an open scientific framework, materials data organizer, and collaborative online platform for the nanotechnology research. It was designed for the materials research teams at the physical and virtual laboratories. Metis is an AI-ready solution, aiming to bring the recent advances of computer science into a rather conservative area of new materials development and quality control. Metis currently focuses on the X-ray powder diffraction and atomistic simulations. It was started in 2021 in BASF (Ludwigshafen am Rhein, Germany) by Bernd Hinrichsen and Evgeny Blokhin.</p>
+
 <p align="center"><img src="https://github.com/basf/metis-backend/blob/master/logo.png" width="300" /></p>
 
 **This is the second part of the whole Metis infra: [GUI](https://github.com/basf/metis-gui) &rlarr; [BFF](https://github.com/basf/metis-bff) &rlarr; [backend](https://github.com/basf/metis-backend).**
+
+Whereas the scientific features of Metis are handled with its backend, this BFF provides user and access management, as well as the backend proxy. The scientific data are represented by the abstract _datasource_ objects, managed by GUI users or scripted clients via the standard application programming interface (API).
+
 
 ### Requirements
 
@@ -47,7 +52,7 @@ Configure the development and production settings in `conf/env.ini` file.
 
 The BFF database schema is presented above (see `db/migrations` script).
 
-By design, BFF knows nothing about the scientific data and is only responsible for the users and access management.
+By design, BFF knows very little about the scientific data and is only responsible for the users and access management.
 
 On top of the `users`, the main concepts mapped onto the database are:
 
