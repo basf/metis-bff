@@ -91,17 +91,21 @@ async function saveCollection(user, data) {
 }
 
 async function changeOwnership(collectionId, userId) {
-
     const SERVICE_UID = 3; // FIXME move to settings?
 
-    const ownerId = await db.select('userId').from(USER_COLLECTIONS_TABLE).where('id', collectionId);
-    if (!ownerId || ownerId[0].userId !== SERVICE_UID)
-        return 'Invalid collection selected';
+    const ownerId = await db
+        .select('userId')
+        .from(USER_COLLECTIONS_TABLE)
+        .where('id', collectionId);
+    if (!ownerId || ownerId[0].userId !== SERVICE_UID) return 'Invalid collection selected';
 
-    const targetIds = await db.select('dataSourceId').from(USER_COLLECTIONS_DATASOURCES_TABLE).where('collectionId', collectionId);
+    const targetIds = await db
+        .select('dataSourceId')
+        .from(USER_COLLECTIONS_DATASOURCES_TABLE)
+        .where('collectionId', collectionId);
 
     const targets = [];
-    targetIds.forEach(function(item){
+    targetIds.forEach(function (item) {
         targets.push(item.dataSourceId);
     });
 
