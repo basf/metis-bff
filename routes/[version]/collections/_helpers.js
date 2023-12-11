@@ -1,7 +1,9 @@
 const {
     COLLECTIONS_TYPES_TABLE,
     SHARED_COLLECTION_VISIBILITY,
+    USER_COLLECTIONS_TABLE,
     USER_SHARED_COLLECTIONS_TABLE,
+    USER_DATASOURCES_TABLE,
     USER_COLLECTIONS_DATASOURCES_TABLE,
     db,
     selectUserCollections,
@@ -13,6 +15,7 @@ const {
 module.exports = {
     getAndPrepareCollections,
     saveCollection,
+    changeOwnership,
 };
 
 async function getAndPrepareCollections(collections = { data: [], total: 0 }) {
@@ -85,4 +88,25 @@ async function saveCollection(user, data) {
     collection.users = users;
 
     return collection;
+}
+
+async function changeOwnership(collectionId, userId) {
+
+    const SERVICE_UID = 3; // FIXME move to settings?
+
+    const ownerId = await db.select('userId').from(USER_COLLECTIONS_TABLE).where('id', collectionId);
+    if (!ownerId || ownerId[0].userId !== SERVICE_UID)
+        return 'Invalid collection selected';
+
+    const targetIds = await db.select('dataSourceId').from(USER_COLLECTIONS_DATASOURCES_TABLE).where('collectionId', collectionId);
+
+    const targets = [];
+    targetIds.forEach(function(item){
+        targets.push(item.dataSourceId);
+    });
+
+    await db(USER_DATASOURCES_TABLE).whereIn('id', targets).update({ userId });
+    await db(USER_COLLECTIONS_TABLE).where('id', collectionId).update({ userId });
+
+    return false;
 }

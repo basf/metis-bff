@@ -24,7 +24,7 @@ exports.seed = async function (knex) {
             // id = 3
             slug: 'statuses',
             label: 'Statuses',
-            flavor: '#fff',
+            flavor: '#f5f5f5',
         },
         {
             // id = 4
@@ -38,5 +38,6 @@ exports.seed = async function (knex) {
             label: 'Customers',
             flavor: '#5755D9',
         },
+        // TODO datasource type
     ]);
 };

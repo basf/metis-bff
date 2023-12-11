@@ -36,12 +36,12 @@ async function post(req, res, next) {
     console.log('Got *engine* param:   ' + engine);
     console.log('Got *workflow* param: ' + workflow);
 
-    if (req.session.calculations.data.length > 15) {
+    /*if (req.session.calculations.data.length > 15) {
         return next({
             status: StatusCodes.PAYMENT_REQUIRED,
             error: 'Sorry, your computing resources quota is exceeded.',
         });
-    }
+    }*/
 
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 

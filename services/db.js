@@ -88,7 +88,7 @@ const VISIBILITY_ENUM = [
 ];
 
 const OAUTH_PROVIDERS_ENUM = ['dummy', 'github', 'linkedin', 'orcid', 'mpds', 'microsoft'];
-const FLAVORS_ENUM = ['#900', '#ccc', '#fff', '#666', '#5755D9'];
+const FLAVORS_ENUM = ['#900', '#ccc', '#f5f5f5', '#666', '#5755D9'];
 
 const selectDataSourcesByUserId = selectAllByUserId(USER_DATASOURCES_TABLE, DATASOURCE_FIELDS);
 const selectCalculationsByUserId = selectAllByUserId(USER_CALCULATIONS_TABLE);
