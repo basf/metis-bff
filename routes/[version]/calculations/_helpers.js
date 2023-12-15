@@ -100,6 +100,7 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
             const { id } = await db(USER_DATASOURCES_TABLE).where({ uuid: parent }).first('id');
             if (!id) return { error: 'Absent parent datasource' };
 
+            // collections inheritance
             const parentCollections = await selectUserCollections(
                 { id: userId },
                 { dataSourceIds: [id] }
@@ -112,7 +113,7 @@ async function getAndPrepareCalcResults(userId, calculations, progress, result) 
             dataSources.data.push(dataSource);
         }
 
-        // get & prepare result datasources from sci. backend
+        // get & prepare result datasources from backend
         const preparedData = await getAndPrepareDataSources(dataSources);
         results = preparedData.data.map((dataSource) => ({ ...dataSource, progress }));
     }

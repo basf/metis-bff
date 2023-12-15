@@ -1,6 +1,7 @@
 const {
     COLLECTIONS_TYPES_TABLE,
     SHARED_COLLECTION_VISIBILITY,
+    PRIVATE_COLLECTION_VISIBILITY,
     USER_COLLECTIONS_TABLE,
     USER_SHARED_COLLECTIONS_TABLE,
     USER_DATASOURCES_TABLE,
@@ -97,7 +98,10 @@ async function changeOwnership(collectionId, userId) {
         .select('userId')
         .from(USER_COLLECTIONS_TABLE)
         .where('id', collectionId);
-    if (!ownerId || ownerId[0].userId !== SERVICE_UID) return 'Invalid collection selected';
+
+    if (!ownerId || ownerId[0].userId !== SERVICE_UID || userId === SERVICE_UID) {
+        throw new Error('Unsuitable collection selected');
+    }
 
     const targetIds = await db
         .select('dataSourceId')
@@ -110,7 +114,10 @@ async function changeOwnership(collectionId, userId) {
     });
 
     await db(USER_DATASOURCES_TABLE).whereIn('id', targets).update({ userId });
-    await db(USER_COLLECTIONS_TABLE).where('id', collectionId).update({ userId });
+    await db(USER_COLLECTIONS_TABLE).where('id', collectionId).update({
+        userId,
+        visibility: PRIVATE_COLLECTION_VISIBILITY,
+    });
 
     return false;
 }

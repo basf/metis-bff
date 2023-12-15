@@ -8,7 +8,7 @@ module.exports = {
 };
 
 /**
- * @api {post} /v0/collections/ownership Get data into work and change ownership (experimental)
+ * @api {post} /v0/collections/ownership Take on the data into work changing ownership
  * @apiName ListCollectionData
  * @apiGroup Collections
  * @apiPermission GUI_ONLY

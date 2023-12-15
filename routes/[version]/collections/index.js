@@ -10,7 +10,7 @@ module.exports = {
 };
 
 /**
- * @api {put} /v0/collections Create a collection
+ * @api {put} /v0/collections Create or update a collection
  * @apiName CreateCollection
  * @apiGroup Collections
  * @apiPermission API
@@ -23,6 +23,10 @@ async function put(req, res, next) {
             status: StatusCodes.BAD_REQUEST,
             error: 'Required fields `typeId` and `title` are not provided.',
         });
+    }
+
+    if (req.body.id === null) {
+        return next({ status: StatusCodes.BAD_REQUEST, error: 'ID should be omitted.' });
     }
 
     const reqId = req.id;

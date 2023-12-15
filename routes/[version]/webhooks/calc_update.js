@@ -12,7 +12,6 @@ const {
 
 const { is_valid_uuid } = require('./_helpers');
 const { getAndPrepareCalcResults, deleteAndClearCalculation } = require('../calculations/_helpers');
-
 const { getAndPrepareDataSources } = require('../datasources/_helpers');
 const { getAndPrepareCollections } = require('../collections/_helpers');
 

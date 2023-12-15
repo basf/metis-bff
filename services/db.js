@@ -81,6 +81,7 @@ const ADMIN_USER_ROLE = 'admin';
 const PUBLIC_COLLECTION_VISIBILITY = 'community';
 const SHARED_COLLECTION_VISIBILITY = 'shared';
 const PRIVATE_COLLECTION_VISIBILITY = 'private';
+
 const VISIBILITY_ENUM = [
     PRIVATE_COLLECTION_VISIBILITY,
     SHARED_COLLECTION_VISIBILITY,
@@ -114,8 +115,8 @@ module.exports = {
     insertUserDataSource,
     deleteUserDataSource,
     delsertDataSourceCollections,
-    selectDataSourceByUserId, // ??
-    selectDataSourcesByUserId, // ??
+    selectDataSourceByUserId, // FIXME?
+    selectDataSourcesByUserId, // FIXME?
 
     selectUserCollections,
     insertUserCollection,

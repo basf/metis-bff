@@ -2,6 +2,10 @@ const { StatusCodes } = require('http-status-codes');
 const { checkAuth } = require('../../../middlewares/auth');
 const { getUserDataSources } = require('../../../middlewares/db');
 
+const { USERS_TABLE, selectFirstUser, selectUserCollections } = require('../../../services/db');
+
+const { getAndPrepareCollections } = require('../collections/_helpers');
+
 const {
     createAndSaveDataSource,
     getAndPrepareDataSources,
@@ -94,17 +98,17 @@ async function get(req, res, next) {
  * @apiUse SSEStreamResponse
  */
 async function put(req, res, next) {
-    if (!req.body.id) {
+    if (!req.body.id || !req.body.parent) {
         return next({
             status: StatusCodes.BAD_REQUEST,
-            error: 'Required field *id* is not provided.',
+            error: 'Required fields are not provided.',
         });
     }
 
     const reqId = req.id;
     res.status(StatusCodes.ACCEPTED).json({ reqId });
 
-    const datasource = await importAndSaveDataSource(req.user.id, req.body.id);
+    const datasource = await importAndSaveDataSource(req.user.id, req.body.id, req.body.parent);
     if (!datasource)
         return next({
             status: StatusCodes.UNPROCESSABLE_ENTITY,
@@ -115,4 +119,10 @@ async function put(req, res, next) {
     const data = await getAndPrepareDataSources(req.session.datasources);
 
     res.sse.sendTo({ reqId, ...data }, 'datasources');
+
+    const user = await selectFirstUser({ [`${USERS_TABLE}.id`]: req.user.id });
+    const filters = await selectUserCollections(user);
+    const preparedFilters = await getAndPrepareCollections(filters);
+
+    res.sse.sendTo({ reqId, ...preparedFilters }, 'filters');
 }

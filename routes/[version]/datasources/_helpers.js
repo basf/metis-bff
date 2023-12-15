@@ -2,6 +2,8 @@ const {
     insertUserDataSource,
     deleteUserDataSource,
     selectDataSourcesIdMap,
+    selectUserCollections,
+    delsertDataSourceCollections,
 } = require('../../../services/db');
 
 const {
@@ -28,7 +30,7 @@ async function createAndSaveDataSource(userId, content, fmt, name) {
     return insertUserDataSource(userId, { uuid: data.uuid });
 }
 
-async function importAndSaveDataSource(userId, externalId) {
+async function importAndSaveDataSource(userId, externalId, parentId) {
     let response;
     try {
         response = await importDataSource(externalId);
@@ -42,7 +44,17 @@ async function importAndSaveDataSource(userId, externalId) {
         throw 'Datasource cannot be used';
     }
 
-    return insertUserDataSource(userId, { uuid: response.data.uuid });
+    // collections inheritance
+    const parentCollections = await selectUserCollections(
+        { id: userId },
+        { dataSourceIds: [parentId] }
+    );
+    const collectionIds = parentCollections.data.map(({ id }) => id);
+    const dataSource = await insertUserDataSource(userId, { uuid: response.data.uuid });
+
+    await delsertDataSourceCollections(dataSource.id, collectionIds);
+
+    return dataSource;
 }
 
 /**
